@@ -11,3 +11,21 @@ class Inseration {
       required this.location,
       required this.headline});
 }
+
+class Chat {
+  String person;
+  List<Message> messages;
+  String imageUri;
+  Chat({required this.person, required this.messages, required this.imageUri});
+}
+
+class Message {
+  DateTime send;
+  String message;
+  String send_by;
+  Message(
+      {required this.send,
+      required this.message,
+      required,
+      required this.send_by});
+}
