@@ -6,6 +6,7 @@ class Inseration {
   String category;
   bool favorized;
   bool selfPickUp;
+  user_id createdBy;
   Inseration(
       {required this.category,
       required this.description,
@@ -13,23 +14,32 @@ class Inseration {
       required this.location,
       required this.headline,
       required this.selfPickUp,
+      required this.createdBy,
       this.favorized = false});
 }
 
 class Chat {
-  String person;
+  user_id person;
   List<Message> messages;
   String imageUri;
   Chat({required this.person, required this.messages, required this.imageUri});
 }
 
+typedef user_id = String;
+
 class Message {
   DateTime send;
   String message;
-  String send_by;
+  user_id sendBy;
   Message(
       {required this.send,
       required this.message,
       required,
-      required this.send_by});
+      required this.sendBy});
+}
+
+class User {
+  user_id id;
+  String imageURI;
+  User({required this.id, required this.imageURI});
 }

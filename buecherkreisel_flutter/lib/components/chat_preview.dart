@@ -50,42 +50,42 @@ List<Chat> sampleDataChats = [
     Message(
       send: DateTime.now(),
       message: "Hey, hast du die Vorlesungsunterlagen?",
-      send_by: "Tina Schmidt",
+      sendBy: "Tina Schmidt",
     )
   ], person: "Tina Schmidt", imageUri: ""),
   Chat(messages: [
     Message(
       send: DateTime.now(),
       message: "Ich habe ein Problem bei der Registrierung",
-      send_by: "David Becker",
+      sendBy: "David Becker",
     )
   ], person: "David Becker", imageUri: ""),
   Chat(messages: [
     Message(
       send: DateTime.now(),
       message: "Kannst du mir bei meinem Projekt helfen?",
-      send_by: "Julia Wagner",
+      sendBy: "Julia Wagner",
     )
   ], person: "Julia Wagner", imageUri: ""),
   Chat(messages: [
     Message(
       send: DateTime.now(),
       message: "Wann findet die nächste Veranstaltung statt?",
-      send_by: "Markus Fischer",
+      sendBy: "Markus Fischer",
     )
   ], person: "Markus Fischer", imageUri: ""),
   Chat(messages: [
     Message(
       send: DateTime.now(),
       message: "Hast du die Prüfungsergebnisse schon erhalten?",
-      send_by: "Laura Peters",
+      sendBy: "Laura Peters",
     )
   ], person: "Laura Peters", imageUri: ""),
   Chat(messages: [
     Message(
       send: DateTime.now(),
       message: "Ich habe mich für das Praktikum angemeldet",
-      send_by: "Maximilian Klein",
+      sendBy: "Maximilian Klein",
     )
   ], person: "Maximilian Klein", imageUri: "")
 ];
