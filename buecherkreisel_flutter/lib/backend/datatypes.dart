@@ -5,12 +5,14 @@ class Inseration {
   String location;
   String category;
   bool favorized;
+  bool selfPickUp;
   Inseration(
       {required this.category,
       required this.description,
       required this.price,
       required this.location,
       required this.headline,
+      required this.selfPickUp,
       this.favorized = false});
 }
 
