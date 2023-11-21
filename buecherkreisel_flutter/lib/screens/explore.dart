@@ -9,9 +9,9 @@ class Explore extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
-      itemCount: sampleDataInseration.length,
+      itemCount: sampleDataInsertion.length,
       itemBuilder: (c, index) =>
-          InserationPreview(inseration: sampleDataInseration[index]),
+          InsertionPreview(insertion: sampleDataInsertion[index]),
     );
   }
 }

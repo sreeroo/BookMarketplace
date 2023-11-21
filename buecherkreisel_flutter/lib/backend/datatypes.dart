@@ -1,4 +1,4 @@
-class Inseration {
+class Insertion {
   String headline;
   String description;
   double price;
@@ -7,7 +7,7 @@ class Inseration {
   bool favorized;
   bool selfPickUp;
   user_id createdBy;
-  Inseration(
+  Insertion(
       {required this.category,
       required this.description,
       required this.price,
