@@ -1,4 +1,5 @@
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
+import 'package:buecherkreisel_flutter/components/inseration_fullscreen.dart';
 import 'package:flutter/material.dart';
 
 class InserationPreview extends StatelessWidget {
@@ -8,30 +9,38 @@ class InserationPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(inseration.category),
-              Text(inseration.location),
-            ],
-          ),
-          const Image(image: AssetImage("lib/assets/6NyIq.jpg")),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(inseration.headline,
-                  softWrap: true,
-                  overflow: TextOverflow.clip,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text("${inseration.price.toString()}€",
-                  style: const TextStyle(fontWeight: FontWeight.bold))
-            ],
-          )
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => InserationFullScreen(inseration: inseration),
+        ),
+      ),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(inseration.category),
+                Text(inseration.location),
+              ],
+            ),
+            const Image(image: AssetImage("lib/assets/6NyIq.jpg")),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(inseration.headline,
+                    softWrap: true,
+                    overflow: TextOverflow.clip,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text("${inseration.price.toString()}€",
+                    style: const TextStyle(fontWeight: FontWeight.bold))
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

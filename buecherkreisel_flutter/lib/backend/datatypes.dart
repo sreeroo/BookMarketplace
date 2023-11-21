@@ -4,12 +4,14 @@ class Inseration {
   double price;
   String location;
   String category;
+  bool favorized;
   Inseration(
       {required this.category,
       required this.description,
       required this.price,
       required this.location,
-      required this.headline});
+      required this.headline,
+      this.favorized = false});
 }
 
 class Chat {

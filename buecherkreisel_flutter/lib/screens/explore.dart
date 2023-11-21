@@ -6,14 +6,12 @@ class Explore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
-        itemCount: sampleDataInseration.length,
-        itemBuilder: (c, index) =>
-            InserationPreview(inseration: sampleDataInseration[index]),
-      ),
+    return ListView.builder(
+      shrinkWrap: true,
+      scrollDirection: Axis.vertical,
+      itemCount: sampleDataInseration.length,
+      itemBuilder: (c, index) =>
+          InserationPreview(inseration: sampleDataInseration[index]),
     );
   }
 }

@@ -6,16 +6,14 @@ class Chats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
-        itemCount: sampleDataChats.length,
-        itemBuilder: (c, index) => ChatPreview(
-          lastMessage: sampleDataChats[index].messages.last,
-          chatWith: sampleDataChats[index].person,
-          imageUri: "",
-        ),
+    return ListView.builder(
+      shrinkWrap: true,
+      scrollDirection: Axis.vertical,
+      itemCount: sampleDataChats.length,
+      itemBuilder: (c, index) => ChatPreview(
+        lastMessage: sampleDataChats[index].messages.last,
+        chatWith: sampleDataChats[index].person,
+        imageUri: "",
       ),
     );
   }
