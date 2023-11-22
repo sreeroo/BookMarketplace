@@ -10,34 +10,36 @@ class APIClient {
   static const baseUrl = "http://10.0.2.2:8080/";
 
   // GET
-  Future<dynamic> fetchData(String endpoint) async {
-    final response = await http.get(Uri.parse('$baseUrl$endpoint'));
+  Future<dynamic> fetchData(http.Client client, String endpoint) async {
+    final response = await client.get(Uri.parse('$baseUrl$endpoint'));
 
     // check response from backend
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      return json.decode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to load data');
     }
   }
 
   // POST
-  Future<dynamic> postData(String endpoint, dynamic data) async {
-    final response = await http.post(
+  Future<dynamic> postData(
+      http.Client client, String endpoint, dynamic data) async {
+    final response = await client.post(
       Uri.parse('$baseUrl$endpoint'),
       body: json.encode(data),
-      headers: {'Content-Type': 'application/json'},
+      headers: <String, String>{'Content-Type': 'application/json'},
     );
 
     if (response.statusCode == 201) {
-      return json.decode(response.body);
+      return json.decode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to create data');
     }
   }
 
   // UPDATE
-  Future<dynamic> updateData(String endpoint, dynamic data) async {
+  Future<dynamic> updateData(
+      http.Client client, String endpoint, dynamic data) async {
     final response = await http.put(
       Uri.parse('$baseUrl$endpoint'),
       body: json.encode(data),
@@ -45,7 +47,7 @@ class APIClient {
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      return json.decode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to update data');
     }
@@ -53,7 +55,10 @@ class APIClient {
 
   // DELETE
   Future<void> deleteData(String endpoint) async {
-    final response = await http.delete(Uri.parse('$baseUrl$endpoint'));
+    final response = await http.delete(
+      Uri.parse('$baseUrl$endpoint'),
+      headers: <String, String>{'Content-Type': 'application/json'},
+    );
 
     if (response.statusCode != 204) {
       throw Exception('Failed to delete data');
