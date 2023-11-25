@@ -1,4 +1,3 @@
-import 'package:buecherkreisel_flutter/backend/datatypes.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -54,8 +53,8 @@ class APIClient {
   }
 
   // DELETE
-  Future<void> deleteData(String endpoint) async {
-    final response = await http.delete(
+  Future<void> deleteData(http.Client client, String endpoint) async {
+    final response = await client.delete(
       Uri.parse('$baseUrl$endpoint'),
       headers: <String, String>{'Content-Type': 'application/json'},
     );
