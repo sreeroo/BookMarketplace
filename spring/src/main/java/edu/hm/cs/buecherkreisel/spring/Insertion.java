@@ -26,6 +26,8 @@ class Insertion {
 
     private Long userID;
 
+    private String location;
+
     @ElementCollection
     @Column(length = 15000000)
     private List<byte[]> images;
@@ -35,7 +37,7 @@ class Insertion {
     }
 
     public Insertion(Long id, String title, Double price, Category category, boolean offersDelivery,
-            String description, boolean isReserved, Long userID, List<MultipartFile> multipartFileList) {
+            String description, boolean isReserved, Long userID, String location, List<MultipartFile> multipartFileList) {
         this.id = id;
         this.title = title;
         this.price = price;
@@ -44,6 +46,7 @@ class Insertion {
         this.description = description;
         this.isReserved = isReserved;
         this.userID = userID;
+        this.location = location;
 
         this.images = multipartFileList.stream().map(
                 image -> {
@@ -57,7 +60,7 @@ class Insertion {
     }
 
      public Insertion(String title, Double price, Category category, boolean offersDelivery,
-            String description, boolean isReserved, Long userID, List<MultipartFile> multipartFileList) {
+            String description, boolean isReserved, Long userID, String location, List<MultipartFile> multipartFileList) {
         this.title = title;
         this.price = price;
         this.category = category;
@@ -65,6 +68,7 @@ class Insertion {
         this.description = description;
         this.isReserved = isReserved;
         this.userID = userID;
+        this.location = location;
 
          this.images = multipartFileList.stream().map(
                 image -> {
@@ -147,5 +151,13 @@ class Insertion {
 
     public void setImages(List<byte[]> images) {
         this.images = images;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

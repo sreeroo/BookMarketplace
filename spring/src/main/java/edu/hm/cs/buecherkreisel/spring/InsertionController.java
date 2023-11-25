@@ -1,5 +1,6 @@
 package edu.hm.cs.buecherkreisel.spring;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
@@ -26,32 +27,58 @@ class InsertionController {
         return ResponseEntity.ok(repository.findAll());
     }
 
-    /*@GetMapping("/insertions/{id}/images")
-    ResponseEntity<Set<Image>> getPicturesByID(@PathVariable Long id) {
-        Optional<Insertion> optionalInsertion = repository.findById(id);
-        if (optionalInsertion.isPresent()) {
-            Set<Image> images = optionalInsertion.get().getImages();
-            return ResponseEntity.ok(images);
+    @GetMapping("/insertions/search")
+    ResponseEntity<List<Insertion>> filterInsertions(
+            @RequestParam("minPrice") Optional<Double> minPrice,
+            @RequestParam("maxPrice") Optional<Double> maxPrice,
+            @RequestParam("category") Optional<Category> category,
+            @RequestParam("offersDelivery") Optional<Boolean> offersDelivery,
+            @RequestParam("searchString") Optional<String> searchString,
+            @RequestParam("isReserved") Optional<Boolean> isReserved,
+            @RequestParam("location") Optional<String> location,
+            @RequestParam("user_id") Optional<Long> userID
+            ) {
+        List<Insertion> allInsertions = repository.findAll();
+
+        List<Insertion> insertions = new ArrayList<>();
+
+        for (Insertion insertion : allInsertions) {
+            if ((minPrice.isEmpty() || minPrice.get() <= insertion.getPrice())
+                    && (maxPrice.isEmpty() || maxPrice.get() >= insertion.getPrice())
+                    && (category.isEmpty() || category.get().equals(insertion.getCategory()))
+                    && (offersDelivery.isEmpty() || offersDelivery.get() == insertion.isOffersDelivery())
+                    && (isReserved.isEmpty() || isReserved.get() == insertion.isReserved())
+                    && (location.isEmpty()
+                        || location.get().isBlank()
+                        || location.get().equals(insertion.getLocation()))
+                    && (userID.isEmpty() || userID.get().equals(insertion.getUserID()))
+                    && (searchString.isEmpty() || searchString.get().isBlank()
+                        || insertion.getTitle().toLowerCase().contains(searchString.get().toLowerCase())
+                        || insertion.getDescription().toLowerCase().contains(searchString.get().toLowerCase()))) {
+
+                insertions.add(insertion);
+            }
         }
-        else {
-            return ResponseEntity.notFound().build();
-        }
-    }*/
+
+        return ResponseEntity.ok(insertions);
+    }
 
     @PostMapping("/insertions")
-    ResponseEntity<?> newInsertion(@RequestParam("title") String title,
-        @RequestParam("price") Double price,
-        @RequestParam("category") Category category,
-        @RequestParam("offersDelivery") boolean offersDelivery,
-        @RequestParam("description") String description,
-        @RequestParam("isReserved") boolean isReserved,
-        @RequestParam("user_id") Long userID,
-        @RequestParam("images") List<MultipartFile> images) {
+    ResponseEntity<?> newInsertion(
+            @RequestParam("title") String title,
+            @RequestParam("price") Double price,
+            @RequestParam("category") Category category,
+            @RequestParam("offersDelivery") boolean offersDelivery,
+            @RequestParam("description") String description,
+            @RequestParam("isReserved") boolean isReserved,
+            @RequestParam("user_id") Long userID,
+            @RequestParam("location") String location,
+            @RequestParam("images") List<MultipartFile> images) {
 
         // TODO überprüfen ob UserID existiert - Error 401
 
         repository.save(new Insertion(title, price, category, offersDelivery,
-                description, isReserved, userID, images));
+                description, isReserved, userID, location, images));
 
         return ResponseEntity.ok().build();
     }
@@ -78,7 +105,8 @@ class InsertionController {
     }
 
     @PutMapping("insertions/{id}")
-    ResponseEntity<?> updateInsertion(@PathVariable Long id,
+    ResponseEntity<?> updateInsertion(
+            @PathVariable Long id,
             @RequestParam("title") String title,
             @RequestParam("price") Double price,
             @RequestParam("category") Category category,
@@ -86,6 +114,7 @@ class InsertionController {
             @RequestParam("description") String description,
             @RequestParam("isReserved") boolean isReserved,
             @RequestParam("user_id") Long userID,
+            @RequestParam("location") String location,
             @RequestParam("images") List<MultipartFile> images) {
 
         Optional<Insertion> optionalInsertion = repository.findById(id);
@@ -97,7 +126,7 @@ class InsertionController {
 
             if (correctUserID.equals(userID)) {
                 repository.save(new Insertion(id, title, price, category, offersDelivery,
-                        description, isReserved, correctUserID, images));
+                        description, isReserved, correctUserID, location, images));
 
                 return ResponseEntity.ok().build();
             }
