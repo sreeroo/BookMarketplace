@@ -1,7 +1,6 @@
 package edu.hm.cs.buecherkreisel.spring;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -90,8 +89,6 @@ class InsertionController {
             @RequestParam("images") List<MultipartFile> images) {
 
         Optional<Insertion> optionalInsertion = repository.findById(id);
-
-        // TODO Doppelte und alte Images löschen
 
         if (optionalInsertion.isPresent()) {
             Insertion insertion = optionalInsertion.get();

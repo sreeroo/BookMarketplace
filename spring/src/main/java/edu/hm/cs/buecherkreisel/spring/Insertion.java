@@ -1,15 +1,13 @@
 package edu.hm.cs.buecherkreisel.spring;
 
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,8 +26,9 @@ class Insertion {
 
     private Long userID;
 
-    @OneToMany(mappedBy = "insertion", cascade = CascadeType.ALL)
-    private Set<Image> images;
+    @ElementCollection
+    @Column(length = 15000000)
+    private List<byte[]> images;
 
     public Insertion() {
 
@@ -48,17 +47,13 @@ class Insertion {
 
         this.images = multipartFileList.stream().map(
                 image -> {
-                    Image newImage = new Image();
                     try {
-                        newImage.setData(image.getBytes());
-                        newImage.setInsertion(this);
+                        return image.getBytes();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-
-                    return newImage;
                 }
-        ).collect(Collectors.toSet());
+        ).collect(Collectors.toList());
     }
 
      public Insertion(String title, Double price, Category category, boolean offersDelivery,
@@ -71,19 +66,15 @@ class Insertion {
         this.isReserved = isReserved;
         this.userID = userID;
 
-        this.images = multipartFileList.stream().map(
+         this.images = multipartFileList.stream().map(
                 image -> {
-                    Image newImage = new Image();
                     try {
-                        newImage.setData(image.getBytes());
-                        newImage.setInsertion(this);
+                        return image.getBytes();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-
-                    return newImage;
                 }
-        ).collect(Collectors.toSet());
+        ).collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -142,19 +133,19 @@ class Insertion {
         isReserved = reserved;
     }
 
-    public Set<Image> getImages() {
-        return images;
-    }
-
-    public void setImages(Set<Image> images) {
-        this.images = images;
-    }
-
     public Long getUserID() {
         return userID;
     }
 
     public void setUserID(Long userID) {
         this.userID = userID;
+    }
+
+    public List<byte[]> getImages() {
+        return images;
+    }
+
+    public void setImages(List<byte[]> images) {
+        this.images = images;
     }
 }
