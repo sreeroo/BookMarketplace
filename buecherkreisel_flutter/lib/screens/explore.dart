@@ -1,4 +1,4 @@
-import 'package:buecherkreisel_flutter/components/insertation_preview.dart';
+import 'package:buecherkreisel_flutter/components/insertion_preview.dart';
 import 'package:flutter/material.dart';
 
 class Explore extends StatelessWidget {

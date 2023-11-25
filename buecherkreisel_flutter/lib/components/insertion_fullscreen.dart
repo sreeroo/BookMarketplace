@@ -1,4 +1,4 @@
-import 'package:buecherkreisel_flutter/backend/datatypes.dart';
+import 'package:buecherkreisel_flutter/models/insertion.dart';
 import 'package:flutter/material.dart';
 
 class InsertionFullScreen extends StatelessWidget {
@@ -13,7 +13,7 @@ class InsertionFullScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Image(image: AssetImage("lib/assets/6NyIq.jpg")),
+          const Image(image: AssetImage("lib/assets/6NyIq.jpg")),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -23,14 +23,14 @@ class InsertionFullScreen extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () => print("Not FaveIcon implmented"),
-                icon: Icon(Icons.favorite),
+                icon: const Icon(Icons.favorite),
               )
             ],
           ),
           Row(
             children: [
               Text("${insertion.price}€"),
-              Text("Nur Abholung (hardcoded)"),
+              const Text("Nur Abholung (hardcoded)"),
             ],
           ),
           Row(
@@ -40,13 +40,13 @@ class InsertionFullScreen extends StatelessWidget {
               Text(insertion.category),
             ],
           ),
-          Divider(),
+          const Divider(),
           Text(
             insertion.description,
             overflow: TextOverflow.clip,
           ),
-          Divider(),
-          Text("missing contact possibility"),
+          const Divider(),
+          const Text("missing contact possibility"),
         ],
       ),
     );

@@ -1,4 +1,5 @@
-import 'package:buecherkreisel_flutter/backend/datatypes.dart';
+import 'package:buecherkreisel_flutter/models/chat.dart';
+import 'package:buecherkreisel_flutter/models/message.dart';
 import 'package:flutter/material.dart';
 
 class ChatPreview extends StatelessWidget {
@@ -15,17 +16,17 @@ class ChatPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 90,
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
+          const CircleAvatar(
             radius: 32,
             backgroundImage: AssetImage("lib/assets/6NyIq.jpg"),
           ),
           Flexible(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
