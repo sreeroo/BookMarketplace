@@ -22,13 +22,22 @@ class ListingController {
         this.repository = repository;
     }
 
+    /**
+     * Respond with all listings
+     * @return 200 HTTP status code and a list of all listings
+     */
     @GetMapping("/listings")
     ResponseEntity<List<Listing>> allListings() {
         return ResponseEntity.ok(repository.findAll());
     }
 
+    /**
+     * Respond with filtered listings
+     * @return 200 HTTP status code and a list of filtered listings
+     */
     @GetMapping("/listings/search")
     ResponseEntity<List<Listing>> filterListings(
+            // Optional required, so params can be null
             @RequestParam("minPrice") Optional<Double> minPrice,
             @RequestParam("maxPrice") Optional<Double> maxPrice,
             @RequestParam("category") Optional<Category> category,
@@ -43,6 +52,8 @@ class ListingController {
         List<Listing> listings = new ArrayList<>();
 
         for (Listing listing : allListings) {
+            // Some filtering action
+            // If param is given, check if listing meets the asked criteria
             if ((minPrice.isEmpty() || minPrice.get() <= listing.getPrice())
                     && (maxPrice.isEmpty() || maxPrice.get() >= listing.getPrice())
                     && (category.isEmpty() || category.get().equals(listing.getCategory()))
@@ -63,6 +74,10 @@ class ListingController {
         return ResponseEntity.ok(listings);
     }
 
+    /**
+     * Creates a new listing
+     * @return 200 - listing created, 401 - user doesn't exist HTTP status code
+     */
     @PostMapping("/listings")
     ResponseEntity<?> newListing(
             @RequestParam("title") String title,
@@ -83,14 +98,21 @@ class ListingController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Deletes the listing by the given ID.
+     * @return 200 - listing deleted, 401 - user isn't the owner, 404 - listing not found
+     */
     @DeleteMapping("listings/{id}")
     ResponseEntity<?> deleteListing(@PathVariable Long id, @RequestParam("user_id") Long userID) {
 
         Optional<Listing> optionalListing = repository.findById(id);
 
+
+        // True, if listing exists, else 404 HTTP Status Code
         if (optionalListing.isPresent()) {
             Long correctUserID = optionalListing.get().getUserID();
 
+            // True, if user is owner of listing, else 401 HTTP Status Code
             if (correctUserID.equals(userID)) {
                 repository.deleteById(id);
                 return ResponseEntity.ok().build();
@@ -104,6 +126,10 @@ class ListingController {
 
     }
 
+    /**
+     * Updates listing by the given ID.
+     * @return 200 - listing updated, 401 - user isn't the owner, 404 - listing not found
+     */
     @PutMapping("listings/{id}")
     ResponseEntity<?> updateListing(
             @PathVariable Long id,
@@ -119,11 +145,13 @@ class ListingController {
 
         Optional<Listing> optionalListing = repository.findById(id);
 
+        // True, if listing exists, else 404 HTTP Status Code
         if (optionalListing.isPresent()) {
             Listing listing = optionalListing.get();
 
             Long correctUserID = listing.getUserID();
 
+            // True, if user is owner of listing, else 401 HTTP Status Code
             if (correctUserID.equals(userID)) {
                 repository.save(new Listing(id, title, price, category, offersDelivery,
                         description, isReserved, correctUserID, location, images));

@@ -33,9 +33,23 @@ class Listing {
     private List<byte[]> images;
 
     public Listing() {
-
+        // Empty constructor, because Spring wants it.
     }
 
+    /**
+     * Constructor for updating a listing.
+     *
+     * @param id ID of listing.
+     * @param title Title of listing.
+     * @param price Price of listing.
+     * @param category Category of listing.
+     * @param offersDelivery True, if seller offers delivery.
+     * @param description Description of listing.
+     * @param isReserved True, if item is reserved for another user.
+     * @param userID UserID of listing's seller.
+     * @param location Location of listing's item.
+     * @param multipartFileList Images as MultipartFile list.
+     */
     public Listing(Long id, String title, Double price, Category category, boolean offersDelivery,
             String description, boolean isReserved, Long userID, String location, List<MultipartFile> multipartFileList) {
         this.id = id;
@@ -59,6 +73,19 @@ class Listing {
         ).collect(Collectors.toList());
     }
 
+    /**
+     * Constructor for creating a listing.
+     *
+     * @param title Title of listing.
+     * @param price Price of listing.
+     * @param category Category of listing.
+     * @param offersDelivery True, if seller offers delivery.
+     * @param description Description of listing.
+     * @param isReserved True, if item is reserved for another user.
+     * @param userID UserID of listing's seller.
+     * @param location Location of listing's item.
+     * @param multipartFileList Images as MultipartFile list.
+     */
      public Listing(String title, Double price, Category category, boolean offersDelivery,
             String description, boolean isReserved, Long userID, String location, List<MultipartFile> multipartFileList) {
         this.title = title;
@@ -145,6 +172,7 @@ class Listing {
         this.userID = userID;
     }
 
+    // Getter must not be removed, because of JPA.
     public List<byte[]> getImages() {
         return images;
     }
