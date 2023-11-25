@@ -1,15 +1,23 @@
 package edu.hm.cs.buecherkreisel.spring;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.util.Objects;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 class Insertion {
 
     private @Id
-    @GeneratedValue Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
 
     private String title;
     private Double price;
@@ -18,7 +26,65 @@ class Insertion {
     private String description;
     private boolean isReserved;
 
-    // TODO Bilder Attribut
+    private Long userID;
+
+    @OneToMany(mappedBy = "insertion", cascade = CascadeType.ALL)
+    private Set<Image> images;
+
+    public Insertion() {
+
+    }
+
+    public Insertion(Long id, String title, Double price, Category category, boolean offersDelivery,
+            String description, boolean isReserved, Long userID, List<MultipartFile> multipartFileList) {
+        this.id = id;
+        this.title = title;
+        this.price = price;
+        this.category = category;
+        this.offersDelivery = offersDelivery;
+        this.description = description;
+        this.isReserved = isReserved;
+        this.userID = userID;
+
+        this.images = multipartFileList.stream().map(
+                image -> {
+                    Image newImage = new Image();
+                    try {
+                        newImage.setData(image.getBytes());
+                        newImage.setInsertion(this);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    return newImage;
+                }
+        ).collect(Collectors.toSet());
+    }
+
+     public Insertion(String title, Double price, Category category, boolean offersDelivery,
+            String description, boolean isReserved, Long userID, List<MultipartFile> multipartFileList) {
+        this.title = title;
+        this.price = price;
+        this.category = category;
+        this.offersDelivery = offersDelivery;
+        this.description = description;
+        this.isReserved = isReserved;
+        this.userID = userID;
+
+        this.images = multipartFileList.stream().map(
+                image -> {
+                    Image newImage = new Image();
+                    try {
+                        newImage.setData(image.getBytes());
+                        newImage.setInsertion(this);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    return newImage;
+                }
+        ).collect(Collectors.toSet());
+    }
 
     public Long getId() {
         return id;
@@ -52,7 +118,7 @@ class Insertion {
         this.category = category;
     }
 
-    public boolean offersDelivery() {
+    public boolean isOffersDelivery() {
         return offersDelivery;
     }
 
@@ -76,41 +142,19 @@ class Insertion {
         isReserved = reserved;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        // TODO Bilder hinzufügen
-        Insertion insertion = (Insertion) o;
-        return offersDelivery == insertion.offersDelivery && isReserved == insertion.isReserved
-                && Objects.equals(id, insertion.id) && Objects.equals(title,
-                insertion.title) && Objects.equals(price, insertion.price)
-                && category == insertion.category && Objects.equals(description,
-                insertion.description);
+    public Set<Image> getImages() {
+        return images;
     }
 
-    @Override
-    public int hashCode() {
-        // TODO Bilder hinzufügen
-        return Objects.hash(id, title, price, category, offersDelivery, description, isReserved);
+    public void setImages(Set<Image> images) {
+        this.images = images;
     }
 
-    @Override
-    public String toString() {
-        // TODO Bilder hinzufügen
-        return "Insertion{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", price=" + price +
-                ", category=" + category +
-                ", offersDelivery=" + offersDelivery +
-                ", description='" + description + '\'' +
-                ", isReserved=" + isReserved +
-                '}';
+    public Long getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Long userID) {
+        this.userID = userID;
     }
 }
