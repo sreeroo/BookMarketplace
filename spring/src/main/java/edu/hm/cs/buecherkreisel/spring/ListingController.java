@@ -14,21 +14,21 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-class InsertionController {
+class ListingController {
 
-    private final InsertionRepository repository;
+    private final ListingRepository repository;
 
-    InsertionController(InsertionRepository repository) {
+    ListingController(ListingRepository repository) {
         this.repository = repository;
     }
 
-    @GetMapping("/insertions")
-    ResponseEntity<List<Insertion>> allInsertions() {
+    @GetMapping("/listings")
+    ResponseEntity<List<Listing>> allListings() {
         return ResponseEntity.ok(repository.findAll());
     }
 
-    @GetMapping("/insertions/search")
-    ResponseEntity<List<Insertion>> filterInsertions(
+    @GetMapping("/listings/search")
+    ResponseEntity<List<Listing>> filterListings(
             @RequestParam("minPrice") Optional<Double> minPrice,
             @RequestParam("maxPrice") Optional<Double> maxPrice,
             @RequestParam("category") Optional<Category> category,
@@ -38,33 +38,33 @@ class InsertionController {
             @RequestParam("location") Optional<String> location,
             @RequestParam("user_id") Optional<Long> userID
             ) {
-        List<Insertion> allInsertions = repository.findAll();
+        List<Listing> allListings = repository.findAll();
 
-        List<Insertion> insertions = new ArrayList<>();
+        List<Listing> listings = new ArrayList<>();
 
-        for (Insertion insertion : allInsertions) {
-            if ((minPrice.isEmpty() || minPrice.get() <= insertion.getPrice())
-                    && (maxPrice.isEmpty() || maxPrice.get() >= insertion.getPrice())
-                    && (category.isEmpty() || category.get().equals(insertion.getCategory()))
-                    && (offersDelivery.isEmpty() || offersDelivery.get() == insertion.isOffersDelivery())
-                    && (isReserved.isEmpty() || isReserved.get() == insertion.isReserved())
+        for (Listing listing : allListings) {
+            if ((minPrice.isEmpty() || minPrice.get() <= listing.getPrice())
+                    && (maxPrice.isEmpty() || maxPrice.get() >= listing.getPrice())
+                    && (category.isEmpty() || category.get().equals(listing.getCategory()))
+                    && (offersDelivery.isEmpty() || offersDelivery.get() == listing.isOffersDelivery())
+                    && (isReserved.isEmpty() || isReserved.get() == listing.isReserved())
                     && (location.isEmpty()
                         || location.get().isBlank()
-                        || location.get().equals(insertion.getLocation()))
-                    && (userID.isEmpty() || userID.get().equals(insertion.getUserID()))
+                        || location.get().equals(listing.getLocation()))
+                    && (userID.isEmpty() || userID.get().equals(listing.getUserID()))
                     && (searchString.isEmpty() || searchString.get().isBlank()
-                        || insertion.getTitle().toLowerCase().contains(searchString.get().toLowerCase())
-                        || insertion.getDescription().toLowerCase().contains(searchString.get().toLowerCase()))) {
+                        || listing.getTitle().toLowerCase().contains(searchString.get().toLowerCase())
+                        || listing.getDescription().toLowerCase().contains(searchString.get().toLowerCase()))) {
 
-                insertions.add(insertion);
+                listings.add(listing);
             }
         }
 
-        return ResponseEntity.ok(insertions);
+        return ResponseEntity.ok(listings);
     }
 
-    @PostMapping("/insertions")
-    ResponseEntity<?> newInsertion(
+    @PostMapping("/listings")
+    ResponseEntity<?> newListing(
             @RequestParam("title") String title,
             @RequestParam("price") Double price,
             @RequestParam("category") Category category,
@@ -77,19 +77,19 @@ class InsertionController {
 
         // TODO überprüfen ob UserID existiert - Error 401
 
-        repository.save(new Insertion(title, price, category, offersDelivery,
+        repository.save(new Listing(title, price, category, offersDelivery,
                 description, isReserved, userID, location, images));
 
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("insertions/{id}")
-    ResponseEntity<?> deleteInsertion(@PathVariable Long id, @RequestParam("user_id") Long userID) {
+    @DeleteMapping("listings/{id}")
+    ResponseEntity<?> deleteListing(@PathVariable Long id, @RequestParam("user_id") Long userID) {
 
-        Optional<Insertion> optionalInsertion = repository.findById(id);
+        Optional<Listing> optionalListing = repository.findById(id);
 
-        if (optionalInsertion.isPresent()) {
-            Long correctUserID = optionalInsertion.get().getUserID();
+        if (optionalListing.isPresent()) {
+            Long correctUserID = optionalListing.get().getUserID();
 
             if (correctUserID.equals(userID)) {
                 repository.deleteById(id);
@@ -104,8 +104,8 @@ class InsertionController {
 
     }
 
-    @PutMapping("insertions/{id}")
-    ResponseEntity<?> updateInsertion(
+    @PutMapping("listings/{id}")
+    ResponseEntity<?> updateListing(
             @PathVariable Long id,
             @RequestParam("title") String title,
             @RequestParam("price") Double price,
@@ -117,15 +117,15 @@ class InsertionController {
             @RequestParam("location") String location,
             @RequestParam("images") List<MultipartFile> images) {
 
-        Optional<Insertion> optionalInsertion = repository.findById(id);
+        Optional<Listing> optionalListing = repository.findById(id);
 
-        if (optionalInsertion.isPresent()) {
-            Insertion insertion = optionalInsertion.get();
+        if (optionalListing.isPresent()) {
+            Listing listing = optionalListing.get();
 
-            Long correctUserID = insertion.getUserID();
+            Long correctUserID = listing.getUserID();
 
             if (correctUserID.equals(userID)) {
-                repository.save(new Insertion(id, title, price, category, offersDelivery,
+                repository.save(new Listing(id, title, price, category, offersDelivery,
                         description, isReserved, correctUserID, location, images));
 
                 return ResponseEntity.ok().build();

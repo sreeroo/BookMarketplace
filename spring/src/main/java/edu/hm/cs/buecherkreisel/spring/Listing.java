@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import org.springframework.web.multipart.MultipartFile;
 
 @Entity
-class Insertion {
+class Listing {
 
     private @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
@@ -32,11 +32,11 @@ class Insertion {
     @Column(length = 15000000)
     private List<byte[]> images;
 
-    public Insertion() {
+    public Listing() {
 
     }
 
-    public Insertion(Long id, String title, Double price, Category category, boolean offersDelivery,
+    public Listing(Long id, String title, Double price, Category category, boolean offersDelivery,
             String description, boolean isReserved, Long userID, String location, List<MultipartFile> multipartFileList) {
         this.id = id;
         this.title = title;
@@ -59,7 +59,7 @@ class Insertion {
         ).collect(Collectors.toList());
     }
 
-     public Insertion(String title, Double price, Category category, boolean offersDelivery,
+     public Listing(String title, Double price, Category category, boolean offersDelivery,
             String description, boolean isReserved, Long userID, String location, List<MultipartFile> multipartFileList) {
         this.title = title;
         this.price = price;
