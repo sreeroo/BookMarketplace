@@ -34,10 +34,12 @@ class InsertionPreview extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(insertion.headline,
-                    softWrap: true,
-                    overflow: TextOverflow.clip,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Expanded(
+                  child: Text(insertion.headline,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                ),
                 Text("${insertion.price.toString()}€",
                     style: const TextStyle(fontWeight: FontWeight.bold))
               ],
