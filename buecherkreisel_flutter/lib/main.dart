@@ -1,5 +1,5 @@
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
-import 'package:buecherkreisel_flutter/components/insertation_preview.dart';
+import 'package:buecherkreisel_flutter/components/insertion_preview.dart';
 import 'package:buecherkreisel_flutter/screens/chats.dart';
 import 'package:buecherkreisel_flutter/screens/explore.dart';
 import 'package:flutter/material.dart';

@@ -23,7 +23,10 @@ class InsertionPreview extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(insertion.category),
+                Text(
+                  insertion.category,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 Text(insertion.location),
               ],
             ),

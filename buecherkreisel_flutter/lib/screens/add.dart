@@ -1,5 +1,6 @@
+import 'package:buecherkreisel_flutter/backend/datatypes.dart';
 import 'package:flutter/material.dart';
-
+/**
 // widget class to create stateful new item page
 class AddUpdateInsertion extends StatefulWidget {
   Insertion? insertion;
@@ -21,7 +22,7 @@ class AddUpdateInsertionState extends State<AddUpdateInsertion> {
   @override
   Widget build(BuildContext context) {
     TextEditingController titleController =
-        TextEditingController(text: widget.insertion?.title ?? "");
+        TextEditingController(text: widget.insertion?.headline ?? "");
     TextEditingController descriptionController =
         TextEditingController(text: widget.insertion?.description ?? "");
     TextEditingController priceController =
@@ -82,3 +83,4 @@ class AddUpdateInsertionState extends State<AddUpdateInsertion> {
     );
   }
 }
+*/
