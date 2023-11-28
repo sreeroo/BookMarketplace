@@ -8,7 +8,7 @@ class Explore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<InsertionState>(
+    return Consumer<ListingState>(
       builder: (c, insertionState, w) {
         insertionState.getAllInsertionsRemote();
         return ListView.builder(

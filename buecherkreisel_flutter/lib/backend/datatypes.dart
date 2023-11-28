@@ -14,17 +14,14 @@ class ChatState extends ChangeNotifier {
   }
 }
 
-class InsertionState extends ChangeNotifier {
+class ListingState extends ChangeNotifier {
   List<Listing> insertions = List.empty(growable: true);
   ListingAPI api = ListingAPI();
-  late http.Client _client;
 
-  InsertionState() {
-    _client = http.Client();
-  }
+  ListingState();
 
   void getAllInsertionsRemote() async {
-    insertions = await api.getAllListings(_client);
+    insertions = await api.getAllListings();
     notifyListeners();
   }
 }

@@ -1,5 +1,6 @@
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
 import 'package:buecherkreisel_flutter/components/listing_preview.dart';
+import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/screens/add.dart';
 import 'package:buecherkreisel_flutter/screens/chats.dart';
 import 'package:buecherkreisel_flutter/screens/explore.dart';
@@ -27,8 +28,8 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<ChatState>(
             create: (_) => ChatState(),
           ),
-          ChangeNotifierProvider<InsertionState>(
-            create: (_) => InsertionState(),
+          ChangeNotifierProvider<ListingState>(
+            create: (_) => ListingState(),
           ),
         ],
         child: SizedBox(height: 56, child: KreiselNavigator()),

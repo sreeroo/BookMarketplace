@@ -8,9 +8,16 @@ class APIClient {
   // use IP 10.0.2.2 to access localhost from emulator!
   static const baseUrl = "http://10.0.2.2:8080/";
 
+  final _client = http.Client();
+
   // GET
-  Future<dynamic> fetchData(http.Client client, String endpoint) async {
-    final response = await client.get(Uri.parse('$baseUrl$endpoint'));
+  Future<dynamic> fetchData(String endpoint) async {
+    final response =
+        await _client.get(Uri.parse('$baseUrl$endpoint'), headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Connection': 'keep-alive',
+    });
 
     // check response from backend
     if (response.statusCode == 200) {
@@ -21,9 +28,8 @@ class APIClient {
   }
 
   // POST
-  Future<dynamic> postData(
-      http.Client client, String endpoint, dynamic data) async {
-    final response = await client.post(
+  Future<dynamic> postData(String endpoint, dynamic data) async {
+    final response = await _client.post(
       Uri.parse('$baseUrl$endpoint'),
       body: json.encode(data),
       headers: <String, String>{'Content-Type': 'application/json'},
@@ -37,9 +43,8 @@ class APIClient {
   }
 
   // UPDATE
-  Future<dynamic> updateData(
-      http.Client client, String endpoint, dynamic data) async {
-    final response = await http.put(
+  Future<dynamic> updateData(String endpoint, dynamic data) async {
+    final response = await _client.put(
       Uri.parse('$baseUrl$endpoint'),
       body: json.encode(data),
       headers: {'Content-Type': 'application/json'},
@@ -53,8 +58,8 @@ class APIClient {
   }
 
   // DELETE
-  Future<void> deleteData(http.Client client, String endpoint) async {
-    final response = await client.delete(
+  Future<void> deleteData(String endpoint) async {
+    final response = await _client.delete(
       Uri.parse('$baseUrl$endpoint'),
       headers: <String, String>{'Content-Type': 'application/json'},
     );
