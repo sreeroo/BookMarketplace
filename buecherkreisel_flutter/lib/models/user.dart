@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 typedef user_id = String;
 
 class User {

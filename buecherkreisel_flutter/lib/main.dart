@@ -1,5 +1,6 @@
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
 import 'package:buecherkreisel_flutter/components/listing_preview.dart';
+import 'package:buecherkreisel_flutter/screens/add.dart';
 import 'package:buecherkreisel_flutter/screens/chats.dart';
 import 'package:buecherkreisel_flutter/screens/explore.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,7 @@ class _KreiselNavigatorState extends State<KreiselNavigator> {
   static List<Widget> _widgetOptions = <Widget>[
     Chats(),
     Explore(),
-    AddUpdateInsertion(),
+    AddUpdateListing(),
     Text(
       'Favorites',
       style: optionStyle,

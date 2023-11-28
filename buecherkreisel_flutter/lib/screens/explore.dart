@@ -1,5 +1,5 @@
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
-import 'package:buecherkreisel_flutter/components/insertion_preview.dart';
+import 'package:buecherkreisel_flutter/components/listing_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +16,7 @@ class Explore extends StatelessWidget {
           scrollDirection: Axis.vertical,
           itemCount: insertionState.insertions.length,
           itemBuilder: (c, index) =>
-              InsertionPreview(insertion: insertionState.insertions[index]),
+              ListingPreview(listing: insertionState.insertions[index]),
         );
       },
     );

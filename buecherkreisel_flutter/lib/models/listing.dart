@@ -3,14 +3,14 @@ import 'dart:ffi';
 import 'user.dart';
 
 class Listing {
-  String id;
+  int id;
   String title;
   double price;
   String category;
   bool offersDelivery;
   String description;
   bool isReserved;
-  user_id createdBy;
+  int createdBy;
   String location;
 
   Listing({
@@ -33,8 +33,8 @@ class Listing {
         category: json["category"],
         offersDelivery: json["offersDelivery"],
         description: json["description"],
-        isReserved: json["isReserved"],
-        createdBy: json["createdBy"],
+        isReserved: json["reserved"],
+        createdBy: json["userID"],
         location: json["location"],
       );
 
@@ -46,8 +46,8 @@ class Listing {
         "category": category,
         "offersDelivery": offersDelivery,
         "description": description,
-        "isReserved": isReserved,
-        "createdBy": createdBy,
+        "reserved": isReserved,
+        "userID": createdBy,
         "location": location,
       };
 }

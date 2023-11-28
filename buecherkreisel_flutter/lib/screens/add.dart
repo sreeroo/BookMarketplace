@@ -1,19 +1,19 @@
-import 'package:buecherkreisel_flutter/models/insertion.dart';
+import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:flutter/material.dart';
 
 // widget class to create stateful new item page
-class AddUpdateInsertion extends StatefulWidget {
-  Insertion? insertion;
+class AddUpdateListing extends StatefulWidget {
+  Listing? listing;
 
-  AddUpdateInsertion({super.key, this.insertion});
+  AddUpdateListing({super.key, this.listing});
 
   @override
-  AddUpdateInsertionState createState() {
-    return AddUpdateInsertionState();
+  AddUpdateListingState createState() {
+    return AddUpdateListingState();
   }
 }
 
-class AddUpdateInsertionState extends State<AddUpdateInsertion> {
+class AddUpdateListingState extends State<AddUpdateListing> {
   final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
@@ -23,13 +23,13 @@ class AddUpdateInsertionState extends State<AddUpdateInsertion> {
   @override
   Widget build(BuildContext context) {
     TextEditingController titleController =
-        TextEditingController(text: widget.insertion?.headline ?? "");
+        TextEditingController(text: widget.listing?.title ?? "");
     TextEditingController descriptionController =
-        TextEditingController(text: widget.insertion?.description ?? "");
+        TextEditingController(text: widget.listing?.description ?? "");
     TextEditingController priceController =
-        TextEditingController(text: "${widget.insertion?.price}" ?? "");
+        TextEditingController(text: "${widget.listing?.price}" ?? "");
     TextEditingController locationController =
-        TextEditingController(text: widget.insertion?.location ?? "");
+        TextEditingController(text: widget.listing?.location ?? "");
 
     //titel, beschreibung,preis, beschreibung, bool abholung, location
 
@@ -101,7 +101,7 @@ class AddUpdateInsertionState extends State<AddUpdateInsertion> {
           //    .then((value) => Navigator.pop(context));
         }
       },
-      child: Text(widget.insertion == null ? 'Add' : 'Save Changes'),
+      child: Text(widget.listing == null ? 'Add' : 'Save Changes'),
     );
 
     return Form(
@@ -119,4 +119,3 @@ class AddUpdateInsertionState extends State<AddUpdateInsertion> {
     );
   }
 }
-*/
