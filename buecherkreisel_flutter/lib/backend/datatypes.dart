@@ -1,45 +1,30 @@
-class Insertion {
-  String headline;
-  String description;
-  double price;
-  String location;
-  String category;
-  bool favorized;
-  bool selfPickUp;
-  user_id createdBy;
-  Insertion(
-      {required this.category,
-      required this.description,
-      required this.price,
-      required this.location,
-      required this.headline,
-      required this.selfPickUp,
-      required this.createdBy,
-      this.favorized = false});
+import 'package:buecherkreisel_flutter/backend/InsertionAPI.dart';
+import 'package:buecherkreisel_flutter/backend/UserAPI.dart';
+import 'package:buecherkreisel_flutter/models/chat.dart';
+import 'package:buecherkreisel_flutter/models/insertion.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+class ChatState extends ChangeNotifier {
+  List<Chat> chats = List.empty(growable: true);
+
+  void updateChats() {
+    print("updateChats not yet implemented");
+    notifyListeners();
+  }
 }
 
-class Chat {
-  user_id person;
-  List<Message> messages;
-  String imageUri;
-  Chat({required this.person, required this.messages, required this.imageUri});
-}
+class InsertionState extends ChangeNotifier {
+  List<Insertion> insertions = List.empty(growable: true);
+  InsertionAPI api = InsertionAPI();
+  late http.Client _client;
 
-typedef user_id = String;
+  InsertionState() {
+    _client = http.Client();
+  }
 
-class Message {
-  DateTime send;
-  String message;
-  user_id sendBy;
-  Message(
-      {required this.send,
-      required this.message,
-      required,
-      required this.sendBy});
-}
-
-class User {
-  user_id id;
-  String imageURI;
-  User({required this.id, required this.imageURI});
+  void getAllInsertionsRemote() async {
+    insertions = await api.getAllInsertions(_client);
+    notifyListeners();
+  }
 }

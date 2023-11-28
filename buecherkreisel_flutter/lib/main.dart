@@ -3,6 +3,7 @@ import 'package:buecherkreisel_flutter/components/listing_preview.dart';
 import 'package:buecherkreisel_flutter/screens/chats.dart';
 import 'package:buecherkreisel_flutter/screens/explore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +21,17 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: SizedBox(height: 56, child: KreiselNavigator()),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ChatState>(
+            create: (_) => ChatState(),
+          ),
+          ChangeNotifierProvider<InsertionState>(
+            create: (_) => InsertionState(),
+          ),
+        ],
+        child: SizedBox(height: 56, child: KreiselNavigator()),
+      ),
     );
   }
 }
@@ -36,13 +47,10 @@ class _KreiselNavigatorState extends State<KreiselNavigator> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
+  static List<Widget> _widgetOptions = <Widget>[
     Chats(),
     Explore(),
-    Text(
-      'Add',
-      style: optionStyle,
-    ),
+    AddUpdateInsertion(),
     Text(
       'Favorites',
       style: optionStyle,
