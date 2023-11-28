@@ -4,6 +4,7 @@ import 'package:buecherkreisel_flutter/screens/add.dart';
 import 'package:buecherkreisel_flutter/screens/chats.dart';
 import 'package:buecherkreisel_flutter/screens/explore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,7 +22,17 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: SizedBox(height: 56, child: KreiselNavigator()),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ChatState>(
+            create: (_) => ChatState(),
+          ),
+          ChangeNotifierProvider<InsertionState>(
+            create: (_) => InsertionState(),
+          ),
+        ],
+        child: SizedBox(height: 56, child: KreiselNavigator()),
+      ),
     );
   }
 }

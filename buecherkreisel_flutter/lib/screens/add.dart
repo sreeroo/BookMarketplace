@@ -1,4 +1,4 @@
-import 'package:buecherkreisel_flutter/backend/datatypes.dart';
+import 'package:buecherkreisel_flutter/models/insertion.dart';
 import 'package:flutter/material.dart';
 
 // widget class to create stateful new item page
