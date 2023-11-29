@@ -15,13 +15,13 @@ class ChatState extends ChangeNotifier {
 }
 
 class ListingState extends ChangeNotifier {
-  List<Listing> insertions = List.empty(growable: true);
+  List<Listing> listings = List.empty(growable: true);
   ListingAPI api = ListingAPI();
 
   ListingState();
 
-  void getAllInsertionsRemote() async {
-    insertions = await api.getAllListings();
+  void getAllListingsRemote() async {
+    listings = await api.getAllListings();
     notifyListeners();
   }
 }
