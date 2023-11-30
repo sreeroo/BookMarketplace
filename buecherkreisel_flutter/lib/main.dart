@@ -1,5 +1,4 @@
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
-import 'package:buecherkreisel_flutter/components/listing_preview.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/screens/add.dart';
 import 'package:buecherkreisel_flutter/screens/chats.dart';
@@ -32,7 +31,7 @@ class MyApp extends StatelessWidget {
             create: (_) => ListingState(),
           ),
         ],
-        child: SizedBox(height: 56, child: KreiselNavigator()),
+        child: const SizedBox(height: 56, child: KreiselNavigator()),
       ),
     );
   }

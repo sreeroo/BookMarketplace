@@ -1,9 +1,7 @@
 import 'package:buecherkreisel_flutter/backend/ListingAPI.dart';
-import 'package:buecherkreisel_flutter/backend/datatypes.dart';
 import 'package:buecherkreisel_flutter/components/listing_preview.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class Explore extends StatefulWidget {
   const Explore({Key? key}) : super(key: key);
@@ -15,6 +13,7 @@ class Explore extends StatefulWidget {
 class _ExploreState extends State<Explore> {
   late List<Listing>? _listingModel = [];
   late bool _isDisposed = false;
+  final ListingAPI _listingAPI = ListingAPI();
 
   @override
   void initState() {
@@ -29,7 +28,7 @@ class _ExploreState extends State<Explore> {
   }
 
   void _getData() async {
-    _listingModel = await ListingAPI().getAllListings();
+    _listingModel = await _listingAPI.getAllListings();
     Future.delayed(const Duration(milliseconds: 250)).then((value) {
       if (!_isDisposed) {
         setState(() {});

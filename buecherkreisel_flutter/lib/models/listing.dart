@@ -1,7 +1,3 @@
-import 'dart:ffi';
-
-import 'user.dart';
-
 class Listing {
   int id;
   String title;

@@ -1,4 +1,3 @@
-import 'package:http/http.dart' as http;
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'backend.dart';
 
