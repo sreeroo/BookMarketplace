@@ -4,7 +4,7 @@ import 'backend.dart';
 
 class ListingAPI {
   final restAPI = APIClient();
-
+/** 
   // CREATE a new Listing on the backend
   Future<Listing> createListing(http.Client client, Listing listing) async {
     final response =
@@ -43,5 +43,5 @@ class ListingAPI {
   Future<List<Listing>> searchListings(http.Client client, String query) async {
     final response = await restAPI.fetchData(client, 'listings?search=$query');
     return List<Listing>.from(response.map((e) => Listing.fromJson(e)));
-  }
+  }*/
 }

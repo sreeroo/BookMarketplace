@@ -25,3 +25,7 @@ class ListingState extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+class AppState extends ChangeNotifier {
+  late String token;
+}

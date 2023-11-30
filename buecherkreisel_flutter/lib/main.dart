@@ -4,6 +4,7 @@ import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/screens/add.dart';
 import 'package:buecherkreisel_flutter/screens/chats.dart';
 import 'package:buecherkreisel_flutter/screens/explore.dart';
+import 'package:buecherkreisel_flutter/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,6 +32,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<ListingState>(
             create: (_) => ListingState(),
           ),
+          ChangeNotifierProvider<AppState>(
+            create: (_) => AppState(),
+          ),
         ],
         child: SizedBox(height: 56, child: KreiselNavigator()),
       ),
@@ -57,10 +61,7 @@ class _KreiselNavigatorState extends State<KreiselNavigator> {
       'Favorites',
       style: optionStyle,
     ),
-    Text(
-      'Account',
-      style: optionStyle,
-    ),
+    Settings()
   ];
 
   void _onItemTapped(int index) {

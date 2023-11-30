@@ -1,7 +1,6 @@
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:flutter/material.dart';
 
-// widget class to create stateful new item page
 class AddUpdateListing extends StatefulWidget {
   Listing? listing;
 
