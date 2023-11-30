@@ -140,7 +140,20 @@ class AddUpdateListingState extends State<AddUpdateListing> {
               createdBy: 1);
           widget.listingAPI
               .createListing(listing, _imageFile!)
-              .then((value) => Navigator.pop(context));
+              .then((value) => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Advertisement posted successfully"),
+                    ),
+                  ));
+
+          // Reset the form after posting the advertisement
+          titleController.clear();
+          descriptionController.clear();
+          priceController.clear();
+          locationController.clear();
+          setState(() {
+            _imageFile = null;
+          });
         }
       },
       child: Text(widget.listing == null ? 'Add' : 'Save Changes'),
