@@ -1,4 +1,3 @@
-import 'package:http/http.dart' as http;
 import "package:buecherkreisel_flutter/models/user.dart";
 import 'backend.dart';
 
@@ -49,5 +48,11 @@ class UserAPI {
   // DELETE an existing User on the backend
   Future<void> deleteUser(User user) async {
     await restAPI.deleteData('users/delete/${user.id}');
+  }
+
+  // LOGIN a user
+  Future<User> loginUser(User user) async {
+    final response = await restAPI.postData('/login', user.toJson());
+    return User.fromJson(response);
   }
 }

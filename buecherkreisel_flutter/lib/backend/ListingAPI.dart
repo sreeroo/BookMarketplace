@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'backend.dart';
 
@@ -5,9 +6,9 @@ class ListingAPI {
   final restAPI = APIClient();
 
   // CREATE a new Listing on the backend
-  Future<Listing> createListing(Listing listing) async {
-    final response = await restAPI.postData('listings', listing.toJson());
-    return Listing.fromJson(response);
+  Future<void> createListing(Listing listing, File imageFile) async {
+    final response = await restAPI.postDataMultipart(
+        'listings', listing.toJson(), imageFile);
   }
 
   // READ list of all Listings from the backend

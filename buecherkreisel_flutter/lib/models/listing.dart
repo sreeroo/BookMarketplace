@@ -8,6 +8,7 @@ class Listing {
   bool isReserved;
   int createdBy;
   String location;
+  String imageBase64;
 
   Listing({
     required this.id,
@@ -19,6 +20,7 @@ class Listing {
     required this.isReserved,
     required this.createdBy,
     required this.location,
+    this.imageBase64 = "",
   });
 
   // parse Item from JSON-data
@@ -35,15 +37,14 @@ class Listing {
       );
 
   // map item to JSON-data
-  Map<String, dynamic> toJson() => {
-        "id": id,
+  Map<String, String> toJson() => {
         "title": title,
-        "price": price,
+        "price": "$price",
         "category": category,
-        "offersDelivery": offersDelivery,
+        "offersDelivery": "$offersDelivery",
         "description": description,
-        "reserved": isReserved,
-        "userID": createdBy,
+        "isReserved": "$isReserved",
+        "user_id": "$createdBy",
         "location": location,
       };
 }

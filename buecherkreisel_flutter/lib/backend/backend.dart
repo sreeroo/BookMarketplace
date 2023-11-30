@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -39,6 +40,39 @@ class APIClient {
       return json.decode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to create data');
+    }
+  }
+
+  // POST using multipart/form-data
+  Future<dynamic> postDataMultipart(
+      String endpoint, dynamic data, File imageFile) async {
+    final response =
+        await http.MultipartRequest('POST', Uri.parse('$baseUrl$endpoint'));
+
+    response.headers.addAll(<String, String>{
+      'Content-Type': 'multipart/form-data',
+      'Connection': 'keep-alive',
+    });
+    response.fields.addAll(data);
+    response.files.add(
+      await http.MultipartFile.fromPath(
+        'images',
+        imageFile.path,
+      ),
+    );
+
+    try {
+      final streamedResponse = await response.send();
+
+      if (streamedResponse.statusCode == 200) {
+        final response = await streamedResponse.stream.bytesToString();
+        return response;
+      } else {
+        return null; // todo handle error according to your needs
+      }
+    } catch (e) {
+      print('Error: $e');
+      return null; // todo  handle error
     }
   }
 
