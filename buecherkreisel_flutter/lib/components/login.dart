@@ -10,51 +10,46 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Login/Register'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _isLogin ? 'Login' : 'Register',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            _isLogin ? 'Login' : 'Register',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 20),
+          TextFormField(
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              labelText: 'Email',
             ),
-            SizedBox(height: 20),
-            TextFormField(
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                labelText: 'Email',
-              ),
+          ),
+          TextFormField(
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Password',
             ),
-            TextFormField(
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Password',
-              ),
-            ),
-            SizedBox(height: 20),
-            TextButton(
-              child: Text(_isLogin ? 'Login' : 'Register'),
-              onPressed: () {
-                // Hier kannst du den Login- oder Registrierungsvorgang implementieren
-              },
-            ),
-            SizedBox(height: 20),
-            TextButton(
-              child: Text(_isLogin
-                  ? 'Noch keinen Account? Registrieren'
-                  : 'Bereits registriert? Einloggen'),
-              onPressed: () {
-                setState(() {
-                  _isLogin = !_isLogin;
-                });
-              },
-            ),
-          ],
-        ),
+          ),
+          SizedBox(height: 20),
+          TextButton(
+            child: Text(_isLogin ? 'Login' : 'Register'),
+            onPressed: () {
+              // Hier kannst du den Login- oder Registrierungsvorgang implementieren
+            },
+          ),
+          SizedBox(height: 20),
+          TextButton(
+            child: Text(_isLogin
+                ? 'Noch keinen Account? Registrieren'
+                : 'Bereits registriert? Einloggen'),
+            onPressed: () {
+              setState(() {
+                _isLogin = !_isLogin;
+              });
+            },
+          ),
+        ],
       ),
     );
   }
