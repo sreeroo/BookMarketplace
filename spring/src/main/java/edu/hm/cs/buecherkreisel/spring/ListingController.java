@@ -17,9 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 class ListingController {
 
     private final ListingRepository repository;
+    private final UserRepository userRepository;
 
-    ListingController(ListingRepository repository) {
+    ListingController(ListingRepository repository, UserRepository userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -88,9 +90,15 @@ class ListingController {
             @RequestParam("isReserved") boolean isReserved,
             @RequestParam("user_id") Long userID,
             @RequestParam("location") String location,
+            @RequestParam("token") String token,
             @RequestParam("images") List<MultipartFile> images) {
 
-        // TODO überprüfen ob UserID existiert - Error 401
+
+        Optional<User> optionalUser = userRepository.findById(userID);
+
+        if (optionalUser.isEmpty() || !optionalUser.get().getToken().equals(token)) {
+            return ResponseEntity.status(401).build();
+        }
 
         repository.save(new Listing(title, price, category, offersDelivery,
                 description, isReserved, userID, location, images));
@@ -103,7 +111,9 @@ class ListingController {
      * @return 200 - listing deleted, 401 - user isn't the owner, 404 - listing not found
      */
     @DeleteMapping("listings/{id}")
-    ResponseEntity<?> deleteListing(@PathVariable Long id, @RequestParam("user_id") Long userID) {
+    ResponseEntity<?> deleteListing(@PathVariable Long id,
+            @RequestParam("user_id") Long userID,
+            @RequestParam("token") String token) {
 
         Optional<Listing> optionalListing = repository.findById(id);
 
@@ -112,8 +122,12 @@ class ListingController {
         if (optionalListing.isPresent()) {
             Long correctUserID = optionalListing.get().getUserID();
 
+            // Get User Token
+            Optional<User>  optionalUser = userRepository.findById(userID);
+
             // True, if user is owner of listing, else 401 HTTP Status Code
-            if (correctUserID.equals(userID)) {
+            if (correctUserID.equals(userID)
+                    && (optionalUser.isPresent() && optionalUser.get().getToken().equals(token))) {
                 repository.deleteById(id);
                 return ResponseEntity.ok().build();
             }
@@ -141,6 +155,7 @@ class ListingController {
             @RequestParam("isReserved") boolean isReserved,
             @RequestParam("user_id") Long userID,
             @RequestParam("location") String location,
+            @RequestParam("token") String token,
             @RequestParam("images") List<MultipartFile> images) {
 
         Optional<Listing> optionalListing = repository.findById(id);
@@ -151,8 +166,12 @@ class ListingController {
 
             Long correctUserID = listing.getUserID();
 
+             // Get User Token
+            Optional<User>  optionalUser = userRepository.findById(userID);
+
             // True, if user is owner of listing, else 401 HTTP Status Code
-            if (correctUserID.equals(userID)) {
+            if (correctUserID.equals(userID)
+                    && (optionalUser.isPresent() && optionalUser.get().getToken().equals(token))) {
                 repository.save(new Listing(id, title, price, category, offersDelivery,
                         description, isReserved, correctUserID, location, images));
 
