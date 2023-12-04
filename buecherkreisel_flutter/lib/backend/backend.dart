@@ -36,7 +36,7 @@ class APIClient {
       headers: <String, String>{'Content-Type': 'application/json'},
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode <= 300) {
       return json.decode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to create data');

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import "package:buecherkreisel_flutter/models/user.dart";
 import 'backend.dart';
 
@@ -5,8 +7,10 @@ class UserAPI {
   final restAPI = APIClient();
 
   // CREATE a new User on the backend
-  Future<User> createUser(User user) async {
-    final response = await restAPI.postData('users/create', user.toJson());
+  Future<User> createUser(String username, password) async {
+    Map<String, dynamic> response = await restAPI
+        .postData('users/create', {"username": username, "password": password});
+    response.addAll({"username": username});
     return User.fromJson(response);
   }
 
@@ -51,8 +55,10 @@ class UserAPI {
   }
 
   // LOGIN a user
-  Future<User> loginUser(User user) async {
-    final response = await restAPI.postData('/login', user.toJson());
+  Future<User> loginUser(String username, password) async {
+    Map<String, dynamic> response = await restAPI
+        .postData('login', {"username": username, "password": password});
+    response.addAll({"username": username});
     return User.fromJson(response);
   }
 }

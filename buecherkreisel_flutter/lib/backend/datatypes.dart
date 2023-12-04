@@ -1,6 +1,7 @@
 import 'package:buecherkreisel_flutter/backend/ListingAPI.dart';
 import 'package:buecherkreisel_flutter/models/chat.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
+import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter/material.dart';
 
 class ChatState extends ChangeNotifier {
@@ -25,5 +26,15 @@ class ListingState extends ChangeNotifier {
 }
 
 class AppState extends ChangeNotifier {
-  late String token = "";
+  User user = User(id: "", imageURI: "", username: "", token: "");
+
+  void setUser(User user) {
+    this.user = user;
+    notifyListeners();
+  }
+
+  void logout() {
+    this.user = User(id: "", imageURI: "", username: "", token: "");
+    notifyListeners();
+  }
 }

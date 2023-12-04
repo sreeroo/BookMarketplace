@@ -11,7 +11,9 @@ class Settings extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (b, state, w) {
-        return state.token.isEmpty ? LoginRegisterScreen() : ProfileScreen();
+        return state.user.token.isEmpty
+            ? LoginRegisterScreen()
+            : ProfileScreen();
       },
     );
   }
