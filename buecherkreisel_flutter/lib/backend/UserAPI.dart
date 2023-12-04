@@ -1,4 +1,3 @@
-import 'package:http/http.dart' as http;
 import "package:buecherkreisel_flutter/models/user.dart";
 import 'backend.dart';
 
@@ -12,19 +11,19 @@ class UserAPI {
   }
 
   // READ a specific User from the backend
-  Future<User> getUserById(http.Client client, String id) async {
+  Future<User> getUserById(String id) async {
     final response = await restAPI.fetchData('users/$id');
     return User.fromJson(response);
   }
 
   // READ user as public
-  Future<User> getUserAsPublic(http.Client client, String id) async {
+  Future<User> getUserAsPublic(String id) async {
     final response = await restAPI.fetchData('users/$id/public');
     return User.fromJson(response);
   }
 
   // UPDATE an existing User on the backend
-  Future<User> updateUser(http.Client client, User user) async {
+  Future<User> updateUser(User user) async {
     final response =
         await restAPI.updateData('users/${user.id}', user.toJson());
     return User.fromJson(response);
@@ -40,14 +39,20 @@ class UserAPI {
 
   // UPDATE imageURL of an existing User on the backend
 
-  Future<User> updateImageURL(http.Client client, User user) async {
+  Future<User> updateImageURL(User user) async {
     final response =
         await restAPI.updateData('users/edit_pic/${user.id}', user.toJson());
     return User.fromJson(response);
   }
 
   // DELETE an existing User on the backend
-  Future<void> deleteUser(http.Client client, User user) async {
+  Future<void> deleteUser(User user) async {
     await restAPI.deleteData('users/delete/${user.id}');
+  }
+
+  // LOGIN a user
+  Future<User> loginUser(User user) async {
+    final response = await restAPI.postData('/login', user.toJson());
+    return User.fromJson(response);
   }
 }

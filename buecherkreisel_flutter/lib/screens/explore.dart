@@ -15,6 +15,7 @@ class Explore extends StatefulWidget {
 class _ExploreState extends State<Explore> {
   late List<Listing>? _listingModel = [];
   late bool _isDisposed = false;
+  final ListingAPI _listingAPI = ListingAPI();
 
   @override
   void initState() {
@@ -29,8 +30,8 @@ class _ExploreState extends State<Explore> {
   }
 
   void _getData() async {
-    _listingModel = await ListingAPI().getAllListings();
-    Future.delayed(const Duration(milliseconds: 250)).then((value) {
+    _listingModel = await _listingAPI.getAllListings();
+    Future.delayed(const Duration(milliseconds: 200)).then((value) {
       if (!_isDisposed) {
         setState(() {});
       }
