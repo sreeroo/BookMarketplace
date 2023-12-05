@@ -4,11 +4,14 @@ import 'backend.dart';
 
 class ListingAPI {
   final restAPI = APIClient();
+  String token = "";
 
   // CREATE a new Listing on the backend
   Future<void> createListing(Listing listing, File imageFile) async {
-    final response = await restAPI.postDataMultipart(
-        'listings', listing.toJson(), imageFile);
+    final body = listing.toJson();
+    body.addAll({"token": token});
+    final response =
+        await restAPI.postDataMultipart('listings', body, imageFile);
   }
 
   // READ list of all Listings from the backend

@@ -15,26 +15,48 @@ class ChatState extends ChangeNotifier {
 
 class ListingState extends ChangeNotifier {
   List<Listing> listings = List.empty(growable: true);
+  List<Listing> ownListings = List.empty(growable: true);
   ListingAPI api = ListingAPI();
 
   ListingState();
 
-  void getAllListingsRemote() async {
+  Future<List<Listing>> getAllListingsRemote() async {
     listings = await api.getAllListings();
+    notifyListeners();
+    return listings;
+  }
+
+  Future<List<Listing>> getOwnListings(String id) async {
+    ownListings = await api.searchListings("user_id=$id");
+    notifyListeners();
+    return ownListings;
+  }
+
+  void setToken(String token) async {
+    api.token = token;
     notifyListeners();
   }
 }
 
 class AppState extends ChangeNotifier {
   User user = User(id: "", imageURI: "", username: "", token: "");
+  ListingState listingState = ListingState();
+  ChatState chatState = ChatState();
 
   void setUser(User user) {
     this.user = user;
     notifyListeners();
   }
 
+  void setToken(String token) {
+    listingState.setToken(token);
+    this.user.token = token;
+    notifyListeners();
+  }
+
   void logout() {
     this.user = User(id: "", imageURI: "", username: "", token: "");
+    listingState.setToken("");
     notifyListeners();
   }
 }

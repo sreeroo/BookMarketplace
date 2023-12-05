@@ -8,11 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final AppState appState = AppState();
 
   // This widget is the root of your application.
   @override
@@ -25,15 +27,10 @@ class MyApp extends StatelessWidget {
       ),
       home: MultiProvider(
         providers: [
-          ChangeNotifierProvider<ChatState>(
-            create: (_) => ChatState(),
-          ),
-          ChangeNotifierProvider<ListingState>(
-            create: (_) => ListingState(),
-          ),
-          ChangeNotifierProvider<AppState>(
-            create: (_) => AppState(),
-          ),
+          ChangeNotifierProvider<ChatState>.value(value: appState.chatState),
+          ChangeNotifierProvider<ListingState>.value(
+              value: appState.listingState),
+          ChangeNotifierProvider<AppState>.value(value: appState),
         ],
         child: const SizedBox(height: 56, child: KreiselNavigator()),
       ),
