@@ -15,36 +15,19 @@ class Explore extends StatefulWidget {
 class _ExploreState extends State<Explore> {
   late List<Listing>? _listingModel = [];
   late bool _isDisposed = false;
-  final ListingAPI _listingAPI = ListingAPI();
 
-  @override
-  void initState() {
-    super.initState();
-    _getData();
-  }
-
-  @override
-  void dispose() {
-    _isDisposed = true;
-    super.dispose();
-  }
-
-  void _getData() async {
-    _listingModel = await _listingAPI.getAllListings();
-    Future.delayed(const Duration(milliseconds: 200)).then((value) {
-      if (!_isDisposed) {
-        setState(() {});
-      }
+  void _getData(ListingState listingState) async {
+    await listingState.getAllListingsRemote();
+    setState(() {
+      _listingModel = listingState.listings;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('EXPLORE PAGE'),
-      ),
-      body: _listingModel == null || _listingModel!.isEmpty
+    return Consumer<ListingState>(builder: (c, listingState, w) {
+      _getData(listingState);
+      return _listingModel == null || _listingModel!.isEmpty
           ? const Center(
               child: CircularProgressIndicator(
               color: Colors.white,
@@ -57,7 +40,7 @@ class _ExploreState extends State<Explore> {
                   listing: _listingModel![index],
                 );
               },
-            ),
-    );
+            );
+    });
   }
 }
