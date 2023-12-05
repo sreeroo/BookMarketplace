@@ -27,7 +27,7 @@ class ListingState extends ChangeNotifier {
   }
 
   Future<List<Listing>> getOwnListings(String id) async {
-    ownListings = await api.searchListings("user_id=$id");
+    ownListings = await api.searchListings({"user_id": id});
     notifyListeners();
     return ownListings;
   }

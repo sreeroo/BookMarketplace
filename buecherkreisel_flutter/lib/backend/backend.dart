@@ -12,13 +12,23 @@ class APIClient {
   final _client = http.Client();
 
   // GET
-  Future<dynamic> fetchData(String endpoint) async {
-    final response =
-        await _client.get(Uri.parse('$baseUrl$endpoint'), headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Connection': 'keep-alive',
-    });
+  Future<dynamic> fetchData(String endpoint,
+      [Map<String, dynamic>? queryParams]) async {
+    Uri uri = Uri.parse('$baseUrl$endpoint');
+
+    if (queryParams != null) {
+      uri =
+          Uri.parse('$baseUrl$endpoint').replace(queryParameters: queryParams);
+    }
+
+    final response = await _client.get(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Connection': 'keep-alive',
+      },
+    );
 
     // check response from backend
     if (response.statusCode == 200) {
@@ -68,7 +78,7 @@ class APIClient {
         final response = await streamedResponse.stream.bytesToString();
         return response;
       } else {
-        return null; // todo handle error according to your needs
+        return null; // todo handle error
       }
     } catch (e) {
       print('Error: $e');

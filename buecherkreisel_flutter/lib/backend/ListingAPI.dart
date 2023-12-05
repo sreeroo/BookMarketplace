@@ -23,7 +23,7 @@ class ListingAPI {
   // READ a specific Listing from the backend
 
   Future<Listing> getListingById(String id) async {
-    final response = await restAPI.fetchData('listings/$id');
+    final response = await restAPI.fetchData('listings/$id', {});
     return Listing.fromJson(response);
   }
 
@@ -42,8 +42,8 @@ class ListingAPI {
 
   // Search for some listing by parameters
 
-  Future<List<Listing>> searchListings(String query) async {
-    final response = await restAPI.fetchData('listings?search=$query');
+  Future<List<Listing>> searchListings(Map<String, dynamic> query) async {
+    final response = await restAPI.fetchData('listings/search', query);
     return List<Listing>.from(response.map((e) => Listing.fromJson(e)));
   }
 }
