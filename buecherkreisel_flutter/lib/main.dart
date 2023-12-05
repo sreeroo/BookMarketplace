@@ -68,53 +68,64 @@ class _KreiselNavigatorState extends State<KreiselNavigator> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('HMKreisel'),
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.message_rounded,
-            ),
-            label: 'Messages',
+    return Consumer<AppState>(
+      builder: (c, state, w) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('HMKreisel'),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.map,
-            ),
-            label: 'Explore',
+          body: Center(
+            child: _widgetOptions.elementAt(_selectedIndex),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.add,
-            ),
-            label: 'Add',
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.message_rounded,
+                ),
+                label: 'Messages',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.map,
+                ),
+                label: 'Explore',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.add,
+                ),
+                label: 'Add',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.favorite,
+                ),
+                label: 'Favorites',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.person,
+                ),
+                label: 'Account',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Colors.amber[800],
+            unselectedItemColor: Colors.grey,
+            onTap: (index) {
+              if (index == 1) {
+                state.listingState.getAllListingsRemote();
+              } else if (index == 4) {
+                state.listingState.getOwnListings(state.user.id);
+              }
+              _onItemTapped(index);
+            },
+            showUnselectedLabels: false,
+            showSelectedLabels: false,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.favorite,
-            ),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person,
-            ),
-            label: 'Account',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
-        showUnselectedLabels: false,
-        showSelectedLabels: false,
-      ),
+        );
+      },
     );
   }
 }

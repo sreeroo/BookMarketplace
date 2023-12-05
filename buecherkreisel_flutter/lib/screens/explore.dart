@@ -5,39 +5,23 @@ import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Explore extends StatefulWidget {
-  const Explore({Key? key}) : super(key: key);
-
-  @override
-  _ExploreState createState() => _ExploreState();
-}
-
-class _ExploreState extends State<Explore> {
-  late List<Listing>? _listingModel = [];
-  late bool _isDisposed = false;
-
-  void _getData(ListingState listingState) async {
-    await listingState.getAllListingsRemote();
-    setState(() {
-      _listingModel = listingState.listings;
-    });
-  }
+class Explore extends StatelessWidget {
+  const Explore({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ListingState>(builder: (c, listingState, w) {
-      _getData(listingState);
-      return _listingModel == null || _listingModel!.isEmpty
+      return listingState.listings.isEmpty
           ? const Center(
               child: CircularProgressIndicator(
               color: Colors.white,
               backgroundColor: Color.fromARGB(255, 15, 15, 15),
             ))
           : ListView.builder(
-              itemCount: _listingModel!.length,
+              itemCount: listingState.listings.length,
               itemBuilder: (context, index) {
                 return ListingPreview(
-                  listing: _listingModel![index],
+                  listing: listingState.listings[index],
                 );
               },
             );
