@@ -36,7 +36,7 @@ class ListingControllerTest {
     }
 
     @Test
-    public void testCreateListing() throws Exception {
+    public void testNewListing() throws Exception {
 
         User user = userRepository.save(
                 new User("Nutzername", "Password", "Profilbild"));
@@ -57,7 +57,7 @@ class ListingControllerTest {
     }
 
     @Test
-    public void testCreateListingUserNotFound() throws Exception {
+    public void testNewListingUserNotFound() throws Exception {
 
         UserRepository userRepository = context.getBean(UserRepository.class);
 
@@ -96,7 +96,7 @@ class ListingControllerTest {
     }
 
     @Test
-    public void testGetListing() throws Exception {
+    public void testAllListings() throws Exception {
 
         User user = userRepository.save(
                 new User("Nutzername", "Password", "Profilbild"));
@@ -130,7 +130,25 @@ class ListingControllerTest {
                 .andExpect(jsonPath("$[0].location").value("München"))
                 .andExpect(jsonPath("$[0].images").exists())
                 .andExpect(jsonPath("$[0].images[0]").value("Bild"));
-
     }
 
+    @Test
+    public void testFilterListing() throws Exception {
+
+        User user = userRepository.save(
+                new User("Nutzername", "Password", "Profilbild"));
+
+        MvcResult mvcResult = createListing(user);
+        if (mvcResult.getResponse().getStatus() != 200) {
+            throw new RuntimeException("Unable to create Listing!");
+        }
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/listings/search")
+                .accept(MediaType.APPLICATION_JSON)
+                .param("location", "München")
+                .param("searchString", "Beschreibung"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]").exists());
+
+    }
 }
