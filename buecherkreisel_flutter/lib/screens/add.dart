@@ -1,30 +1,39 @@
 import 'dart:io';
-import 'package:buecherkreisel_flutter/backend/ListingAPI.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:buecherkreisel_flutter/backend/datatypes.dart';
+import 'package:provider/provider.dart';
 
-class AddUpdateListing extends StatefulWidget {
-  Listing? listing;
-  final ListingAPI listingAPI = ListingAPI();
-
-  AddUpdateListing({super.key, this.listing});
+class AddUpdateListing extends StatelessWidget {
+  final Listing? listing;
+  const AddUpdateListing({Key? key, this.listing}) : super(key: key);
 
   @override
-  AddUpdateListingState createState() {
-    return AddUpdateListingState();
+  Widget build(BuildContext context) {
+    return Consumer<AppState>(
+      builder: (context, appState, _) {
+        return _AddUpdateListingForm(appState: appState, listing: listing);
+      },
+    );
   }
 }
 
-class AddUpdateListingState extends State<AddUpdateListing> {
-  final _formKey = GlobalKey<FormState>();
-  File? _imageFile;
+class _AddUpdateListingForm extends StatefulWidget {
+  final AppState appState;
+  final Listing? listing;
+
+  const _AddUpdateListingForm({Key? key, required this.appState, this.listing})
+      : super(key: key);
 
   @override
-  void initState() {
-    super.initState();
-  }
+  _AddUpdateListingFormState createState() => _AddUpdateListingFormState();
+}
+
+class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
+  final _formKey = GlobalKey<FormState>();
+  File? _imageFile;
 
   @override
   Widget build(BuildContext context) {
@@ -128,16 +137,17 @@ class AddUpdateListingState extends State<AddUpdateListing> {
         if (_formKey.currentState!.validate() && _imageFile != null) {
           print("ADD!!!");
           Listing listing = Listing(
-              id: widget.listing?.id ?? 0,
-              title: titleController.text,
-              description: descriptionController.text,
-              price: double.parse(priceController.text),
-              location: locationController.text,
-              category: "INFORMATIK", // TODO: HARDCODED
-              offersDelivery: false, // TODO: HARDCODED
-              isReserved: false, // TODO: HARDCODED
-              createdBy: 1);
-          widget.listingAPI
+            id: widget.listing?.id ?? 0,
+            title: titleController.text,
+            description: descriptionController.text,
+            price: double.parse(priceController.text),
+            location: locationController.text,
+            category: "INFORMATIK", // TODO: HARDCODED
+            offersDelivery: false, // TODO: HARDCODED
+            isReserved: false, // TODO: HARDCODED
+            createdBy: int.parse(widget.appState.user.id),
+          );
+          widget.appState.listingState.api
               .createListing(listing, _imageFile!)
               .then((value) => ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
