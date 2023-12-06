@@ -50,19 +50,10 @@ class ListingControllerTest {
                         .param("offersDelivery", "true")
                         .param("description", "Beschreibung")
                         .param("isReserved", "false")
-                        .param("user_id", String.valueOf(user.getId()))
+                        .param("user_id", "2")
                         .param("location", "München")
                         .param("token", user.getToken())
-                ).andExpect(status().isOk());
-    }
-
-    @Test
-    public void testNewListingUserNotFound() throws Exception {
-
-        UserRepository userRepository = context.getBean(UserRepository.class);
-
-        User user = userRepository.save(
-                new User("Nutzername", "Password", "Profilbild"));
+                ).andExpect(status().is(401));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .multipart("/listings")
@@ -73,10 +64,10 @@ class ListingControllerTest {
                         .param("offersDelivery", "true")
                         .param("description", "Beschreibung")
                         .param("isReserved", "false")
-                        .param("user_id", "2")
+                        .param("user_id", String.valueOf(user.getId()))
                         .param("location", "München")
                         .param("token", user.getToken())
-                ).andExpect(status().is(401));
+                ).andExpect(status().isOk());
     }
 
     private MvcResult createListing(User user) throws Exception {
@@ -150,5 +141,31 @@ class ListingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0]").exists());
 
+    }
+
+    @Test
+    public void testDeleteListing() throws Exception {
+        User user = userRepository.save(
+                new User("Nutzername", "Password", "Profilbild"));
+
+        MvcResult mvcResult = createListing(user);
+        if (mvcResult.getResponse().getStatus() != 200) {
+            throw new RuntimeException("Unable to create Listing!");
+        }
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/listings/2")
+                .param("user_id", String.valueOf(user.getId()))
+                .param("token", user.getToken()))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/listings/1")
+                .param("user_id", String.valueOf(user.getId()+1))
+                .param("token", user.getToken()))
+                .andExpect(status().is(401));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/listings/1")
+                .param("user_id", String.valueOf(user.getId()))
+                .param("token", user.getToken()))
+                .andExpect(status().isOk());
     }
 }
