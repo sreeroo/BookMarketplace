@@ -14,11 +14,11 @@ public class UserController {
     private UserRepository repository;
 
     @GetMapping("/users/{id}")
-    Map<String, String> getUser(@PathVariable long id, @RequestBody String token) {
+    Map<String, String> getUser(@PathVariable long id, @RequestBody Map<String, String> body) {
         Optional<User> userCheck = repository.findById(id);
         if(userCheck.isPresent()) {
             User user = userCheck.get();
-            if(Objects.equals(user.getToken(), token)) {
+            if(Objects.equals(user.getToken(), body.get("token"))) {
                 Map<String, String> answer = new HashMap<>();
                 answer.put("id", String.valueOf(user.getId()));
                 answer.put("username", user.getUsername());
@@ -77,11 +77,18 @@ public class UserController {
     }
 
     @PutMapping("/users/edit_likes/{id}")
-    void editLikes(@PathVariable long id, @RequestParam String token, @RequestBody List<Long> listOfLikes) {
+    void editLikes(@PathVariable long id, @RequestBody Map<String, String> body) {
         Optional<User> userCheck = repository.findById(id);
         if(userCheck.isPresent()) {
             User user = userCheck.get();
+            String token = body.get("token");
             if(user.getToken().equals(token)) {
+                String listOfLikesString = body.get("liked_listings");
+                String[] stringArray = listOfLikesString.replaceAll("[\\[\\]\"]", "").split(", ");
+                List<Long> listOfLikes = new ArrayList<>();
+                for (String str : stringArray) {
+                    listOfLikes.add(Long.parseLong(str));
+                }
                 user.setLikedListings(listOfLikes);
                 repository.save(user);
             } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -89,7 +96,7 @@ public class UserController {
     }
 
     @PutMapping("/users/edit_auth/{id}")
-    String editAuth(@PathVariable long id, @RequestBody Map<String, String> body) {
+    Map<String, String> editAuth(@PathVariable long id, @RequestBody Map<String, String> body) {
         Optional<User> userCheck = repository.findById(id);
         if(userCheck.isPresent()) {
             User user = userCheck.get();
@@ -99,7 +106,9 @@ public class UserController {
                 user.setPassword(body.get("new_password"));
                 user.updateToken();
                 repository.save(user);
-                return user.getToken();
+                Map<String,String> response = new HashMap<>();
+                response.put("token", user.getToken());
+                return response;
             } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }

@@ -30,6 +30,8 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private static final String TOKEN_BODY_TEMPLATE = "{\"token\":\"%s\"}";
+
     @Autowired
     UserRepository repo;
 
@@ -37,6 +39,7 @@ public class UserControllerTest {
     void setup() {
         repo.deleteAll();
     }
+
 
     /*
      * Erstellt Standardbenutzer zum Testen namens Tom mit Passwort test123
@@ -142,7 +145,7 @@ public class UserControllerTest {
 
         // Try to get all available data
         mockMvc.perform(MockMvcRequestBuilders.get("/users/{id}", id)
-                        .content(token)
+                        .content(String.format(TOKEN_BODY_TEMPLATE, token))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -169,7 +172,7 @@ public class UserControllerTest {
 
         // Try to get all available data with false credentials
         mockMvc.perform(MockMvcRequestBuilders.get("/users/{id}", id)
-                    .content("falseToken")
+                    .content(String.format(TOKEN_BODY_TEMPLATE, "falseToken"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -179,7 +182,7 @@ public class UserControllerTest {
     public void testGetUserNotFound() throws Exception {
         // Try to get data for non-existent user
         mockMvc.perform(MockMvcRequestBuilders.get("/users/{id}", 1)
-                        .content("123")
+                        .content(String.format(TOKEN_BODY_TEMPLATE, "falseToken"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -231,15 +234,18 @@ public class UserControllerTest {
         String token = jsonNode.get("token").asText();
         Long id = jsonNode.get("id").asLong();
 
-        List<String> content = new ArrayList<>();
-        content.add(String.valueOf(2));
-        content.add(String.valueOf(3));
-        content.add(String.valueOf(24));
+        List<String> listOfLikes = new ArrayList<>();
+        listOfLikes.add(String.valueOf(2));
+        listOfLikes.add(String.valueOf(3));
+        listOfLikes.add(String.valueOf(24));
+
+        Map<String, String> content = new HashMap<>();
+        content.put("token", token);
+        content.put("liked_listings", listOfLikes.toString());
 
         // Try to edit the likes
         mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_likes/{id}", id)
-                        .param("token", token)
-                        .content(content.toString())
+                        .content(new ObjectMapper().writeValueAsString(content))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -247,7 +253,7 @@ public class UserControllerTest {
 
         // Verify that likes were edited
         mockMvc.perform(MockMvcRequestBuilders.get("/users/{id}", id)
-                        .content(token)
+                        .content(String.format(TOKEN_BODY_TEMPLATE, token))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -272,15 +278,18 @@ public class UserControllerTest {
         JsonNode jsonNode = new ObjectMapper().readTree(jsonResponse);
         Long id = jsonNode.get("id").asLong();
 
-        List<String> content = new ArrayList<>();
-        content.add(String.valueOf(2));
-        content.add(String.valueOf(3));
-        content.add(String.valueOf(24));
+        List<String> listOfLikes = new ArrayList<>();
+        listOfLikes.add(String.valueOf(2));
+        listOfLikes.add(String.valueOf(3));
+        listOfLikes.add(String.valueOf(24));
+
+        Map<String, String> content = new HashMap<>();
+        content.put("token", "FalscherToken");
+        content.put("liked_listings", listOfLikes.toString());
 
         // Try to edit likes with false credentials
         mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_likes/{id}", id)
-                        .param("token", "DieserTokenIstFalsch")
-                        .content(content.toString())
+                        .content(new ObjectMapper().writeValueAsString(content))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
@@ -291,8 +300,7 @@ public class UserControllerTest {
     public void testEditLikesNotFound() throws Exception {
         // Try to edit likes of non-existent user
         mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_likes/{id}", 23)
-                        .param("token", "DieserTokenIstFalsch")
-                        .content(new ArrayList<>().toString())
+                        .content(new ObjectMapper().writeValueAsString(new HashMap<>()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -313,7 +321,7 @@ public class UserControllerTest {
         editAuthBody.put("old_password", "test123");
         editAuthBody.put("new_password", "newTest123");
 
-        // Try tp edit credentials
+        // Try to edit credentials
         MvcResult nextResult = mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_auth/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editAuthBody))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -322,8 +330,9 @@ public class UserControllerTest {
                 .andDo(print())
                 .andReturn();
 
-        String newToken = nextResult.getResponse().getContentAsString();
-        assertNotEquals(newToken, token);
+        String response = nextResult.getResponse().getContentAsString();
+        jsonNode = new ObjectMapper().readTree(response);
+        assertNotEquals(jsonNode.get("token").asText(), token);
 
         // Verify that the password has been updated
         mockMvc.perform(MockMvcRequestBuilders.post("/login")
@@ -540,7 +549,7 @@ public class UserControllerTest {
 
         // Verify that the user has been deleted
         mockMvc.perform(MockMvcRequestBuilders.get("/users/{id}", id)
-                        .content(token)
+                        .content(String.format(TOKEN_BODY_TEMPLATE, token))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
