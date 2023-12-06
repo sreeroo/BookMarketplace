@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @SpringBootTest
@@ -35,12 +36,16 @@ class ListingControllerTest {
         userRepository.deleteAll();
     }
 
+    /**
+     * Test for creating a new listing
+     */
     @Test
     public void testNewListing() throws Exception {
 
         User user = userRepository.save(
                 new User("Nutzername", "Password", "Profilbild"));
 
+        // Wrong user id, throw 401 Status Code
         mockMvc.perform(MockMvcRequestBuilders
                         .multipart("/listings")
                         .file("images", Base64.getDecoder().decode("Bild"))
@@ -55,6 +60,7 @@ class ListingControllerTest {
                         .param("token", user.getToken())
                 ).andExpect(status().is(401));
 
+        // All correct
         mockMvc.perform(MockMvcRequestBuilders
                         .multipart("/listings")
                         .file("images", Base64.getDecoder().decode("Bild"))
@@ -68,8 +74,25 @@ class ListingControllerTest {
                         .param("location", "München")
                         .param("token", user.getToken())
                 ).andExpect(status().isOk());
+
+        // Checks if listing was created correctly
+        mockMvc.perform(MockMvcRequestBuilders.get("/listings")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").exists())
+                .andExpect(jsonPath("$[0].id").exists())
+                .andExpect(jsonPath("$[0].id").value("1"))
+                .andExpect(jsonPath("$[0].title").exists())
+                .andExpect(jsonPath("$[0].title").value("Titel"))
+                .andExpect(jsonPath("$[0].price").exists())
+                .andExpect(jsonPath("$[0].price").value("29.99"));
     }
 
+    /**
+     * Helper method for creating listing
+     * @param user User the listing belongs to
+     * @return MvcResult
+     */
     private MvcResult createListing(User user) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders
                         .multipart("/listings")
@@ -86,6 +109,9 @@ class ListingControllerTest {
                 ).andReturn();
     }
 
+    /**
+     * Tests if Response of Get Request is correct
+     */
     @Test
     public void testAllListings() throws Exception {
 
@@ -123,6 +149,9 @@ class ListingControllerTest {
                 .andExpect(jsonPath("$[0].images[0]").value("Bild"));
     }
 
+    /**
+     * Tests if Response of filtered Get Request is correct
+     */
     @Test
     public void testFilterListing() throws Exception {
 
@@ -140,9 +169,11 @@ class ListingControllerTest {
                 .param("searchString", "Beschreibung"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0]").exists());
-
     }
 
+    /**
+     * Tests if listings are deleted correctly
+     */
     @Test
     public void testDeleteListing() throws Exception {
         User user = userRepository.save(
@@ -153,19 +184,120 @@ class ListingControllerTest {
             throw new RuntimeException("Unable to create Listing!");
         }
 
+        // Not existing id, throw 404 Status Code
         mockMvc.perform(MockMvcRequestBuilders.delete("/listings/2")
                 .param("user_id", String.valueOf(user.getId()))
                 .param("token", user.getToken()))
                 .andExpect(status().isNotFound());
 
+        // Wrong user id, throw 401 Status Code
         mockMvc.perform(MockMvcRequestBuilders.delete("/listings/1")
                 .param("user_id", String.valueOf(user.getId()+1))
                 .param("token", user.getToken()))
                 .andExpect(status().is(401));
 
+        // All correct
         mockMvc.perform(MockMvcRequestBuilders.delete("/listings/1")
                 .param("user_id", String.valueOf(user.getId()))
                 .param("token", user.getToken()))
                 .andExpect(status().isOk());
+
+        //Checks if listing was deleted correctly
+        mockMvc.perform(MockMvcRequestBuilders.get("/listings")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").exists())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    /**
+     * Helper method for creating PUT Builder
+     * @param id ID of listing
+     * @return MockMultipartHttpServletRequestBuilder of PUT Request
+     */
+    private MockMultipartHttpServletRequestBuilder createBuilder(Long id) {
+        MockMultipartHttpServletRequestBuilder builder =
+            MockMvcRequestBuilders.multipart("/listings/" + id);
+
+        // Multipart does only support POST, so overwrite it with PUT
+        builder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
+
+        return builder;
+    }
+
+    /**
+     * Tests if listing is updated correctly
+     */
+    @Test
+    public void testUpdateListing() throws Exception {
+        User user = userRepository.save(
+                new User("Nutzername", "Password", "Profilbild"));
+
+        MvcResult mvcResult = createListing(user);
+        if (mvcResult.getResponse().getStatus() != 200) {
+            throw new RuntimeException("Unable to create Listing!");
+        }
+
+        // Check for wrong id
+        mockMvc.perform(createBuilder(2L)
+                .file("images", Base64.getDecoder().decode("Bild"))
+                        .param("title", "UpdatedTitle")
+                        .param("price", "29.99")
+                        .param("category", "INFORMATIK")
+                        .param("offersDelivery", "true")
+                        .param("description", "Beschreibung")
+                        .param("isReserved", "false")
+                        .param("user_id", String.valueOf(user.getId()))
+                        .param("location", "München")
+                        .param("token", user.getToken())
+                )
+                .andExpect(status().isNotFound());
+
+
+        // Check for wrong user id
+        mockMvc.perform(createBuilder(1L)
+                .file("images", Base64.getDecoder().decode("Bild"))
+                        .param("title", "UpdatedTitle")
+                        .param("price", "29.99")
+                        .param("category", "INFORMATIK")
+                        .param("offersDelivery", "true")
+                        .param("description", "Beschreibung")
+                        .param("isReserved", "false")
+                        .param("user_id", String.valueOf(user.getId()+1))
+                        .param("location", "München")
+                        .param("token", user.getToken())
+                )
+                .andExpect(status().is(401));
+
+        // With correct parameters
+        mockMvc.perform(createBuilder(1L)
+                .file("images", Base64.getDecoder().decode("Bild"))
+                        .param("title", "UpdatedTitle")
+                        .param("price", "29.99")
+                        .param("category", "INFORMATIK")
+                        .param("offersDelivery", "true")
+                        .param("description", "Beschreibung")
+                        .param("isReserved", "false")
+                        .param("user_id", String.valueOf(user.getId()))
+                        .param("location", "München")
+                        .param("token", user.getToken())
+                )
+                .andExpect(status().isOk());
+
+
+        // Check if values were updated correctly
+        mockMvc.perform(MockMvcRequestBuilders.get("/listings")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").exists())
+                .andExpect(jsonPath("$[0].id").exists())
+                .andExpect(jsonPath("$[0].id").value("1"))
+                .andExpect(jsonPath("$[0].title").exists())
+                .andExpect(jsonPath("$[0].title").value("UpdatedTitle"))
+                .andExpect(jsonPath("$[0].price").exists())
+                .andExpect(jsonPath("$[0].price").value("29.99"));
     }
 }
