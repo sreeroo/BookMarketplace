@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/components/listing_fullscreen.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +32,9 @@ class ListingPreview extends StatelessWidget {
                 Text(listing.location),
               ],
             ),
-            const Image(image: AssetImage("lib/assets/6NyIq.jpg")),
+            Image(
+                image: MemoryImage(
+                    const Base64Decoder().convert(listing.imageBase64!))),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

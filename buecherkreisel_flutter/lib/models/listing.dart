@@ -8,7 +8,7 @@ class Listing {
   bool isReserved;
   int createdBy;
   String location;
-  String imageBase64;
+  String? imageBase64;
 
   Listing({
     required this.id,
@@ -20,7 +20,7 @@ class Listing {
     required this.isReserved,
     required this.createdBy,
     required this.location,
-    this.imageBase64 = "",
+    this.imageBase64,
   });
 
   // parse Item from JSON-data
@@ -34,6 +34,7 @@ class Listing {
         isReserved: json["reserved"],
         createdBy: json["userID"],
         location: json["location"],
+        imageBase64: json["images"][0],
       );
 
   // map item to JSON-data

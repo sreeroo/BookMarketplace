@@ -13,7 +13,7 @@ class AddUpdateListing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppState>(
-      builder: (context, appState, _) {
+      builder: (context, appState, w) {
         return _AddUpdateListingForm(appState: appState, listing: listing);
       },
     );
