@@ -26,7 +26,7 @@ class ListingAPI {
   }
 
   // UPDATE an existing Listing on the backend
-  Future<dynamic> updateListing(Listing listing, File imageFile) async {
+  Future<dynamic> updateListing(Listing listing, [File? imageFile]) async {
     final body = listing.toJson();
     body.addAll({"token": token});
     return await _restAPI.updateDataMultipart(

@@ -16,8 +16,11 @@ List<dynamic> mergeListsOnKey(
   return list_a;
 }
 
-MemoryImage imageFromBase64String(String base64String) {
-  return MemoryImage(
-    base64Decode(base64String),
-  );
+MemoryImage? imageFromBase64String(String base64String) {
+  if (base64String.isNotEmpty) {
+    return MemoryImage(
+      base64Decode(base64String),
+    );
+  }
+  return null;
 }

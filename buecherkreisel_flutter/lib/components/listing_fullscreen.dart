@@ -14,7 +14,7 @@ class ListingFullScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Image(image: imageFromBase64String(listing.imageBase64!)),
+          Image.memory(imageFromBase64String(listing.imageBase64!)!.bytes),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

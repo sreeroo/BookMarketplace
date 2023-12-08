@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:buecherkreisel_flutter/backend/utils.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -67,6 +68,14 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
     final imageField = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (widget.listing?.imageBase64 != null &&
+            widget.listing!.imageBase64!.isNotEmpty)
+          Image.memory(
+            imageFromBase64String(widget.listing!.imageBase64!)!.bytes,
+            height: 200,
+            width: 200,
+            fit: BoxFit.cover,
+          ),
         if (_imageFile != null)
           Image.file(
             _imageFile!,
@@ -172,7 +181,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
 
     final saveButton = ElevatedButton(
       onPressed: () {
-        if (_formKey.currentState!.validate() && _imageFile != null) {
+        if (_formKey.currentState!.validate()) {
           Listing listing = Listing(
             id: widget.listing?.id ?? 0,
             title: titleController.text,
@@ -185,7 +194,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
             createdBy: int.parse(widget.appState.user.id),
           );
 
-          if (widget.listing == null) {
+          if (widget.listing == null && _imageFile != null) {
             // Add new listing
             widget.appState.listingState.api
                 .createListing(listing, _imageFile!)
@@ -195,7 +204,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
           } else {
             // Update existing listing
             widget.appState.listingState.api
-                .updateListing(listing, _imageFile!)
+                .updateListing(listing, _imageFile)
                 .then((value) {
               handleApiResponse(value);
             });

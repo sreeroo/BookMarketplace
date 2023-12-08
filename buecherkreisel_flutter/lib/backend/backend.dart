@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -101,8 +102,8 @@ class APIClient {
   }
 
   // Update using multipart/form-data
-  Future<dynamic> updateDataMultipart(
-      String endpoint, dynamic data, File imageFile) async {
+  Future<dynamic> updateDataMultipart(String endpoint, dynamic data,
+      [File? imageFile]) async {
     final response =
         await http.MultipartRequest('PUT', Uri.parse('$baseUrl$endpoint'));
 
@@ -110,13 +111,17 @@ class APIClient {
       'Content-Type': 'multipart/form-data',
       'Connection': 'keep-alive',
     });
+
     response.fields.addAll(data);
-    response.files.add(
-      await http.MultipartFile.fromPath(
-        'images',
-        imageFile.path,
-      ),
-    );
+
+    if (imageFile != null) {
+      response.files.add(
+        await http.MultipartFile.fromPath(
+          'images',
+          imageFile.path,
+        ),
+      );
+    }
 
     try {
       final streamedResponse = await response.send();
