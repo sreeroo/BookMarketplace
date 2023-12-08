@@ -33,7 +33,7 @@ class _AddUpdateListingForm extends StatefulWidget {
 
 class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   final _formKey = GlobalKey<FormState>();
-  File? _imageFile;
+  File? _imageFile = null;
 
   @override
   Widget build(BuildContext context) {
@@ -42,24 +42,31 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
     TextEditingController descriptionController =
         TextEditingController(text: widget.listing?.description ?? "");
     TextEditingController priceController =
-        TextEditingController(text: "${widget.listing?.price}" ?? "");
+        TextEditingController(text: widget.listing?.price.toString() ?? "");
     TextEditingController locationController =
         TextEditingController(text: widget.listing?.location ?? "");
 
     //titel, beschreibung,preis, beschreibung, bool abholung, location
 
+    bool isImagePickerOpen = false;
+
     final imageField = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _imageFile != null
-            ? Image.file(
-                _imageFile!,
-                height: 200,
-                width: 200,
-                fit: BoxFit.cover,
-              )
-            : ElevatedButton(
-                onPressed: () async {
+        if (_imageFile != null)
+          Image.file(
+            _imageFile!,
+            height: 200,
+            width: 200,
+            fit: BoxFit.cover,
+          ),
+        ElevatedButton(
+          onPressed: isImagePickerOpen
+              ? null
+              : () async {
+                  setState(() {
+                    isImagePickerOpen = true;
+                  });
                   final picker = ImagePicker();
                   final pickedFile =
                       await picker.pickImage(source: ImageSource.gallery);
@@ -69,9 +76,13 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                       _imageFile = File(pickedFile.path);
                     });
                   }
+
+                  setState(() {
+                    isImagePickerOpen = false;
+                  });
                 },
-                child: Text('Select Image'),
-              ),
+          child: Text('Select Image'),
+        ),
       ],
     );
 
@@ -149,12 +160,22 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
           );
           widget.appState.listingState.api
               .createListing(listing, _imageFile!)
-              .then((value) => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Advertisement posted successfully"),
-                    ),
-                  ));
-
+              .then((value) {
+            if (value <= 300) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Advertisement posted successfully"),
+                ),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                      "Advertisement could not be posted, try again maybe?"),
+                ),
+              );
+            }
+          });
           // Reset the form after posting the advertisement
           titleController.clear();
           descriptionController.clear();
@@ -168,18 +189,23 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       child: Text(widget.listing == null ? 'Add' : 'Save Changes'),
     );
 
-    return Form(
-      key: _formKey,
-      child: ListView(
-        padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-        children: <Widget>[
-          imageField,
-          nameField,
-          descriptionField,
-          priceField,
-          locationField,
-          saveButton
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add/Update Listing'),
+      ),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+          children: <Widget>[
+            imageField,
+            nameField,
+            descriptionField,
+            priceField,
+            locationField,
+            saveButton
+          ],
+        ),
       ),
     );
   }

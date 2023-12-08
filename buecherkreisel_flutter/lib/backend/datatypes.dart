@@ -36,6 +36,13 @@ class ListingState extends ChangeNotifier {
     api.token = token;
     notifyListeners();
   }
+
+  dynamic deleteListing(Listing listing, String userId) {
+    var response = api.deleteListing(listing, userId);
+    ownListings.removeWhere((l) => l.id == listing.id);
+    notifyListeners();
+    return response;
+  }
 }
 
 class AppState extends ChangeNotifier {

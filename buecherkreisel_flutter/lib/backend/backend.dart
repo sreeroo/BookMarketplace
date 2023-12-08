@@ -75,10 +75,9 @@ class APIClient {
       final streamedResponse = await response.send();
 
       if (streamedResponse.statusCode == 200) {
-        final response = await streamedResponse.stream.bytesToString();
-        return response;
+        return streamedResponse.statusCode;
       } else {
-        return null; // todo handle error
+        return streamedResponse.statusCode; // todo handle error
       }
     } catch (e) {
       print('Error: $e');
@@ -102,14 +101,15 @@ class APIClient {
   }
 
   // DELETE
-  Future<void> deleteData(String endpoint) async {
-    final response = await _client.delete(
-      Uri.parse('$baseUrl$endpoint'),
-      headers: <String, String>{'Content-Type': 'application/json'},
-    );
+  Future<dynamic> deleteData(String endpoint) async {
+    Uri uri = Uri.parse('$baseUrl$endpoint');
 
-    if (response.statusCode != 204) {
+    final response = await _client.delete(uri);
+
+    if (response.statusCode >= 300) {
       throw Exception('Failed to delete data');
     }
+
+    return response;
   }
 }
