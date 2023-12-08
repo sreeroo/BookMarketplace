@@ -33,21 +33,35 @@ class _AddUpdateListingForm extends StatefulWidget {
 
 class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   final _formKey = GlobalKey<FormState>();
-  File? _imageFile = null;
+  late TextEditingController titleController;
+  late TextEditingController descriptionController;
+  late TextEditingController priceController;
+  late TextEditingController locationController;
+  File? _imageFile;
+
+  @override
+  void initState() {
+    super.initState();
+    titleController = TextEditingController(text: widget.listing?.title ?? "");
+    descriptionController =
+        TextEditingController(text: widget.listing?.description ?? "");
+    priceController =
+        TextEditingController(text: widget.listing?.price.toString() ?? "");
+    locationController =
+        TextEditingController(text: widget.listing?.location ?? "");
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    priceController.dispose();
+    locationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController titleController =
-        TextEditingController(text: widget.listing?.title ?? "");
-    TextEditingController descriptionController =
-        TextEditingController(text: widget.listing?.description ?? "");
-    TextEditingController priceController =
-        TextEditingController(text: widget.listing?.price.toString() ?? "");
-    TextEditingController locationController =
-        TextEditingController(text: widget.listing?.location ?? "");
-
-    //titel, beschreibung,preis, beschreibung, bool abholung, location
-
     bool isImagePickerOpen = false;
 
     final imageField = Column(
@@ -76,10 +90,6 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                       _imageFile = File(pickedFile.path);
                     });
                   }
-
-                  setState(() {
-                    isImagePickerOpen = false;
-                  });
                 },
           child: Text('Select Image'),
         ),
@@ -143,10 +153,26 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       },
     );
 
+    void handleApiResponse(int value) {
+      if (value <= 300) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Advertisement posted successfully"),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text("Advertisement could not be posted, try again maybe?"),
+          ),
+        );
+      }
+    }
+
     final saveButton = ElevatedButton(
       onPressed: () {
         if (_formKey.currentState!.validate() && _imageFile != null) {
-          print("ADD!!!");
           Listing listing = Listing(
             id: widget.listing?.id ?? 0,
             title: titleController.text,
@@ -158,24 +184,23 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
             isReserved: false, // TODO: HARDCODED
             createdBy: int.parse(widget.appState.user.id),
           );
-          widget.appState.listingState.api
-              .createListing(listing, _imageFile!)
-              .then((value) {
-            if (value <= 300) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Advertisement posted successfully"),
-                ),
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                      "Advertisement could not be posted, try again maybe?"),
-                ),
-              );
-            }
-          });
+
+          if (widget.listing == null) {
+            // Add new listing
+            widget.appState.listingState.api
+                .createListing(listing, _imageFile!)
+                .then((value) {
+              handleApiResponse(value);
+            });
+          } else {
+            // Update existing listing
+            widget.appState.listingState.api
+                .updateListing(listing, _imageFile!)
+                .then((value) {
+              handleApiResponse(value);
+            });
+          }
+
           // Reset the form after posting the advertisement
           titleController.clear();
           descriptionController.clear();

@@ -100,6 +100,38 @@ class APIClient {
     }
   }
 
+  // Update using multipart/form-data
+  Future<dynamic> updateDataMultipart(
+      String endpoint, dynamic data, File imageFile) async {
+    final response =
+        await http.MultipartRequest('PUT', Uri.parse('$baseUrl$endpoint'));
+
+    response.headers.addAll(<String, String>{
+      'Content-Type': 'multipart/form-data',
+      'Connection': 'keep-alive',
+    });
+    response.fields.addAll(data);
+    response.files.add(
+      await http.MultipartFile.fromPath(
+        'images',
+        imageFile.path,
+      ),
+    );
+
+    try {
+      final streamedResponse = await response.send();
+
+      if (streamedResponse.statusCode == 200) {
+        return streamedResponse.statusCode;
+      } else {
+        return streamedResponse.statusCode; // todo handle error
+      }
+    } catch (e) {
+      print('Error: $e');
+      return null; // todo  handle error
+    }
+  }
+
   // DELETE
   Future<dynamic> deleteData(String endpoint) async {
     Uri uri = Uri.parse('$baseUrl$endpoint');

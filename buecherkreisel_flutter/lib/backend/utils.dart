@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+
 List<dynamic> mergeListsOnKey(
     List<dynamic> list_a, List<dynamic> list_b, String keyPath) {
   for (final (index_b, obj) in list_b.indexed) {
@@ -11,4 +14,10 @@ List<dynamic> mergeListsOnKey(
   }
   for (final left_over in list_b) list_a.add(left_over);
   return list_a;
+}
+
+MemoryImage imageFromBase64String(String base64String) {
+  return MemoryImage(
+    base64Decode(base64String),
+  );
 }

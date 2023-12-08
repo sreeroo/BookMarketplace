@@ -20,28 +20,26 @@ class ListingAPI {
   }
 
   // READ a specific Listing from the backend
-
   Future<Listing> getListingById(String id) async {
     final response = await _restAPI.fetchData('listings/$id', {});
     return Listing.fromJson(response);
   }
 
   // UPDATE an existing Listing on the backend
-  Future<Listing> updateListing(Listing listing) async {
-    final response =
-        await _restAPI.updateData('listings/${listing.id}', listing.toJson());
-    return Listing.fromJson(response);
+  Future<dynamic> updateListing(Listing listing, File imageFile) async {
+    final body = listing.toJson();
+    body.addAll({"token": token});
+    return await _restAPI.updateDataMultipart(
+        'listings/${listing.id}', body, imageFile);
   }
 
   // DELETE an existing Listing on the backend
-
-  Future<void> deleteListing(Listing listing, String userID) async {
+  Future<dynamic> deleteListing(Listing listing, String userID) async {
     return await _restAPI
         .deleteData('listings/${listing.id}?user_id=$userID&token=$token');
   }
 
   // Search for some listing by parameters
-
   Future<List<Listing>> searchListings(Map<String, dynamic> query) async {
     final response = await _restAPI.fetchData('listings/search', query);
     return List<Listing>.from(response.map((e) => Listing.fromJson(e)));
