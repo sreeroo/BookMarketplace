@@ -93,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
                                     state.listingState
                                         .deleteListing(listing, state.user.id)
                                         ?.then((value) {
-                                      if (value != null) {
+                                      if (value.statusCode <= 300) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           const SnackBar(

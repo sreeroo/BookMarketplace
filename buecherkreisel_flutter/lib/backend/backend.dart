@@ -121,7 +121,7 @@ class APIClient {
 
     final streamedResponse = await response.send();
 
-    if (streamedResponse.statusCode == 200) {
+    if (streamedResponse.statusCode <= 300) {
       return streamedResponse;
     } else {
       throw Exception('Failed to update data');

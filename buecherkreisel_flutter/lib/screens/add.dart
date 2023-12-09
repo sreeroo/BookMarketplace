@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:buecherkreisel_flutter/backend/utils.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
 import 'package:provider/provider.dart';
@@ -162,24 +161,8 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       },
     );
 
-    void handleApiResponse(int value) {
-      if (value <= 300) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Listing posted successfully"),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Listing could not be posted, try again maybe?"),
-          ),
-        );
-      }
-    }
-
     final saveButton = ElevatedButton(
-      onPressed: () {
+      onPressed: () async {
         if (_formKey.currentState!.validate()) {
           try {
             Listing listing = Listing(
@@ -196,18 +179,22 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
 
             if (widget.listing == null && _imageFile != null) {
               // Add new listing
-              widget.appState.listingState.api
+              await widget.appState.listingState.api
                   .createListing(listing, _imageFile!)
-                  .then((value) {
-                handleApiResponse(value.statusCode);
-              });
+                  .then((value) => ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Listing posted"),
+                        ),
+                      ));
             } else {
               // Update existing listing
-              widget.appState.listingState.api
+              await widget.appState.listingState.api
                   .updateListing(listing, _imageFile)
-                  .then((value) {
-                handleApiResponse(value.statusCode);
-              });
+                  .then((value) => ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Listing updated"),
+                        ),
+                      ));
             }
 
             // Reset the form after posting the advertisement
@@ -221,8 +208,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content:
-                    Text("Listing could not be posted. Did you login yet?"),
+                content: Text("Listing could not be processed"),
               ),
             );
           }
