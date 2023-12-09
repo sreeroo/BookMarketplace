@@ -143,8 +143,8 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
         hintText: "Price",
       ),
       validator: (value) {
-        if (!new RegExp(r'^[0-9]+$').hasMatch(value ?? "")) {
-          return 'Please enter valid price';
+        if (!RegExp(r'^-?[0-9]+(\.[0-9]+)?$').hasMatch(value!)) {
+          return 'Please enter a valid price';
         }
       },
     );
@@ -197,17 +197,18 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                       ));
             }
 
-           (widget.listing == null) ? {
+            (widget.listing == null)
+                ? {
 // Reset the form after posting the advertisement
-              titleController.clear();
-              descriptionController.clear();
-              priceController.clear();
-              locationController.clear();
-              setState(() {
-                _imageFile = null;
-              });
-           } : 
-              Navigator.pop(context);
+                    titleController.clear(),
+                    descriptionController.clear(),
+                    priceController.clear(),
+                    locationController.clear(),
+                    setState(() {
+                      _imageFile = null;
+                    })
+                  }
+                : Navigator.pop(context);
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
