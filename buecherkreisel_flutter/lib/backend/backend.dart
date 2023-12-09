@@ -55,7 +55,7 @@ class APIClient {
   }
 
   // POST using multipart/form-data
-  Future<dynamic> postDataMultipart(
+  Future<http.StreamedResponse> postDataMultipart(
       String endpoint, dynamic data, File imageFile) async {
     final response =
         await http.MultipartRequest('POST', Uri.parse('$baseUrl$endpoint'));
@@ -72,17 +72,12 @@ class APIClient {
       ),
     );
 
-    try {
-      final streamedResponse = await response.send();
+    final streamedResponse = await response.send();
 
-      if (streamedResponse.statusCode == 200) {
-        return streamedResponse.statusCode;
-      } else {
-        return streamedResponse.statusCode; // todo handle error
-      }
-    } catch (e) {
-      print('Error: $e');
-      return null; // todo  handle error
+    if (streamedResponse.statusCode == 200) {
+      return streamedResponse;
+    } else {
+      throw Exception('Failed to create data');
     }
   }
 
@@ -102,7 +97,8 @@ class APIClient {
   }
 
   // Update using multipart/form-data
-  Future<dynamic> updateDataMultipart(String endpoint, dynamic data,
+  Future<http.StreamedResponse> updateDataMultipart(
+      String endpoint, dynamic data,
       [File? imageFile]) async {
     final response =
         await http.MultipartRequest('PUT', Uri.parse('$baseUrl$endpoint'));
@@ -123,22 +119,17 @@ class APIClient {
       );
     }
 
-    try {
-      final streamedResponse = await response.send();
+    final streamedResponse = await response.send();
 
-      if (streamedResponse.statusCode == 200) {
-        return streamedResponse.statusCode;
-      } else {
-        return streamedResponse.statusCode; // todo handle error
-      }
-    } catch (e) {
-      print('Error: $e');
-      return null; // todo  handle error
+    if (streamedResponse.statusCode == 200) {
+      return streamedResponse;
+    } else {
+      throw Exception('Failed to update data');
     }
   }
 
   // DELETE
-  Future<dynamic> deleteData(String endpoint) async {
+  Future<http.Response> deleteData(String endpoint) async {
     Uri uri = Uri.parse('$baseUrl$endpoint');
 
     final response = await _client.delete(uri);

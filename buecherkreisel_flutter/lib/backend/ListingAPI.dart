@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:buecherkreisel_flutter/models/listing.dart';
+import 'package:http/http.dart' as http;
 import 'backend.dart';
 
 class ListingAPI {
@@ -7,7 +8,8 @@ class ListingAPI {
   String token = "";
 
   // CREATE a new Listing on the backend
-  Future<dynamic> createListing(Listing listing, File imageFile) async {
+  Future<http.StreamedResponse> createListing(
+      Listing listing, File imageFile) async {
     final body = listing.toJson();
     body.addAll({"token": token});
     return await _restAPI.postDataMultipart('listings', body, imageFile);
@@ -26,7 +28,8 @@ class ListingAPI {
   }
 
   // UPDATE an existing Listing on the backend
-  Future<dynamic> updateListing(Listing listing, [File? imageFile]) async {
+  Future<http.StreamedResponse> updateListing(Listing listing,
+      [File? imageFile]) async {
     final body = listing.toJson();
     body.addAll({"token": token});
     return await _restAPI.updateDataMultipart(
@@ -34,7 +37,7 @@ class ListingAPI {
   }
 
   // DELETE an existing Listing on the backend
-  Future<dynamic> deleteListing(Listing listing, String userID) async {
+  Future<http.Response> deleteListing(Listing listing, String userID) async {
     return await _restAPI
         .deleteData('listings/${listing.id}?user_id=$userID&token=$token');
   }

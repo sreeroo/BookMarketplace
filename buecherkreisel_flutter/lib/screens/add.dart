@@ -166,14 +166,13 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       if (value <= 300) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Advertisement posted successfully"),
+            content: Text("Listing posted successfully"),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content:
-                Text("Advertisement could not be posted, try again maybe?"),
+            content: Text("Listing could not be posted, try again maybe?"),
           ),
         );
       }
@@ -182,42 +181,51 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
     final saveButton = ElevatedButton(
       onPressed: () {
         if (_formKey.currentState!.validate()) {
-          Listing listing = Listing(
-            id: widget.listing?.id ?? 0,
-            title: titleController.text,
-            description: descriptionController.text,
-            price: double.parse(priceController.text),
-            location: locationController.text,
-            category: "INFORMATIK", // TODO: HARDCODED
-            offersDelivery: false, // TODO: HARDCODED
-            isReserved: false, // TODO: HARDCODED
-            createdBy: int.parse(widget.appState.user.id),
-          );
+          try {
+            Listing listing = Listing(
+              id: widget.listing?.id ?? 0,
+              title: titleController.text,
+              description: descriptionController.text,
+              price: double.parse(priceController.text),
+              location: locationController.text,
+              category: "INFORMATIK", // TODO: HARDCODED
+              offersDelivery: false, // TODO: HARDCODED
+              isReserved: false, // TODO: HARDCODED
+              createdBy: int.parse(widget.appState.user.id),
+            );
 
-          if (widget.listing == null && _imageFile != null) {
-            // Add new listing
-            widget.appState.listingState.api
-                .createListing(listing, _imageFile!)
-                .then((value) {
-              handleApiResponse(value);
+            if (widget.listing == null && _imageFile != null) {
+              // Add new listing
+              widget.appState.listingState.api
+                  .createListing(listing, _imageFile!)
+                  .then((value) {
+                handleApiResponse(value.statusCode);
+              });
+            } else {
+              // Update existing listing
+              widget.appState.listingState.api
+                  .updateListing(listing, _imageFile)
+                  .then((value) {
+                handleApiResponse(value.statusCode);
+              });
+            }
+
+            // Reset the form after posting the advertisement
+            titleController.clear();
+            descriptionController.clear();
+            priceController.clear();
+            locationController.clear();
+            setState(() {
+              _imageFile = null;
             });
-          } else {
-            // Update existing listing
-            widget.appState.listingState.api
-                .updateListing(listing, _imageFile)
-                .then((value) {
-              handleApiResponse(value);
-            });
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content:
+                    Text("Listing could not be posted. Did you login yet?"),
+              ),
+            );
           }
-
-          // Reset the form after posting the advertisement
-          titleController.clear();
-          descriptionController.clear();
-          priceController.clear();
-          locationController.clear();
-          setState(() {
-            _imageFile = null;
-          });
         }
       },
       child: Text(widget.listing == null ? 'Add' : 'Save Changes'),

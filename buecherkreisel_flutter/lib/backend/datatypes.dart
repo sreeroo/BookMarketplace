@@ -3,6 +3,7 @@ import 'package:buecherkreisel_flutter/models/chat.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class ChatState extends ChangeNotifier {
   List<Chat> chats = List.empty(growable: true);
@@ -37,11 +38,16 @@ class ListingState extends ChangeNotifier {
     notifyListeners();
   }
 
-  dynamic deleteListing(Listing listing, String userId) {
-    var response = api.deleteListing(listing, userId);
-    ownListings.removeWhere((l) => l.id == listing.id);
-    notifyListeners();
-    return response;
+  Future<dynamic>? deleteListing(Listing listing, String userId) {
+    try {
+      var response = api.deleteListing(listing, userId);
+      ownListings.removeWhere((l) => l.id == listing.id);
+      notifyListeners();
+      return response;
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 }
 

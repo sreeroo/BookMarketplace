@@ -91,7 +91,18 @@ class ProfileScreen extends StatelessWidget {
                                 ElevatedButton(
                                   onPressed: () {
                                     state.listingState
-                                        .deleteListing(listing, state.user.id);
+                                        .deleteListing(listing, state.user.id)
+                                        ?.then((value) {
+                                      if (value != null) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                                "Listing deleted successfully"),
+                                          ),
+                                        );
+                                      }
+                                    });
                                   },
                                   child: Text('Delete'),
                                 ),

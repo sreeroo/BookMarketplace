@@ -84,11 +84,27 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
                 onPressed: () async {
                   //if (!_passwordOk || !_usernameOK) return;
                   if (!_isLogin) {
-                    state.setUser(await widget.userAPI.createUser(
-                        _usernameController.text, _passwordController.text));
+                    try {
+                      state.setUser(await widget.userAPI.createUser(
+                          _usernameController.text, _passwordController.text));
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Registration Failed"),
+                        ),
+                      );
+                    }
                   } else {
-                    state.setUser(await widget.userAPI.loginUser(
-                        _usernameController.text, _passwordController.text));
+                    try {
+                      state.setUser(await widget.userAPI.loginUser(
+                          _usernameController.text, _passwordController.text));
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Login Failed"),
+                        ),
+                      );
+                    }
                   }
                 },
               ),
