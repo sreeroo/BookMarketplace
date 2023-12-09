@@ -63,14 +63,14 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   @override
   Widget build(BuildContext context) {
     bool isImagePickerOpen = false;
+    String imageBase64 = widget.listing?.imageBase64 ?? "";
 
     final imageField = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (widget.listing?.imageBase64 != null &&
-            widget.listing!.imageBase64!.isNotEmpty)
+        if (imageBase64.isNotEmpty && _imageFile == null)
           Image.memory(
-            imageFromBase64String(widget.listing!.imageBase64!)!.bytes,
+            imageFromBase64String(imageBase64)!.bytes,
             height: 200,
             width: 200,
             fit: BoxFit.cover,
@@ -197,14 +197,17 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                       ));
             }
 
-            // Reset the form after posting the advertisement
-            titleController.clear();
-            descriptionController.clear();
-            priceController.clear();
-            locationController.clear();
-            setState(() {
-              _imageFile = null;
-            });
+           (widget.listing == null) ? {
+// Reset the form after posting the advertisement
+              titleController.clear();
+              descriptionController.clear();
+              priceController.clear();
+              locationController.clear();
+              setState(() {
+                _imageFile = null;
+              });
+           } : 
+              Navigator.pop(context);
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -219,7 +222,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add/Update Listing'),
+        title: Text(widget.listing == null ? 'Add Listing' : 'Update Listing'),
       ),
       body: Form(
         key: _formKey,
