@@ -184,6 +184,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                   .then((value) => ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text("Listing posted"),
+                          duration: Durations.medium3,
                         ),
                       ));
             } else {
@@ -193,6 +194,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                   .then((value) => ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text("Listing updated"),
+                          duration: Durations.long2,
                         ),
                       ));
             }
@@ -213,6 +215,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text("Listing could not be processed"),
+                duration: Durations.long2,
               ),
             );
           }

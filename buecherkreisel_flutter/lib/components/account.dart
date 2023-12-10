@@ -97,9 +97,9 @@ class ProfileScreen extends StatelessWidget {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           const SnackBar(
-                                            content: Text(
-                                                "Listing deleted successfully"),
-                                          ),
+                                              content: Text(
+                                                  "Listing deleted successfully"),
+                                              duration: Durations.medium4),
                                         );
                                       }
                                     });

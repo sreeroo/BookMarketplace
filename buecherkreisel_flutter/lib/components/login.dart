@@ -11,6 +11,7 @@ class LoginRegisterScreen extends StatefulWidget {
 }
 
 class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
   bool _isLogin = true;
   bool _passwordOk = false;
   bool _usernameOK = false;
@@ -56,21 +57,28 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 20),
-              TextFormField(
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Username',
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        labelText: 'Username',
+                      ),
+                      validator: usernameValidator,
+                      controller: _usernameController,
+                    ),
+                    TextFormField(
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Password',
+                      ),
+                      validator: passwordValidator,
+                      controller: _passwordController,
+                    )
+                  ],
                 ),
-                validator: usernameValidator,
-                controller: _usernameController,
-              ),
-              TextFormField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                ),
-                validator: passwordValidator,
-                controller: _passwordController,
               ),
               SizedBox(height: 20),
               TextButton(
@@ -82,29 +90,40 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
                   //        : Colors.black),
                 ),
                 onPressed: () async {
-                  //if (!_passwordOk || !_usernameOK) return;
-                  if (!_isLogin) {
-                    try {
-                      state.setUser(await widget.userAPI.createUser(
-                          _usernameController.text, _passwordController.text));
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Registration Failed"),
-                        ),
-                      );
+                  if (_formKey.currentState!.validate()) {
+                    if (!_isLogin) {
+                      try {
+                        state.setUser(await widget.userAPI.createUser(
+                            _usernameController.text,
+                            _passwordController.text));
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Registration Failed"),
+                          ),
+                        );
+                      }
+                    } else {
+                      try {
+                        state.setUser(await widget.userAPI.loginUser(
+                            _usernameController.text,
+                            _passwordController.text));
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Login Failed, did you register?"),
+                            duration: Durations.medium4,
+                          ),
+                        );
+                      }
                     }
                   } else {
-                    try {
-                      state.setUser(await widget.userAPI.loginUser(
-                          _usernameController.text, _passwordController.text));
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Login Failed"),
-                        ),
-                      );
-                    }
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Check password and username"),
+                        duration: Durations.medium3,
+                      ),
+                    );
                   }
                 },
               ),
