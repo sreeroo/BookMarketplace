@@ -114,12 +114,16 @@ class _KreiselNavigatorState extends State<KreiselNavigator> {
             selectedItemColor: Colors.amber[800],
             unselectedItemColor: Colors.grey,
             onTap: (index) {
-              if (index == 1) {
-                state.listingState.getAllListingsRemote();
-              } else if (index == 4) {
-                state.listingState.getOwnListings(state.user.id);
+              try {
+                if (index == 1) {
+                  state.listingState.getAllListingsRemote();
+                } else if (index == 4) {
+                  state.listingState.getOwnListings(state.user.id);
+                }
+                _onItemTapped(index);
+              } catch (e) {
+                print(e);
               }
-              _onItemTapped(index);
             },
             showUnselectedLabels: false,
             showSelectedLabels: false,

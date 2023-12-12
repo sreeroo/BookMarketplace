@@ -40,8 +40,8 @@ class ListingState extends ChangeNotifier {
 
   Future<dynamic>? deleteListing(Listing listing, String userId) {
     try {
-      var response = api.deleteListing(listing, userId);
       ownListings.removeWhere((l) => l.id == listing.id);
+      var response = api.deleteListing(listing, userId);
       notifyListeners();
       return response;
     } catch (e) {

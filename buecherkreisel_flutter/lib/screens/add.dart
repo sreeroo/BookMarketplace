@@ -190,13 +190,15 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
             } else {
               // Update existing listing
               await widget.appState.listingState.api
-                  .updateListing(listing, _imageFile)
-                  .then((value) => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Listing updated"),
-                          duration: Durations.long2,
-                        ),
-                      ));
+                  .updateListing(listing, _imageFile);
+              await widget.appState.listingState
+                  .getOwnListings(widget.appState.user.id);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Listing updated"),
+                  duration: Durations.long2,
+                ),
+              );
             }
 
             (widget.listing == null)
