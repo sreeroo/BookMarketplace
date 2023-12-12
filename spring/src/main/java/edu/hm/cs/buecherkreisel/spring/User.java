@@ -18,6 +18,7 @@ public class User {
     private String username;
     private String password;
     private String token;
+    private int totalListings;
 
     @Column(length = 15_000_000)
     private String profilePicture;
@@ -31,6 +32,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.profilePicture = profilePicture;
+        this.totalListings = 0;
         likedListings = new ArrayList<>();
         updateToken(); // Generate first token
     }
@@ -81,6 +83,18 @@ public class User {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public int getTotalListings() {
+        return totalListings;
+    }
+
+    public void setTotalListings(int totalListings) {
+        this.totalListings = totalListings;
+    }
+
+    public void incrementTotalListings() {
+        this.totalListings++;
     }
 
     @Override

@@ -14,12 +14,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.security.auth.login.AccountNotFoundException;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -34,6 +32,9 @@ public class UserControllerTest {
 
     @Autowired
     UserRepository repo;
+
+    @Autowired
+    ListingRepository listRepo;
 
     @BeforeEach
     void setup() {
@@ -50,7 +51,7 @@ public class UserControllerTest {
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andDo(print())
                 .andReturn();
     }
@@ -62,7 +63,7 @@ public class UserControllerTest {
                 .content(body)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists())
@@ -158,6 +159,8 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profile_picture").value(""))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.liked_listings").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.liked_listings").value("[]"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_listings").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_listings").value("0"))
                 .andDo(print());
     }
 
@@ -210,6 +213,8 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profile_picture").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profile_picture").value(""))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.liked_listings").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_listings").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_listings").value("0"))
                 .andDo(print());
     }
 
@@ -244,11 +249,11 @@ public class UserControllerTest {
         content.put("liked_listings", listOfLikes.toString());
 
         // Try to edit the likes
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_likes/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_likes/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(content))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andDo(print());
 
         // Verify that likes were edited
@@ -288,7 +293,7 @@ public class UserControllerTest {
         content.put("liked_listings", listOfLikes.toString());
 
         // Try to edit likes with false credentials
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_likes/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_likes/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(content))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -299,7 +304,7 @@ public class UserControllerTest {
     @Test
     public void testEditLikesNotFound() throws Exception {
         // Try to edit likes of non-existent user
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_likes/{id}", 23)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_likes/{id}", 23)
                         .content(new ObjectMapper().writeValueAsString(new HashMap<>()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -322,7 +327,7 @@ public class UserControllerTest {
         editAuthBody.put("new_password", "newTest123");
 
         // Try to edit credentials
-        MvcResult nextResult = mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_auth/{id}", id)
+        MvcResult nextResult = mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_auth/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editAuthBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -359,7 +364,7 @@ public class UserControllerTest {
         editAuthBody.put("new_password", "newTest123");
 
         // Try to edit credentials with false credentials
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_auth/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_auth/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editAuthBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -376,7 +381,7 @@ public class UserControllerTest {
         editAuthBody.put("new_password", "newTest123");
 
         // Try to edit credentials of non-existent user
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_auth/{id}", 23)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_auth/{id}", 23)
                         .content(new ObjectMapper().writeValueAsString(editAuthBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -398,11 +403,11 @@ public class UserControllerTest {
         editAliasBody.put("new_alias", "NewTom");
 
         // Try to edit alias
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_alias/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_alias/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editAliasBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andDo(print());
 
         // Verify that alias has been updated
@@ -432,7 +437,7 @@ public class UserControllerTest {
         editAliasBody.put("new_alias", "NewTom");
 
         // Try to edit alias using false credentials
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_alias/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_alias/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editAliasBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -447,7 +452,7 @@ public class UserControllerTest {
         editAliasBody.put("new_alias", "NewTom");
 
         // Try to edit alias of non-existent user
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_alias/{id}", 23)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_alias/{id}", 23)
                         .content(new ObjectMapper().writeValueAsString(editAliasBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -469,11 +474,11 @@ public class UserControllerTest {
         editPictureBody.put("new_picture", "newProfilePicBaseString");
 
         // Try to edit pic
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_pic/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_pic/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editPictureBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andDo(print());
 
         // Verify that pic has been updated
@@ -503,7 +508,7 @@ public class UserControllerTest {
         editPictureBody.put("new_picture", "newProfilePic.jpg");
 
         // Try to edit pic using false credentials
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_pic/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_pic/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editPictureBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -518,7 +523,7 @@ public class UserControllerTest {
         editPictureBody.put("new_picture", "newProfilePic.jpg");
 
         // Try to edit pic of non-existent user
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_pic/{id}", 23)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_pic/{id}", 23)
                         .content(new ObjectMapper().writeValueAsString(editPictureBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -544,7 +549,7 @@ public class UserControllerTest {
                         .content(new ObjectMapper().writeValueAsString(deleteUserBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andDo(print());
 
         // Verify that the user has been deleted
@@ -590,5 +595,105 @@ public class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andDo(print());
+    }
+
+    @Test
+    public void testClearListRepo() throws Exception {
+        // create Tom
+        MvcResult result = createTom();
+
+        String jsonResponse = result.getResponse().getContentAsString();
+        JsonNode jsonNode = new ObjectMapper().readTree(jsonResponse);
+        Optional<User> optUser = repo.findById(jsonNode.get("id").asLong());
+        if(optUser.isEmpty())
+            throw new AccountNotFoundException();
+        User tom = optUser.get();
+
+        // create Listing for Tom
+        mockMvc.perform(MockMvcRequestBuilders
+                .multipart("/listings")
+                .file("images", Base64.getDecoder().decode("Bild"))
+                .param("title", "Titel")
+                .param("price", "29.99")
+                .param("category", "INFORMATIK")
+                .param("offersDelivery", "true")
+                .param("description", "Beschreibung")
+                .param("isReserved", "false")
+                .param("user_id", String.valueOf(tom.getId()))
+                .param("location", "München")
+                .param("token", tom.getToken())
+        ).andExpect(status().isOk());
+
+        // create another listing for tom
+        mockMvc.perform(MockMvcRequestBuilders
+                .multipart("/listings")
+                .file("images", Base64.getDecoder().decode("Bild"))
+                .param("title", "Titel")
+                .param("price", "23")
+                .param("category", "INFORMATIK")
+                .param("offersDelivery", "false")
+                .param("description", "Bestes Buch aller Zeiten")
+                .param("isReserved", "false")
+                .param("user_id", String.valueOf(tom.getId()))
+                .param("location", "Fugging")
+                .param("token", tom.getToken())
+        ).andExpect(status().isOk());
+
+        // create bob
+        result = mockMvc.perform(MockMvcRequestBuilders.post("/users/create")
+                        .content("{\"username\":\"Bob\", \"password\":\"test123\"}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andDo(print())
+                .andReturn();
+
+        jsonResponse = result.getResponse().getContentAsString();
+        jsonNode = new ObjectMapper().readTree(jsonResponse);
+        optUser = repo.findById(jsonNode.get("id").asLong());
+        if(optUser.isEmpty())
+            throw new AccountNotFoundException();
+        User bob = optUser.get();
+
+        // create listing for bob
+        mockMvc.perform(MockMvcRequestBuilders
+                .multipart("/listings")
+                .file("images", Base64.getDecoder().decode("Bild"))
+                .param("title", "Titel")
+                .param("price", "23")
+                .param("category", "INFORMATIK")
+                .param("offersDelivery", "false")
+                .param("description", "Bestes Buch aller Zeiten")
+                .param("isReserved", "false")
+                .param("user_id", String.valueOf(bob.getId()))
+                .param("location", "Fugging")
+                .param("token", bob.getToken())
+        ).andExpect(status().isOk());
+
+        // now delete user tom and expect his listings to be deleted as well
+        Map<String, String> deleteUserBody = new HashMap<>();
+        deleteUserBody.put("token", tom.getToken());
+        deleteUserBody.put("password", tom.getPassword());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/users/delete/{id}", tom.getId())
+                        .content(new ObjectMapper().writeValueAsString(deleteUserBody))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andDo(print());
+
+        // are Tom's listings deleted?
+        assertTrue(listRepo.findAll().stream()
+                        .filter(listing -> listing.getUserID()==tom.getId())
+                        .toList()
+                        .isEmpty());
+
+        // is Bob's listing still there
+        assertEquals(1, listRepo.findAll().stream()
+                .filter(listing -> listing.getUserID() == bob.getId())
+                .toList()
+                .size());
+
+        assertEquals(1, listRepo.findAll().size());
     }
 }
