@@ -50,7 +50,7 @@ public class UserControllerTest {
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andDo(print())
                 .andReturn();
     }
@@ -62,7 +62,7 @@ public class UserControllerTest {
                 .content(body)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists())
@@ -244,11 +244,11 @@ public class UserControllerTest {
         content.put("liked_listings", listOfLikes.toString());
 
         // Try to edit the likes
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_likes/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_likes/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(content))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andDo(print());
 
         // Verify that likes were edited
@@ -288,7 +288,7 @@ public class UserControllerTest {
         content.put("liked_listings", listOfLikes.toString());
 
         // Try to edit likes with false credentials
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_likes/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_likes/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(content))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -299,7 +299,7 @@ public class UserControllerTest {
     @Test
     public void testEditLikesNotFound() throws Exception {
         // Try to edit likes of non-existent user
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_likes/{id}", 23)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_likes/{id}", 23)
                         .content(new ObjectMapper().writeValueAsString(new HashMap<>()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -322,7 +322,7 @@ public class UserControllerTest {
         editAuthBody.put("new_password", "newTest123");
 
         // Try to edit credentials
-        MvcResult nextResult = mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_auth/{id}", id)
+        MvcResult nextResult = mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_auth/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editAuthBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -359,7 +359,7 @@ public class UserControllerTest {
         editAuthBody.put("new_password", "newTest123");
 
         // Try to edit credentials with false credentials
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_auth/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_auth/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editAuthBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -376,7 +376,7 @@ public class UserControllerTest {
         editAuthBody.put("new_password", "newTest123");
 
         // Try to edit credentials of non-existent user
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_auth/{id}", 23)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_auth/{id}", 23)
                         .content(new ObjectMapper().writeValueAsString(editAuthBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -398,11 +398,11 @@ public class UserControllerTest {
         editAliasBody.put("new_alias", "NewTom");
 
         // Try to edit alias
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_alias/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_alias/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editAliasBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andDo(print());
 
         // Verify that alias has been updated
@@ -432,7 +432,7 @@ public class UserControllerTest {
         editAliasBody.put("new_alias", "NewTom");
 
         // Try to edit alias using false credentials
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_alias/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_alias/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editAliasBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -447,7 +447,7 @@ public class UserControllerTest {
         editAliasBody.put("new_alias", "NewTom");
 
         // Try to edit alias of non-existent user
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_alias/{id}", 23)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_alias/{id}", 23)
                         .content(new ObjectMapper().writeValueAsString(editAliasBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -469,11 +469,11 @@ public class UserControllerTest {
         editPictureBody.put("new_picture", "newProfilePicBaseString");
 
         // Try to edit pic
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_pic/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_pic/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editPictureBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andDo(print());
 
         // Verify that pic has been updated
@@ -503,7 +503,7 @@ public class UserControllerTest {
         editPictureBody.put("new_picture", "newProfilePic.jpg");
 
         // Try to edit pic using false credentials
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_pic/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_pic/{id}", id)
                         .content(new ObjectMapper().writeValueAsString(editPictureBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -518,7 +518,7 @@ public class UserControllerTest {
         editPictureBody.put("new_picture", "newProfilePic.jpg");
 
         // Try to edit pic of non-existent user
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/edit_pic/{id}", 23)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/edit_pic/{id}", 23)
                         .content(new ObjectMapper().writeValueAsString(editPictureBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -544,7 +544,7 @@ public class UserControllerTest {
                         .content(new ObjectMapper().writeValueAsString(deleteUserBody))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andDo(print());
 
         // Verify that the user has been deleted

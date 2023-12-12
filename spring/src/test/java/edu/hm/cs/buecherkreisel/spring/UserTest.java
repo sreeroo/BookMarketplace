@@ -87,5 +87,16 @@ public class UserTest {
         assertNotEquals(user, user1);
         assertNotEquals(user.hashCode(), user1.hashCode());
     }
+
+    @Test
+    public void testIncrementGetAndSetTotalListings() {
+        assertEquals(0, user.getTotalListings());
+        user.incrementTotalListings();
+        assertEquals(1, user.getTotalListings());
+        user.setTotalListings(10);
+        assertEquals(10, user.getTotalListings());
+        user.incrementTotalListings();
+        assertEquals(11, user.getTotalListings());
+    }
 }
 

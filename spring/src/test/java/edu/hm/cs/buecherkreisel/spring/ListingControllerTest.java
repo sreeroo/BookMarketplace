@@ -1,5 +1,6 @@
 package edu.hm.cs.buecherkreisel.spring;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,6 +46,7 @@ class ListingControllerTest {
         User user = userRepository.save(
                 new User("Nutzername", "Password", "Profilbild"));
 
+        int totalListings = user.getTotalListings();
         // Wrong user id, throw 401 Status Code
         mockMvc.perform(MockMvcRequestBuilders
                         .multipart("/listings")
@@ -59,6 +61,7 @@ class ListingControllerTest {
                         .param("location", "München")
                         .param("token", user.getToken())
                 ).andExpect(status().is(401));
+        assertEquals(totalListings, userRepository.findById(user.getId()).get().getTotalListings());
 
         // All correct
         mockMvc.perform(MockMvcRequestBuilders
@@ -75,6 +78,8 @@ class ListingControllerTest {
                         .param("token", user.getToken())
                 ).andExpect(status().isOk());
 
+        assertEquals(totalListings+1, userRepository.findById(user.getId()).get().getTotalListings());
+
         // Checks if listing was created correctly
         mockMvc.perform(MockMvcRequestBuilders.get("/listings")
                         .accept(MediaType.APPLICATION_JSON))
@@ -86,6 +91,7 @@ class ListingControllerTest {
                 .andExpect(jsonPath("$[0].title").value("Titel"))
                 .andExpect(jsonPath("$[0].price").exists())
                 .andExpect(jsonPath("$[0].price").value("29.99"));
+        assertEquals(totalListings+1, userRepository.findById(user.getId()).get().getTotalListings());
     }
 
     /**
