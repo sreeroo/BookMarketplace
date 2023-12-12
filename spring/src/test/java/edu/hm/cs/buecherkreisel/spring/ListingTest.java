@@ -5,10 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -94,15 +92,7 @@ class ListingTest {
         listing.setReserved(false);
         listing.setUserID(2L);
         listing.setLocation("München");
-        listing.setImages(createMultipartFileList().stream().map(
-            image -> {
-                    try {
-                        return image.getBytes();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-        ).collect(Collectors.toList()));
+        listing.setImages(createMultipartFileList());
 
         assertEquals(1L, listing.getId());
         assertEquals("TestBuch", listing.getTitle());

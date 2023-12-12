@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -176,6 +177,58 @@ class ListingController {
                         description, isReserved, correctUserID, location, images));
 
                 return ResponseEntity.ok().build();
+            }
+            else {
+                return ResponseEntity.status(401).build();
+            }
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping("listings/{id}")
+    ResponseEntity<?> patchListing(
+            @PathVariable Long id,
+            @RequestParam("token") String token,
+            @RequestParam("user_id") Long userID,
+            @RequestParam("title") Optional<String> title,
+            @RequestParam("price") Optional<Double> price,
+            @RequestParam("category") Optional<Category> category,
+            @RequestParam("offersDelivery") Optional<Boolean> offersDelivery,
+            @RequestParam("description") Optional<String> description,
+            @RequestParam("isReserved") Optional<Boolean> isReserved,
+            @RequestParam("location") Optional<String> location,
+            @RequestParam("images") Optional<List<MultipartFile>> images
+    ) {
+
+        Optional<Listing> optionalListing = repository.findById(id);
+
+        // True, if listing exists, else 404 HTTP Status Code
+        if (optionalListing.isPresent()) {
+            Listing listing = optionalListing.get();
+
+            Long correctUserID = listing.getUserID();
+
+             // Get User Token
+            Optional<User>  optionalUser = userRepository.findById(userID);
+
+            // True, if user is owner of listing, else 401 HTTP Status Code
+            if (correctUserID.equals(userID)
+                    && (optionalUser.isPresent() && optionalUser.get().getToken().equals(token))) {
+
+                title.ifPresent(listing::setTitle);
+                price.ifPresent(listing::setPrice);
+                category.ifPresent(listing::setCategory);
+                offersDelivery.ifPresent(listing::setOffersDelivery);
+                description.ifPresent(listing::setDescription);
+                isReserved.ifPresent(listing::setReserved);
+                location.ifPresent(listing::setLocation);
+                images.ifPresent(listing::setImages);
+
+                repository.save(listing);
+
+
+                return ResponseEntity.status(204).build();
             }
             else {
                 return ResponseEntity.status(401).build();

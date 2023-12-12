@@ -177,9 +177,17 @@ class Listing {
         return images;
     }
 
-    public void setImages(List<byte[]> images) {
-        this.images = images;
-    }
+    public void setImages(List<MultipartFile> multipartFileList) {
+          this.images = multipartFileList.stream().map(
+                image -> {
+                    try {
+                        return image.getBytes();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        ).collect(Collectors.toList());
+     }
 
     public String getLocation() {
         return location;
