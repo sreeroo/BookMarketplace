@@ -177,7 +177,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
               createdBy: int.parse(widget.appState.user.id),
             );
 
-            if (widget.listing == null && _imageFile != null) {
+            if (widget.listing == null) {
               // Add new listing
               await widget.appState.listingState.api
                   .createListing(listing, _imageFile!)

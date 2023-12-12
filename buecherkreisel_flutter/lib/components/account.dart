@@ -80,7 +80,8 @@ class ProfileScreen extends StatelessWidget {
                                             ChangeNotifierProvider.value(
                                           value: state,
                                           child: AddUpdateListing(
-                                              listing: listing),
+                                            listing: listing,
+                                          ),
                                         ),
                                       ),
                                     );
