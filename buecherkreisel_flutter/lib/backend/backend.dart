@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -12,13 +13,23 @@ class APIClient {
   final _client = http.Client();
 
   // GET
-  Future<dynamic> fetchData(String endpoint) async {
-    final response =
-        await _client.get(Uri.parse('$baseUrl$endpoint'), headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Connection': 'keep-alive',
-    });
+  Future<dynamic> fetchData(String endpoint,
+      [Map<String, dynamic>? queryParams]) async {
+    Uri uri = Uri.parse('$baseUrl$endpoint');
+
+    if (queryParams != null) {
+      uri =
+          Uri.parse('$baseUrl$endpoint').replace(queryParameters: queryParams);
+    }
+
+    final response = await _client.get(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Connection': 'keep-alive',
+      },
+    );
 
     // check response from backend
     if (response.statusCode == 200) {
@@ -36,7 +47,7 @@ class APIClient {
       headers: <String, String>{'Content-Type': 'application/json'},
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode <= 300) {
       return json.decode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to create data');
@@ -44,7 +55,7 @@ class APIClient {
   }
 
   // POST using multipart/form-data
-  Future<dynamic> postDataMultipart(
+  Future<http.StreamedResponse> postDataMultipart(
       String endpoint, dynamic data, File imageFile) async {
     final response =
         await http.MultipartRequest('POST', Uri.parse('$baseUrl$endpoint'));
@@ -61,18 +72,12 @@ class APIClient {
       ),
     );
 
-    try {
-      final streamedResponse = await response.send();
+    final streamedResponse = await response.send();
 
-      if (streamedResponse.statusCode == 200) {
-        final response = await streamedResponse.stream.bytesToString();
-        return response;
-      } else {
-        return null; // todo handle error according to your needs
-      }
-    } catch (e) {
-      print('Error: $e');
-      return null; // todo  handle error
+    if (streamedResponse.statusCode == 200) {
+      return streamedResponse;
+    } else {
+      throw Exception('Failed to create data');
     }
   }
 
@@ -91,15 +96,48 @@ class APIClient {
     }
   }
 
-  // DELETE
-  Future<void> deleteData(String endpoint) async {
-    final response = await _client.delete(
-      Uri.parse('$baseUrl$endpoint'),
-      headers: <String, String>{'Content-Type': 'application/json'},
-    );
+  // Update using multipart/form-data
+  Future<http.StreamedResponse> updateDataMultipart(
+      String endpoint, dynamic data,
+      [File? imageFile]) async {
+    final response =
+        await http.MultipartRequest('PUT', Uri.parse('$baseUrl$endpoint'));
 
-    if (response.statusCode != 204) {
+    response.headers.addAll(<String, String>{
+      'Content-Type': 'multipart/form-data',
+      'Connection': 'keep-alive',
+    });
+
+    response.fields.addAll(data);
+
+    if (imageFile != null) {
+      response.files.add(
+        await http.MultipartFile.fromPath(
+          'images',
+          imageFile.path,
+        ),
+      );
+    }
+
+    final streamedResponse = await response.send();
+
+    if (streamedResponse.statusCode <= 300) {
+      return streamedResponse;
+    } else {
+      throw Exception('Failed to update data');
+    }
+  }
+
+  // DELETE
+  Future<http.Response> deleteData(String endpoint) async {
+    Uri uri = Uri.parse('$baseUrl$endpoint');
+
+    final response = await _client.delete(uri);
+
+    if (response.statusCode >= 300) {
       throw Exception('Failed to delete data');
     }
+
+    return response;
   }
 }

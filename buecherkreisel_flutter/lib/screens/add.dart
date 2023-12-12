@@ -1,57 +1,94 @@
 import 'dart:io';
-import 'package:buecherkreisel_flutter/backend/ListingAPI.dart';
+import 'package:buecherkreisel_flutter/backend/utils.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:buecherkreisel_flutter/backend/datatypes.dart';
+import 'package:provider/provider.dart';
 
-// widget class to create stateful new item page
-class AddUpdateListing extends StatefulWidget {
-  Listing? listing;
-  final ListingAPI listingAPI = ListingAPI();
-
-  AddUpdateListing({super.key, this.listing});
+class AddUpdateListing extends StatelessWidget {
+  final Listing? listing;
+  const AddUpdateListing({Key? key, this.listing}) : super(key: key);
 
   @override
-  AddUpdateListingState createState() {
-    return AddUpdateListingState();
+  Widget build(BuildContext context) {
+    return Consumer<AppState>(
+      builder: (context, appState, w) {
+        return _AddUpdateListingForm(appState: appState, listing: listing);
+      },
+    );
   }
 }
 
-class AddUpdateListingState extends State<AddUpdateListing> {
+class _AddUpdateListingForm extends StatefulWidget {
+  final AppState appState;
+  final Listing? listing;
+
+  const _AddUpdateListingForm({Key? key, required this.appState, this.listing})
+      : super(key: key);
+
+  @override
+  _AddUpdateListingFormState createState() => _AddUpdateListingFormState();
+}
+
+class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   final _formKey = GlobalKey<FormState>();
+  late TextEditingController titleController;
+  late TextEditingController descriptionController;
+  late TextEditingController priceController;
+  late TextEditingController locationController;
   File? _imageFile;
 
   @override
   void initState() {
     super.initState();
+    titleController = TextEditingController(text: widget.listing?.title ?? "");
+    descriptionController =
+        TextEditingController(text: widget.listing?.description ?? "");
+    priceController =
+        TextEditingController(text: widget.listing?.price.toString() ?? "");
+    locationController =
+        TextEditingController(text: widget.listing?.location ?? "");
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    priceController.dispose();
+    locationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController titleController =
-        TextEditingController(text: widget.listing?.title ?? "");
-    TextEditingController descriptionController =
-        TextEditingController(text: widget.listing?.description ?? "");
-    TextEditingController priceController =
-        TextEditingController(text: "${widget.listing?.price}" ?? "");
-    TextEditingController locationController =
-        TextEditingController(text: widget.listing?.location ?? "");
-
-    //titel, beschreibung,preis, beschreibung, bool abholung, location
+    bool isImagePickerOpen = false;
+    String imageBase64 = widget.listing?.imageBase64 ?? "";
 
     final imageField = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _imageFile != null
-            ? Image.file(
-                _imageFile!,
-                height: 200,
-                width: 200,
-                fit: BoxFit.cover,
-              )
-            : ElevatedButton(
-                onPressed: () async {
+        if (imageBase64.isNotEmpty && _imageFile == null)
+          Image.memory(
+            imageFromBase64String(imageBase64)!.bytes,
+            height: 200,
+            width: 200,
+            fit: BoxFit.cover,
+          ),
+        if (_imageFile != null)
+          Image.file(
+            _imageFile!,
+            height: 200,
+            width: 200,
+            fit: BoxFit.cover,
+          ),
+        ElevatedButton(
+          onPressed: isImagePickerOpen
+              ? null
+              : () async {
+                  setState(() {
+                    isImagePickerOpen = true;
+                  });
                   final picker = ImagePicker();
                   final pickedFile =
                       await picker.pickImage(source: ImageSource.gallery);
@@ -62,8 +99,8 @@ class AddUpdateListingState extends State<AddUpdateListing> {
                     });
                   }
                 },
-                child: Text('Select Image'),
-              ),
+          child: Text('Select Image'),
+        ),
       ],
     );
 
@@ -106,8 +143,8 @@ class AddUpdateListingState extends State<AddUpdateListing> {
         hintText: "Price",
       ),
       validator: (value) {
-        if (!new RegExp(r'^[0-9]+$').hasMatch(value ?? "")) {
-          return 'Please enter valid price';
+        if (!RegExp(r'^-?[0-9]+(\.[0-9]+)?$').hasMatch(value!)) {
+          return 'Please enter a valid price';
         }
       },
     );
@@ -125,10 +162,10 @@ class AddUpdateListingState extends State<AddUpdateListing> {
     );
 
     final saveButton = ElevatedButton(
-      onPressed: () {
-        if (_formKey.currentState!.validate() && _imageFile != null) {
-          print("ADD!!!");
-          Listing listing = Listing(
+      onPressed: () async {
+        if (_formKey.currentState!.validate()) {
+          try {
+            Listing listing = Listing(
               id: widget.listing?.id ?? 0,
               title: titleController.text,
               description: descriptionController.text,
@@ -137,40 +174,75 @@ class AddUpdateListingState extends State<AddUpdateListing> {
               category: "INFORMATIK", // TODO: HARDCODED
               offersDelivery: false, // TODO: HARDCODED
               isReserved: false, // TODO: HARDCODED
-              createdBy: 1);
-          widget.listingAPI
-              .createListing(listing, _imageFile!)
-              .then((value) => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Advertisement posted successfully"),
-                    ),
-                  ));
+              createdBy: int.parse(widget.appState.user.id),
+            );
 
-          // Reset the form after posting the advertisement
-          titleController.clear();
-          descriptionController.clear();
-          priceController.clear();
-          locationController.clear();
-          setState(() {
-            _imageFile = null;
-          });
+            if (widget.listing == null) {
+              // Add new listing
+              await widget.appState.listingState.api
+                  .createListing(listing, _imageFile!)
+                  .then((value) => ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Listing posted"),
+                          duration: Durations.medium3,
+                        ),
+                      ));
+            } else {
+              // Update existing listing
+              await widget.appState.listingState.api
+                  .updateListing(listing, _imageFile);
+              await widget.appState.listingState
+                  .getOwnListings(widget.appState.user.id);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Listing updated"),
+                  duration: Durations.long2,
+                ),
+              );
+            }
+
+            (widget.listing == null)
+                ? {
+// Reset the form after posting the advertisement
+                    titleController.clear(),
+                    descriptionController.clear(),
+                    priceController.clear(),
+                    locationController.clear(),
+                    setState(() {
+                      _imageFile = null;
+                    })
+                  }
+                : Navigator.pop(context);
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Listing could not be processed"),
+                duration: Durations.long2,
+              ),
+            );
+          }
         }
       },
       child: Text(widget.listing == null ? 'Add' : 'Save Changes'),
     );
 
-    return Form(
-      key: _formKey,
-      child: ListView(
-        padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-        children: <Widget>[
-          imageField,
-          nameField,
-          descriptionField,
-          priceField,
-          locationField,
-          saveButton
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.listing == null ? 'Add Listing' : 'Update Listing'),
+      ),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+          children: <Widget>[
+            imageField,
+            nameField,
+            descriptionField,
+            priceField,
+            locationField,
+            saveButton
+          ],
+        ),
       ),
     );
   }

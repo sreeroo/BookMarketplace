@@ -1,3 +1,4 @@
+import 'package:buecherkreisel_flutter/backend/utils.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,7 @@ class ListingFullScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          const Image(image: AssetImage("lib/assets/6NyIq.jpg")),
+          Image.memory(imageFromBase64String(listing.imageBase64!)!.bytes),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

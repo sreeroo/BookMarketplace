@@ -3,15 +3,18 @@ import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/screens/add.dart';
 import 'package:buecherkreisel_flutter/screens/chats.dart';
 import 'package:buecherkreisel_flutter/screens/explore.dart';
+import 'package:buecherkreisel_flutter/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final AppState appState = AppState();
 
   // This widget is the root of your application.
   @override
@@ -24,12 +27,10 @@ class MyApp extends StatelessWidget {
       ),
       home: MultiProvider(
         providers: [
-          ChangeNotifierProvider<ChatState>(
-            create: (_) => ChatState(),
-          ),
-          ChangeNotifierProvider<ListingState>(
-            create: (_) => ListingState(),
-          ),
+          ChangeNotifierProvider<ChatState>.value(value: appState.chatState),
+          ChangeNotifierProvider<ListingState>.value(
+              value: appState.listingState),
+          ChangeNotifierProvider<AppState>.value(value: appState),
         ],
         child: const SizedBox(height: 56, child: KreiselNavigator()),
       ),
@@ -49,17 +50,14 @@ class _KreiselNavigatorState extends State<KreiselNavigator> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
-    Chats(),
+    //Chats(),
     Explore(),
     AddUpdateListing(),
     Text(
       'Favorites',
       style: optionStyle,
     ),
-    Text(
-      'Account',
-      style: optionStyle,
-    ),
+    Settings()
   ];
 
   void _onItemTapped(int index) {
@@ -70,53 +68,68 @@ class _KreiselNavigatorState extends State<KreiselNavigator> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('HMKreisel'),
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.message_rounded,
-            ),
-            label: 'Messages',
+    return Consumer<AppState>(
+      builder: (c, state, w) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('HMKreisel'),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.map,
-            ),
-            label: 'Explore',
+          body: Center(
+            child: _widgetOptions.elementAt(_selectedIndex),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.add,
-            ),
-            label: 'Add',
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              //BottomNavigationBarItem(
+              //  icon: Icon(
+              //    Icons.message_rounded,
+              //  ),
+              //  label: 'Messages',
+              //),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.map,
+                ),
+                label: 'Explore',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.add,
+                ),
+                label: 'Add',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.favorite,
+                ),
+                label: 'Favorites',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.person,
+                ),
+                label: 'Account',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Colors.amber[800],
+            unselectedItemColor: Colors.grey,
+            onTap: (index) {
+              try {
+                if (index == 0) {
+                  state.listingState.getAllListingsRemote();
+                } else if (index == 3) {
+                  state.listingState.getOwnListings(state.user.id);
+                }
+                _onItemTapped(index);
+              } catch (e) {
+                print(e);
+              }
+            },
+            showUnselectedLabels: false,
+            showSelectedLabels: false,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.favorite,
-            ),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person,
-            ),
-            label: 'Account',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
-        showUnselectedLabels: false,
-        showSelectedLabels: false,
-      ),
+        );
+      },
     );
   }
 }
