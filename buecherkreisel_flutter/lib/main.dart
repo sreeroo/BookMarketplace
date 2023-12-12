@@ -50,7 +50,7 @@ class _KreiselNavigatorState extends State<KreiselNavigator> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
-    Chats(),
+    //Chats(),
     Explore(),
     AddUpdateListing(),
     Text(
@@ -79,12 +79,12 @@ class _KreiselNavigatorState extends State<KreiselNavigator> {
           ),
           bottomNavigationBar: BottomNavigationBar(
             items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.message_rounded,
-                ),
-                label: 'Messages',
-              ),
+              //BottomNavigationBarItem(
+              //  icon: Icon(
+              //    Icons.message_rounded,
+              //  ),
+              //  label: 'Messages',
+              //),
               BottomNavigationBarItem(
                 icon: Icon(
                   Icons.map,
@@ -114,12 +114,16 @@ class _KreiselNavigatorState extends State<KreiselNavigator> {
             selectedItemColor: Colors.amber[800],
             unselectedItemColor: Colors.grey,
             onTap: (index) {
-              if (index == 1) {
-                state.listingState.getAllListingsRemote();
-              } else if (index == 4) {
-                state.listingState.getOwnListings(state.user.id);
+              try {
+                if (index == 0) {
+                  state.listingState.getAllListingsRemote();
+                } else if (index == 3) {
+                  state.listingState.getOwnListings(state.user.id);
+                }
+                _onItemTapped(index);
+              } catch (e) {
+                print(e);
               }
-              _onItemTapped(index);
             },
             showUnselectedLabels: false,
             showSelectedLabels: false,

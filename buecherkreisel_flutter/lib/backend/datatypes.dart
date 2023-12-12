@@ -38,10 +38,10 @@ class ListingState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<dynamic>? deleteListing(Listing listing, String userId) {
+  Future<dynamic>? deleteListing(Listing listing, String userId) async {
     try {
-      var response = api.deleteListing(listing, userId);
       ownListings.removeWhere((l) => l.id == listing.id);
+      var response = await api.deleteListing(listing, userId);
       notifyListeners();
       return response;
     } catch (e) {
