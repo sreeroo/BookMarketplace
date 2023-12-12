@@ -103,10 +103,6 @@ class ListingController {
         repository.save(new Listing(title, price, category, offersDelivery,
                 description, isReserved, userID, location, images));
 
-        User user = optionalUser.get();
-        user.incrementTotalListings();
-        userRepository.save(user);
-
         return ResponseEntity.ok().build();
     }
 

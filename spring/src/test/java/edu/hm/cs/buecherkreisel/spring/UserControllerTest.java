@@ -14,12 +14,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.security.auth.login.AccountNotFoundException;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -34,6 +32,9 @@ public class UserControllerTest {
 
     @Autowired
     UserRepository repo;
+
+    @Autowired
+    ListingRepository listRepo;
 
     @BeforeEach
     void setup() {
@@ -158,6 +159,8 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profile_picture").value(""))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.liked_listings").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.liked_listings").value("[]"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_listings").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_listings").value("0"))
                 .andDo(print());
     }
 
@@ -210,6 +213,8 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profile_picture").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profile_picture").value(""))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.liked_listings").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_listings").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_listings").value("0"))
                 .andDo(print());
     }
 
@@ -590,5 +595,105 @@ public class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andDo(print());
+    }
+
+    @Test
+    public void testClearListRepo() throws Exception {
+        // create Tom
+        MvcResult result = createTom();
+
+        String jsonResponse = result.getResponse().getContentAsString();
+        JsonNode jsonNode = new ObjectMapper().readTree(jsonResponse);
+        Optional<User> optUser = repo.findById(jsonNode.get("id").asLong());
+        if(optUser.isEmpty())
+            throw new AccountNotFoundException();
+        User tom = optUser.get();
+
+        // create Listing for Tom
+        mockMvc.perform(MockMvcRequestBuilders
+                .multipart("/listings")
+                .file("images", Base64.getDecoder().decode("Bild"))
+                .param("title", "Titel")
+                .param("price", "29.99")
+                .param("category", "INFORMATIK")
+                .param("offersDelivery", "true")
+                .param("description", "Beschreibung")
+                .param("isReserved", "false")
+                .param("user_id", String.valueOf(tom.getId()))
+                .param("location", "München")
+                .param("token", tom.getToken())
+        ).andExpect(status().isOk());
+
+        // create another listing for tom
+        mockMvc.perform(MockMvcRequestBuilders
+                .multipart("/listings")
+                .file("images", Base64.getDecoder().decode("Bild"))
+                .param("title", "Titel")
+                .param("price", "23")
+                .param("category", "INFORMATIK")
+                .param("offersDelivery", "false")
+                .param("description", "Bestes Buch aller Zeiten")
+                .param("isReserved", "false")
+                .param("user_id", String.valueOf(tom.getId()))
+                .param("location", "Fugging")
+                .param("token", tom.getToken())
+        ).andExpect(status().isOk());
+
+        // create bob
+        result = mockMvc.perform(MockMvcRequestBuilders.post("/users/create")
+                        .content("{\"username\":\"Bob\", \"password\":\"test123\"}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andDo(print())
+                .andReturn();
+
+        jsonResponse = result.getResponse().getContentAsString();
+        jsonNode = new ObjectMapper().readTree(jsonResponse);
+        optUser = repo.findById(jsonNode.get("id").asLong());
+        if(optUser.isEmpty())
+            throw new AccountNotFoundException();
+        User bob = optUser.get();
+
+        // create listing for bob
+        mockMvc.perform(MockMvcRequestBuilders
+                .multipart("/listings")
+                .file("images", Base64.getDecoder().decode("Bild"))
+                .param("title", "Titel")
+                .param("price", "23")
+                .param("category", "INFORMATIK")
+                .param("offersDelivery", "false")
+                .param("description", "Bestes Buch aller Zeiten")
+                .param("isReserved", "false")
+                .param("user_id", String.valueOf(bob.getId()))
+                .param("location", "Fugging")
+                .param("token", bob.getToken())
+        ).andExpect(status().isOk());
+
+        // now delete user tom and expect his listings to be deleted as well
+        Map<String, String> deleteUserBody = new HashMap<>();
+        deleteUserBody.put("token", tom.getToken());
+        deleteUserBody.put("password", tom.getPassword());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/users/delete/{id}", tom.getId())
+                        .content(new ObjectMapper().writeValueAsString(deleteUserBody))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andDo(print());
+
+        // are Tom's listings deleted?
+        assertTrue(listRepo.findAll().stream()
+                        .filter(listing -> listing.getUserID()==tom.getId())
+                        .toList()
+                        .isEmpty());
+
+        // is Bob's listing still there
+        assertEquals(1, listRepo.findAll().stream()
+                .filter(listing -> listing.getUserID() == bob.getId())
+                .toList()
+                .size());
+
+        assertEquals(1, listRepo.findAll().size());
     }
 }
