@@ -301,4 +301,36 @@ class ListingControllerTest {
                 .andExpect(jsonPath("$[0].price").exists())
                 .andExpect(jsonPath("$[0].price").value("29.99"));
     }
+
+    @Test
+    public void testPatchListing() throws Exception{
+        User user = userRepository.save(
+                new User("Nutzername", "Password", "Profilbild"));
+
+        MvcResult mvcResult = createListing(user);
+        if (mvcResult.getResponse().getStatus() != 200) {
+            throw new RuntimeException("Unable to create Listing!");
+        }
+
+        // Check for wrong id
+        mockMvc.perform(MockMvcRequestBuilders.patch("/listings/2")
+                .param("user_id", String.valueOf(user.getId()))
+                .param("token", user.getToken())
+                .param("title", "PatchTitel"))
+                .andExpect(status().isNotFound());
+
+        //Check for wrong user id
+        mockMvc.perform(MockMvcRequestBuilders.patch("/listings/1")
+                .param("user_id", String.valueOf(user.getId() + 1))
+                .param("token", user.getToken())
+                .param("title", "PatchTitel"))
+                .andExpect(status().is(401));
+
+        // With correct parameters
+        mockMvc.perform(MockMvcRequestBuilders.patch("/listings/1")
+                .param("user_id", String.valueOf(user.getId()))
+                .param("token", user.getToken())
+                .param("title", "PatchTitel"))
+                .andExpect(status().isNoContent());
+    }
 }
