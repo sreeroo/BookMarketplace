@@ -622,7 +622,8 @@ public class UserControllerTest {
                 .param("user_id", String.valueOf(tom.getId()))
                 .param("location", "München")
                 .param("token", tom.getToken())
-        ).andExpect(status().isOk());
+                .param("contact", "tom@samsa.pl")
+        ).andExpect(status().isCreated());
 
         // create another listing for tom
         mockMvc.perform(MockMvcRequestBuilders
@@ -636,8 +637,9 @@ public class UserControllerTest {
                 .param("isReserved", "false")
                 .param("user_id", String.valueOf(tom.getId()))
                 .param("location", "Fugging")
+                .param("contact", "tom@samsa.pl")
                 .param("token", tom.getToken())
-        ).andExpect(status().isOk());
+        ).andExpect(status().isCreated());
 
         // create bob
         result = mockMvc.perform(MockMvcRequestBuilders.post("/users/create")
@@ -668,7 +670,8 @@ public class UserControllerTest {
                 .param("user_id", String.valueOf(bob.getId()))
                 .param("location", "Fugging")
                 .param("token", bob.getToken())
-        ).andExpect(status().isOk());
+                .param("contact", "bob@samsa.pl")
+        ).andExpect(status().isCreated());
 
         // now delete user tom and expect his listings to be deleted as well
         Map<String, String> deleteUserBody = new HashMap<>();
