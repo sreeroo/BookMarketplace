@@ -1,6 +1,5 @@
 package edu.hm.cs.buecherkreisel.spring;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,6 +57,7 @@ class ListingControllerTest {
                         .param("isReserved", "false")
                         .param("user_id", "2")
                         .param("location", "München")
+                        .param("contact", "gregor@samsa.pl")
                         .param("token", user.getToken())
                 ).andExpect(status().is(401));
 
@@ -73,8 +73,9 @@ class ListingControllerTest {
                         .param("isReserved", "false")
                         .param("user_id", String.valueOf(user.getId()))
                         .param("location", "München")
+                        .param("contact", "gregor@samsa.pl")
                         .param("token", user.getToken())
-                ).andExpect(status().isOk());
+                ).andExpect(status().isCreated());
 
         // Checks if listing was created correctly
         mockMvc.perform(MockMvcRequestBuilders.get("/listings")
@@ -106,6 +107,7 @@ class ListingControllerTest {
                         .param("isReserved", "false")
                         .param("user_id", String.valueOf(user.getId()))
                         .param("location", "München")
+                        .param("contact", "gregor@samsa.pl")
                         .param("token", user.getToken())
                 ).andReturn();
     }
@@ -120,7 +122,7 @@ class ListingControllerTest {
                 new User("Nutzername", "Password", "Profilbild"));
 
         MvcResult mvcResult = createListing(user);
-        if (mvcResult.getResponse().getStatus() != 200) {
+        if (mvcResult.getResponse().getStatus() != 201) {
             throw new RuntimeException("Unable to create Listing!");
         }
 
@@ -146,6 +148,8 @@ class ListingControllerTest {
                 .andExpect(jsonPath("$[0].userID").value(user.getId()))
                 .andExpect(jsonPath("$[0].location").exists())
                 .andExpect(jsonPath("$[0].location").value("München"))
+                .andExpect(jsonPath("$[0].contact").exists())
+                .andExpect(jsonPath("$[0].contact").value("gregor@samsa.pl"))
                 .andExpect(jsonPath("$[0].images").exists())
                 .andExpect(jsonPath("$[0].images[0]").value("Bild"));
     }
@@ -160,7 +164,7 @@ class ListingControllerTest {
                 new User("Nutzername", "Password", "Profilbild"));
 
         MvcResult mvcResult = createListing(user);
-        if (mvcResult.getResponse().getStatus() != 200) {
+        if (mvcResult.getResponse().getStatus() != 201) {
             throw new RuntimeException("Unable to create Listing!");
         }
 
@@ -181,7 +185,7 @@ class ListingControllerTest {
                 new User("Nutzername", "Password", "Profilbild"));
 
         MvcResult mvcResult = createListing(user);
-        if (mvcResult.getResponse().getStatus() != 200) {
+        if (mvcResult.getResponse().getStatus() != 201) {
             throw new RuntimeException("Unable to create Listing!");
         }
 
@@ -201,7 +205,7 @@ class ListingControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/listings/1")
                 .param("user_id", String.valueOf(user.getId()))
                 .param("token", user.getToken()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         //Checks if listing was deleted correctly
         mockMvc.perform(MockMvcRequestBuilders.get("/listings")
@@ -238,25 +242,9 @@ class ListingControllerTest {
                 new User("Nutzername", "Password", "Profilbild"));
 
         MvcResult mvcResult = createListing(user);
-        if (mvcResult.getResponse().getStatus() != 200) {
+        if (mvcResult.getResponse().getStatus() != 201) {
             throw new RuntimeException("Unable to create Listing!");
         }
-
-        // Check for wrong id
-        mockMvc.perform(createBuilder(2L)
-                .file("images", Base64.getDecoder().decode("Bild"))
-                        .param("title", "UpdatedTitle")
-                        .param("price", "29.99")
-                        .param("category", "INFORMATIK")
-                        .param("offersDelivery", "true")
-                        .param("description", "Beschreibung")
-                        .param("isReserved", "false")
-                        .param("user_id", String.valueOf(user.getId()))
-                        .param("location", "München")
-                        .param("token", user.getToken())
-                )
-                .andExpect(status().isNotFound());
-
 
         // Check for wrong user id
         mockMvc.perform(createBuilder(1L)
@@ -269,9 +257,26 @@ class ListingControllerTest {
                         .param("isReserved", "false")
                         .param("user_id", String.valueOf(user.getId()+1))
                         .param("location", "München")
+                        .param("contact", "gregor@samsa.pl")
                         .param("token", user.getToken())
                 )
                 .andExpect(status().is(401));
+
+        // Check for wrong id - Listing should be created anyway
+        mockMvc.perform(createBuilder(2L)
+                .file("images", Base64.getDecoder().decode("Bild"))
+                        .param("title", "UpdatedTitle")
+                        .param("price", "29.99")
+                        .param("category", "INFORMATIK")
+                        .param("offersDelivery", "true")
+                        .param("description", "Beschreibung")
+                        .param("isReserved", "false")
+                        .param("user_id", String.valueOf(user.getId()))
+                        .param("location", "München")
+                        .param("contact", "gregor@samsa.pl")
+                        .param("token", user.getToken())
+                )
+                .andExpect(status().isCreated());
 
         // With correct parameters
         mockMvc.perform(createBuilder(1L)
@@ -284,9 +289,10 @@ class ListingControllerTest {
                         .param("isReserved", "false")
                         .param("user_id", String.valueOf(user.getId()))
                         .param("location", "München")
+                        .param("contact", "gregor@samsa.pl")
                         .param("token", user.getToken())
                 )
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
 
         // Check if values were updated correctly
@@ -303,12 +309,12 @@ class ListingControllerTest {
     }
 
     @Test
-    public void testPatchListing() throws Exception{
+    public void testPatchListing() throws Exception {
         User user = userRepository.save(
                 new User("Nutzername", "Password", "Profilbild"));
 
         MvcResult mvcResult = createListing(user);
-        if (mvcResult.getResponse().getStatus() != 200) {
+        if (mvcResult.getResponse().getStatus() != 201) {
             throw new RuntimeException("Unable to create Listing!");
         }
 
@@ -332,5 +338,14 @@ class ListingControllerTest {
                 .param("token", user.getToken())
                 .param("title", "PatchTitel"))
                 .andExpect(status().isNoContent());
+    }
+
+    /**
+     * Tests if categories are returned correct
+     */
+    @Test
+    public void testGetCategories() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/categories"))
+                .andExpect(status().isOk());
     }
 }

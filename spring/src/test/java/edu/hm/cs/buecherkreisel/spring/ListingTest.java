@@ -35,6 +35,7 @@ class ListingTest {
                 false,
                 2L,
                 "München",
+                "gregor@samsa.pl",
                 createMultipartFileList()
         );
 
@@ -62,6 +63,7 @@ class ListingTest {
                 false,
                 2L,
                 "München",
+                "gregor@samsa.pl",
                 createMultipartFileList()
         );
 
@@ -92,6 +94,7 @@ class ListingTest {
         listing.setReserved(false);
         listing.setUserID(2L);
         listing.setLocation("München");
+        listing.setContact("gregor@samsa.pl");
         listing.setImages(createMultipartFileList());
 
         assertEquals(1L, listing.getId());
@@ -103,6 +106,7 @@ class ListingTest {
         assertFalse(listing.isReserved());
         assertEquals(2L, listing.getUserID());
         assertEquals("München", listing.getLocation());
+        assertEquals("gregor@samsa.pl", listing.getContact());
         assertEquals(createMultipartFileList().size(),
                 listing.getImages().size());
     }

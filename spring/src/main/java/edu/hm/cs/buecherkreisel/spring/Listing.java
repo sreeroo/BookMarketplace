@@ -28,6 +28,8 @@ class Listing {
 
     private String location;
 
+    private String contact;
+
     @ElementCollection
     @Column(length = 15000000)
     private List<byte[]> images;
@@ -48,10 +50,11 @@ class Listing {
      * @param isReserved True, if item is reserved for another user.
      * @param userID UserID of listing's seller.
      * @param location Location of listing's item.
+     * @param contact Contact Information.
      * @param multipartFileList Images as MultipartFile list.
      */
     public Listing(Long id, String title, Double price, Category category, boolean offersDelivery,
-            String description, boolean isReserved, Long userID, String location, List<MultipartFile> multipartFileList) {
+            String description, boolean isReserved, Long userID, String location, String contact,  List<MultipartFile> multipartFileList) {
         this.id = id;
         this.title = title;
         this.price = price;
@@ -61,6 +64,7 @@ class Listing {
         this.isReserved = isReserved;
         this.userID = userID;
         this.location = location;
+        this.contact = contact;
 
         this.images = multipartFileList.stream().map(
                 image -> {
@@ -84,10 +88,11 @@ class Listing {
      * @param isReserved True, if item is reserved for another user.
      * @param userID UserID of listing's seller.
      * @param location Location of listing's item.
+     * @param contact Contact information.
      * @param multipartFileList Images as MultipartFile list.
      */
      public Listing(String title, Double price, Category category, boolean offersDelivery,
-            String description, boolean isReserved, Long userID, String location, List<MultipartFile> multipartFileList) {
+            String description, boolean isReserved, Long userID, String location, String contact, List<MultipartFile> multipartFileList) {
         this.title = title;
         this.price = price;
         this.category = category;
@@ -96,6 +101,7 @@ class Listing {
         this.isReserved = isReserved;
         this.userID = userID;
         this.location = location;
+        this.contact = contact;
 
          this.images = multipartFileList.stream().map(
                 image -> {
@@ -195,5 +201,13 @@ class Listing {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 }

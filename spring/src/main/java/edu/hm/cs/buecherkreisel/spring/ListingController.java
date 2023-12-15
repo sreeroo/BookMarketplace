@@ -78,8 +78,35 @@ class ListingController {
     }
 
     /**
+     * Helper Method for creating new listing
+     * @param optionalUser Optional user from database by ID
+     * @param token Token of User
+     *
+     * @return HTTP Response 201 if listing was created, 401 if user wasn't found
+     */
+    private ResponseEntity<?> createListing(Optional<User> optionalUser, String token,
+            String title, Double price, Category category, boolean offersDelivery,
+            String description, boolean isReserved, Long userID, String location, String contact, List<MultipartFile> images) {
+        if (optionalUser.isEmpty() || !optionalUser.get().getToken().equals(token)) {
+            return ResponseEntity.status(401).build();
+        }
+
+        Listing listing = new Listing(title, price, category, offersDelivery,
+                description, isReserved, userID, location, contact, images);
+
+        repository.save(listing);
+
+        // Increment total listings counter of users
+        User user = optionalUser.get();
+        user.incrementTotalListings();
+        userRepository.save(user);
+
+        return ResponseEntity.status(201).body(listing);
+    }
+
+    /**
      * Creates a new listing
-     * @return 200 - listing created, 401 - user doesn't exist HTTP status code
+     * @return 201 - listing created, 401 - user doesn't exist HTTP status code
      */
     @PostMapping("/listings")
     ResponseEntity<?> newListing(
@@ -91,30 +118,20 @@ class ListingController {
             @RequestParam("isReserved") boolean isReserved,
             @RequestParam("user_id") Long userID,
             @RequestParam("location") String location,
+            @RequestParam("contact") String contact,
             @RequestParam("token") String token,
             @RequestParam("images") List<MultipartFile> images) {
 
 
         Optional<User> optionalUser = userRepository.findById(userID);
 
-        if (optionalUser.isEmpty() || !optionalUser.get().getToken().equals(token)) {
-            return ResponseEntity.status(401).build();
-        }
-
-        repository.save(new Listing(title, price, category, offersDelivery,
-                description, isReserved, userID, location, images));
-
-        // Increment total listings counter of users
-        User user = optionalUser.get();
-        user.incrementTotalListings();
-        userRepository.save(user);
-
-        return ResponseEntity.ok().build();
+       return createListing(optionalUser, token, title, price, category, offersDelivery,
+               description, isReserved, userID, location, contact, images);
     }
 
     /**
      * Deletes the listing by the given ID.
-     * @return 200 - listing deleted, 401 - user isn't the owner, 404 - listing not found
+     * @return 204 - listing deleted, 401 - user isn't the owner, 404 - listing not found
      */
     @DeleteMapping("listings/{id}")
     ResponseEntity<?> deleteListing(@PathVariable Long id,
@@ -135,7 +152,7 @@ class ListingController {
             if (correctUserID.equals(userID)
                     && (optionalUser.isPresent() && optionalUser.get().getToken().equals(token))) {
                 repository.deleteById(id);
-                return ResponseEntity.ok().build();
+                return ResponseEntity.status(204).build();
             }
             else {
                 return ResponseEntity.status(401).build();
@@ -148,7 +165,7 @@ class ListingController {
 
     /**
      * Updates listing by the given ID.
-     * @return 200 - listing updated, 401 - user isn't the owner, 404 - listing not found
+     * @return 204 - listing updated, 401 - user isn't the owner, 404 - listing not found
      */
     @PutMapping("listings/{id}")
     ResponseEntity<?> updateListing(
@@ -161,10 +178,14 @@ class ListingController {
             @RequestParam("isReserved") boolean isReserved,
             @RequestParam("user_id") Long userID,
             @RequestParam("location") String location,
+            @RequestParam("contact") String contact,
             @RequestParam("token") String token,
             @RequestParam("images") List<MultipartFile> images) {
 
         Optional<Listing> optionalListing = repository.findById(id);
+
+        // Get User Token
+        Optional<User>  optionalUser = userRepository.findById(userID);
 
         // True, if listing exists, else 404 HTTP Status Code
         if (optionalListing.isPresent()) {
@@ -172,25 +193,29 @@ class ListingController {
 
             Long correctUserID = listing.getUserID();
 
-             // Get User Token
-            Optional<User>  optionalUser = userRepository.findById(userID);
-
             // True, if user is owner of listing, else 401 HTTP Status Code
             if (correctUserID.equals(userID)
                     && (optionalUser.isPresent() && optionalUser.get().getToken().equals(token))) {
                 repository.save(new Listing(id, title, price, category, offersDelivery,
-                        description, isReserved, correctUserID, location, images));
+                        description, isReserved, correctUserID, location, contact, images));
 
-                return ResponseEntity.ok().build();
+                return ResponseEntity.status(204).build();
             }
             else {
                 return ResponseEntity.status(401).build();
             }
         }
 
-        return ResponseEntity.notFound().build();
+        // Listing not found, create new one
+        return createListing(optionalUser, token, title, price, category, offersDelivery,
+               description, isReserved, userID, location, contact, images);
+
     }
 
+    /**
+     * Updates the given attributes of listing
+     * @return 204 - listing updated, 401 - user isn't the owner, 404 - listing not found
+     */
     @PatchMapping("listings/{id}")
     ResponseEntity<?> patchListing(
             @PathVariable Long id,
@@ -241,6 +266,11 @@ class ListingController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<?> getCategories() {
+        return ResponseEntity.ok(Category.values());
     }
 
 }
