@@ -8,6 +8,7 @@ class Listing {
   bool isReserved;
   int createdBy;
   String location;
+  String contact;
   String? imageBase64;
 
   Listing({
@@ -20,6 +21,7 @@ class Listing {
     required this.isReserved,
     required this.createdBy,
     required this.location,
+    required this.contact,
     this.imageBase64,
   });
 
@@ -34,6 +36,7 @@ class Listing {
         isReserved: json["reserved"],
         createdBy: json["userID"],
         location: json["location"],
+        contact: json["contact"],
         imageBase64: json["images"][0],
       );
 
@@ -47,5 +50,6 @@ class Listing {
         "isReserved": "$isReserved",
         "user_id": "$createdBy",
         "location": location,
+        "contact": contact,
       };
 }

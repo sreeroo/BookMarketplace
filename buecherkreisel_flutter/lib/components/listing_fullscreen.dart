@@ -47,7 +47,7 @@ class ListingFullScreen extends StatelessWidget {
             overflow: TextOverflow.clip,
           ),
           const Divider(),
-          const Text("missing contact possibility"),
+          Text(listing.contact),
         ],
       ),
     );
