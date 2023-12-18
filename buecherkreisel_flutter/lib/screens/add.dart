@@ -37,6 +37,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   late TextEditingController descriptionController;
   late TextEditingController priceController;
   late TextEditingController locationController;
+  late TextEditingController contactController;
   File? _imageFile;
 
   @override
@@ -49,6 +50,8 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
         TextEditingController(text: widget.listing?.price.toString() ?? "");
     locationController =
         TextEditingController(text: widget.listing?.location ?? "");
+    contactController =
+        TextEditingController(text: widget.listing?.contact ?? "");
   }
 
   @override
@@ -57,6 +60,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
     descriptionController.dispose();
     priceController.dispose();
     locationController.dispose();
+    contactController.dispose();
     super.dispose();
   }
 
@@ -161,6 +165,19 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       },
     );
 
+    final contactField = TextFormField(
+      key: Key("contact"),
+      controller: contactController,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(hintText: "Contact details"),
+      validator: (text) {
+        if (text == null || text.isEmpty) {
+          return 'Error: please enter contact information';
+        }
+        return null;
+      },
+    );
+
     final saveButton = ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
@@ -174,6 +191,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
               category: "INFORMATIK", // TODO: HARDCODED
               offersDelivery: false, // TODO: HARDCODED
               isReserved: false, // TODO: HARDCODED
+              contact: contactController.text,
               createdBy: int.parse(widget.appState.user.id),
             );
 
@@ -190,7 +208,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
             } else {
               // Update existing listing
               await widget.appState.listingState.api
-                  .updateListing(listing, _imageFile);
+                  .patchListing(listing, _imageFile);
               await widget.appState.listingState
                   .getOwnListings(widget.appState.user.id);
               ScaffoldMessenger.of(context).showSnackBar(
@@ -208,6 +226,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                     descriptionController.clear(),
                     priceController.clear(),
                     locationController.clear(),
+                    contactController.clear(),
                     setState(() {
                       _imageFile = null;
                     })
@@ -240,6 +259,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
             descriptionField,
             priceField,
             locationField,
+            contactField,
             saveButton
           ],
         ),

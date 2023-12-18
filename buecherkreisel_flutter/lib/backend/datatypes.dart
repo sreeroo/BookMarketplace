@@ -59,6 +59,7 @@ class AppState extends ChangeNotifier {
   void setUser(User user) {
     this.user = user;
     setToken(user.token);
+    listingState.getOwnListings(user.id);
     notifyListeners();
   }
 

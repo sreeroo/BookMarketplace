@@ -11,6 +11,9 @@ class Explore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ListingState>(builder: (c, listingState, w) {
+      if (listingState.listings.isEmpty) {
+        listingState.getAllListingsRemote();
+      }
       return listingState.listings.isEmpty
           ? const Center(
               child: CircularProgressIndicator(

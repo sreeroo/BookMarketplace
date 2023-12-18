@@ -12,7 +12,9 @@ class ListingFullScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+        body: Padding(
+      padding: const EdgeInsets.only(top: 60, left: 10, right: 10),
+      child: Column(
         children: [
           Image.memory(imageFromBase64String(listing.imageBase64!)!.bytes),
           Row(
@@ -47,9 +49,9 @@ class ListingFullScreen extends StatelessWidget {
             overflow: TextOverflow.clip,
           ),
           const Divider(),
-          const Text("missing contact possibility"),
+          Text(listing.contact),
         ],
       ),
-    );
+    ));
   }
 }
