@@ -228,6 +228,7 @@ class ListingController {
             @RequestParam("description") Optional<String> description,
             @RequestParam("isReserved") Optional<Boolean> isReserved,
             @RequestParam("location") Optional<String> location,
+            @RequestParam("contact") Optional<String> contact,
             @RequestParam("images") Optional<List<MultipartFile>> images
     ) {
 
@@ -253,6 +254,7 @@ class ListingController {
                 description.ifPresent(listing::setDescription);
                 isReserved.ifPresent(listing::setReserved);
                 location.ifPresent(listing::setLocation);
+                contact.ifPresent(listing::setContact);
                 images.ifPresent(listing::setImages);
 
                 repository.save(listing);
