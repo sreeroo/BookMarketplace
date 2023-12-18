@@ -12,7 +12,9 @@ class ListingFullScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+        body: Padding(
+      padding: EdgeInsets.only(top: 60, left: 10, right: 10),
+      child: Column(
         children: [
           Image.memory(imageFromBase64String(listing.imageBase64!)!.bytes),
           Row(
@@ -50,6 +52,6 @@ class ListingFullScreen extends StatelessWidget {
           Text(listing.contact),
         ],
       ),
-    );
+    ));
   }
 }
