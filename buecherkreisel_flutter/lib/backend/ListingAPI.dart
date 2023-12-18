@@ -36,6 +36,15 @@ class ListingAPI {
         'listings/${listing.id}', body, imageFile);
   }
 
+  // Partial UPDATE an existing Listing on the backend
+  Future<http.StreamedResponse> patchListing(Listing listing,
+      [File? imageFile]) async {
+    final body = listing.toJson();
+    body.addAll({"token": token});
+    return await _restAPI.patchDataMultipart(
+        'listings/${listing.id}', body, imageFile);
+  }
+
   // DELETE an existing Listing on the backend
   Future<http.Response> deleteListing(Listing listing, String userID) async {
     return await _restAPI

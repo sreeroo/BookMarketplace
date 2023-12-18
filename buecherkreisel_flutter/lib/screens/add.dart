@@ -208,7 +208,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
             } else {
               // Update existing listing
               await widget.appState.listingState.api
-                  .updateListing(listing, _imageFile);
+                  .patchListing(listing, _imageFile);
               await widget.appState.listingState
                   .getOwnListings(widget.appState.user.id);
               ScaffoldMessenger.of(context).showSnackBar(
@@ -226,6 +226,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                     descriptionController.clear(),
                     priceController.clear(),
                     locationController.clear(),
+                    contactController.clear(),
                     setState(() {
                       _imageFile = null;
                     })
