@@ -39,6 +39,16 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   late TextEditingController locationController;
   late TextEditingController contactController;
   File? _imageFile;
+  String? selectedCategory;
+  final categories = [
+    "INFORMATIK",
+    "ELEKTROTECHNIK",
+    "MATHEMATIK",
+    "PHYSIK",
+    "WIRTSCHAFT",
+    "POLITIK",
+    "SONSTIGES"
+  ];
 
   @override
   void initState() {
@@ -103,7 +113,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                     });
                   }
                 },
-          child: Text('Select Image'),
+          child: Text('Bild auswählen'),
         ),
       ],
     );
@@ -115,7 +125,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       decoration: InputDecoration(hintText: "Title"),
       validator: (text) {
         if (text == null || text.isEmpty) {
-          return 'Error: please enter item name';
+          return 'Bitte gib einen Titel ein.';
         }
         return null;
       },
@@ -127,11 +137,11 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       keyboardType: TextInputType.multiline,
       maxLines: 4,
       decoration: InputDecoration(
-        hintText: "Please enter item description",
+        hintText: "Beschreibung",
       ),
       validator: (text) {
         if (text == null || text.isEmpty) {
-          return 'Error: please enter item description';
+          return 'Bitte gib eine Beschreibung ein.';
         }
         return null;
       },
@@ -142,13 +152,12 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       controller: priceController,
       keyboardType:
           TextInputType.numberWithOptions(decimal: true, signed: true),
-      maxLines: 4,
       decoration: InputDecoration(
-        hintText: "Price",
+        hintText: "Preis",
       ),
       validator: (value) {
         if (!RegExp(r'^-?[0-9]+(\.[0-9]+)?$').hasMatch(value!)) {
-          return 'Please enter a valid price';
+          return 'Bitte gib eine Zahl ein.';
         }
       },
     );
@@ -156,10 +165,10 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       key: Key("location"),
       controller: locationController,
       keyboardType: TextInputType.text,
-      decoration: InputDecoration(hintText: "Location"),
+      decoration: InputDecoration(hintText: "Ort"),
       validator: (text) {
         if (text == null || text.isEmpty) {
-          return 'Error: please enter item name';
+          return 'Bitte gib einen Ort ein.';
         }
         return null;
       },
@@ -169,10 +178,32 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       key: Key("contact"),
       controller: contactController,
       keyboardType: TextInputType.text,
-      decoration: InputDecoration(hintText: "Contact details"),
+      decoration: InputDecoration(hintText: "Kontakt (Email, Telefon, ...)"),
       validator: (text) {
         if (text == null || text.isEmpty) {
-          return 'Error: please enter contact information';
+          return 'Bitte gib Kontaktdaten ein.';
+        }
+        return null;
+      },
+    );
+
+    final categoryField = DropdownButtonFormField<String>(
+      value: selectedCategory,
+      items: categories.map((category) {
+        return DropdownMenuItem<String>(
+          value: category,
+          child: Text(category),
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          selectedCategory = value;
+        });
+      },
+      decoration: InputDecoration(hintText: "Kategorie auswählen"),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Bitte gib eine Kategorie ein.';
         }
         return null;
       },
@@ -180,6 +211,15 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
 
     final saveButton = ElevatedButton(
       onPressed: () async {
+        if (widget.appState.user.id.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Bitte logge dich ein"),
+              duration: Durations.long2,
+            ),
+          );
+          return;
+        }
         if (_formKey.currentState!.validate()) {
           try {
             Listing listing = Listing(
@@ -242,12 +282,13 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
           }
         }
       },
-      child: Text(widget.listing == null ? 'Add' : 'Save Changes'),
+      child: Text(widget.listing == null ? 'Post' : 'Aktualisieren'),
     );
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.listing == null ? 'Add Listing' : 'Update Listing'),
+        title:
+            Text(widget.listing == null ? 'Listing erstellen' : 'Bearbeiten'),
       ),
       body: Form(
         key: _formKey,
@@ -257,6 +298,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
             imageField,
             nameField,
             descriptionField,
+            categoryField,
             priceField,
             locationField,
             contactField,
