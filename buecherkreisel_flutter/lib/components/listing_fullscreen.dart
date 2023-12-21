@@ -97,22 +97,6 @@ class ListingFullScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 20),
-            Divider(),
-            Text(
-              'Posted by:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Consumer<AppState>(
-              builder: (context, appState, child) {
-                final user = appState.user;
-                return Text(
-                  user.username,
-                  style: TextStyle(fontSize: 16),
-                );
-              },
-            ),
           ],
         ),
       ),

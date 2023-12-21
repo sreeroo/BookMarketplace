@@ -6,9 +6,9 @@ import 'package:buecherkreisel_flutter/components/listing_fullscreen.dart';
 import 'package:flutter/material.dart';
 
 class ListingPreview extends StatelessWidget {
-  late Listing listing;
+  final Listing listing;
 
-  ListingPreview({super.key, required this.listing});
+  ListingPreview({Key? key, required this.listing}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,35 +19,81 @@ class ListingPreview extends StatelessWidget {
           builder: (context) => ListingFullScreen(listing: listing),
         ),
       ),
-      child: Container(
+      child: Card(
+        elevation: 4,
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  listing.category,
-                  overflow: TextOverflow.ellipsis,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                listing.category,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 16,
                 ),
-                Text(listing.location),
-              ],
-            ),
-            Image.memory(imageFromBase64String(listing.imageBase64!)!.bytes),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(listing.title,
-                      softWrap: true,
+              ),
+              SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.memory(
+                  imageFromBase64String(listing.imageBase64!)!.bytes,
+                  height: 150,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      listing.title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                Text("${listing.price.toString()}€",
-                    style: const TextStyle(fontWeight: FontWeight.bold))
-              ],
-            )
-          ],
+                    ),
+                  ),
+                  Text(
+                    '${listing.price.toString()}€',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    listing.location,
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 16,
+                    ),
+                  ),
+                  if (listing.offersDelivery != null &&
+                      !listing.offersDelivery!)
+                    Text(
+                      'No Delivery',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
