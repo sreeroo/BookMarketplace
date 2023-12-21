@@ -102,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
                                                 .showSnackBar(
                                               const SnackBar(
                                                   content: Text(
-                                                      "Listing deleted successfully"),
+                                                      "Listing erfolgreich gelöscht."),
                                                   duration: Durations.medium4),
                                             );
                                           }

@@ -39,7 +39,8 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   late TextEditingController locationController;
   late TextEditingController contactController;
   File? _imageFile;
-  String? selectedCategory;
+  late String? selectedCategory;
+  bool _checkboxValue = false;
 
   @override
   void initState() {
@@ -53,6 +54,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
         TextEditingController(text: widget.listing?.location ?? "");
     contactController =
         TextEditingController(text: widget.listing?.contact ?? "");
+    selectedCategory = widget.listing == null ? "" : widget.listing!.category;
   }
 
   @override
@@ -145,7 +147,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
 
     final categoryField = DropdownButtonFormField<String>(
       key: Key("category"),
-      value: selectedCategory,
+      value: widget.listing != null ? widget.listing!.category : null,
       decoration: InputDecoration(hintText: "Kategorie"),
       items: categories.map((String category) {
         return DropdownMenuItem<String>(
@@ -155,7 +157,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       }).toList(),
       onChanged: (String? value) {
         setState(() {
-          selectedCategory = value;
+          selectedCategory = value!;
         });
       },
       validator: (value) {
@@ -193,6 +195,20 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       },
     );
 
+    final deliveryCheckbox = Row(
+      children: <Widget>[
+        Checkbox(
+          value: _checkboxValue,
+          onChanged: (bool? value) {
+            setState(() {
+              _checkboxValue = value!;
+            });
+          },
+        ),
+        Text('Offers Delivery'),
+      ],
+    );
+
     final contactField = TextFormField(
       key: Key("contact"),
       controller: contactController,
@@ -226,7 +242,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
               price: double.parse(priceController.text),
               location: locationController.text,
               category: selectedCategory!,
-              offersDelivery: false, // TODO: HARDCODED
+              offersDelivery: _checkboxValue,
               isReserved: false, // TODO: HARDCODED
               contact: contactController.text,
               createdBy: int.parse(widget.appState.user.id),
@@ -238,7 +254,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                   .createListing(listing, _imageFile!)
                   .then((value) => ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("Listing posted"),
+                          content: Text("Listing erstellt"),
                           duration: Durations.medium3,
                         ),
                       ));
@@ -250,7 +266,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                   .getOwnListings(widget.appState.user.id);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text("Listing updated"),
+                  content: Text("Listing aktualisiert"),
                   duration: Durations.long2,
                 ),
               );
@@ -264,16 +280,15 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                     priceController.clear(),
                     locationController.clear(),
                     contactController.clear(),
-                    selectedCategory = null,
                     setState(() {
                       _imageFile = null;
-                    })
+                    }),
                   }
                 : Navigator.pop(context);
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text("Listing could not be processed"),
+                content: Text("Fehler beim Posten des Listings"),
                 duration: Durations.long2,
               ),
             );
@@ -299,8 +314,9 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
             categoryField,
             priceField,
             locationField,
+            deliveryCheckbox,
             contactField,
-            saveButton
+            saveButton,
           ],
         ),
       ),
