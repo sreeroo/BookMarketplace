@@ -69,7 +69,11 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   Widget build(BuildContext context) {
     bool isImagePickerOpen = false;
     String imageBase64 = widget.listing?.imageBase64 ?? "";
+    List<String> categories = [];
     widget.appState.listingState.getCategoriesRemote();
+    setState(() {
+      categories = widget.appState.listingState.categories;
+    });
 
     final imageField = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -143,7 +147,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       key: Key("category"),
       value: selectedCategory,
       decoration: InputDecoration(hintText: "Kategorie"),
-      items: widget.appState.listingState.categories.map((String category) {
+      items: categories.map((String category) {
         return DropdownMenuItem<String>(
           value: category,
           child: Text(category),
