@@ -5,15 +5,6 @@ import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
-class ChatState extends ChangeNotifier {
-  List<Chat> chats = List.empty(growable: true);
-
-  void updateChats() {
-    print("updateChats not yet implemented");
-    notifyListeners();
-  }
-}
-
 class ListingState extends ChangeNotifier {
   List<Listing> listings = List.empty(growable: true);
   List<String> categories = List.empty(growable: true);
@@ -61,7 +52,6 @@ class ListingState extends ChangeNotifier {
 class AppState extends ChangeNotifier {
   User user = User(id: "", imageURI: "", username: "", token: "");
   ListingState listingState = ListingState();
-  ChatState chatState = ChatState();
 
   void setUser(User user) {
     this.user = user;

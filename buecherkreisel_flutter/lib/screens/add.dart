@@ -38,9 +38,9 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   late TextEditingController priceController;
   late TextEditingController locationController;
   late TextEditingController contactController;
-  File? _imageFile;
   late String? selectedCategory;
-  bool _checkboxValue = false;
+  late bool _checkboxValue;
+  File? _imageFile;
 
   @override
   void initState() {
@@ -55,6 +55,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
     contactController =
         TextEditingController(text: widget.listing?.contact ?? "");
     selectedCategory = widget.listing == null ? "" : widget.listing!.category;
+    _checkboxValue = widget.listing?.offersDelivery ?? false;
   }
 
   @override
