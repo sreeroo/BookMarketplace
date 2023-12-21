@@ -40,15 +40,6 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   late TextEditingController contactController;
   File? _imageFile;
   String? selectedCategory;
-  final categories = [
-    "INFORMATIK",
-    "ELEKTROTECHNIK",
-    "MATHEMATIK",
-    "PHYSIK",
-    "WIRTSCHAFT",
-    "POLITIK",
-    "SONSTIGES"
-  ];
 
   @override
   void initState() {
@@ -78,6 +69,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   Widget build(BuildContext context) {
     bool isImagePickerOpen = false;
     String imageBase64 = widget.listing?.imageBase64 ?? "";
+    widget.appState.listingState.getCategoriesRemote();
 
     final imageField = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -147,6 +139,29 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       },
     );
 
+    final categoryField = DropdownButtonFormField<String>(
+      key: Key("category"),
+      value: selectedCategory,
+      decoration: InputDecoration(hintText: "Kategorie"),
+      items: widget.appState.listingState.categories.map((String category) {
+        return DropdownMenuItem<String>(
+          value: category,
+          child: Text(category),
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        setState(() {
+          selectedCategory = value;
+        });
+      },
+      validator: (value) {
+        if (value == null) {
+          return 'Bitte wähle eine Kategorie aus.';
+        }
+        return null;
+      },
+    );
+
     final priceField = TextFormField(
       key: Key("price"),
       controller: priceController,
@@ -187,28 +202,6 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       },
     );
 
-    final categoryField = DropdownButtonFormField<String>(
-      value: selectedCategory,
-      items: categories.map((category) {
-        return DropdownMenuItem<String>(
-          value: category,
-          child: Text(category),
-        );
-      }).toList(),
-      onChanged: (value) {
-        setState(() {
-          selectedCategory = value;
-        });
-      },
-      decoration: InputDecoration(hintText: "Kategorie auswählen"),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Bitte gib eine Kategorie ein.';
-        }
-        return null;
-      },
-    );
-
     final saveButton = ElevatedButton(
       onPressed: () async {
         if (widget.appState.user.id.isEmpty) {
@@ -228,7 +221,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
               description: descriptionController.text,
               price: double.parse(priceController.text),
               location: locationController.text,
-              category: "INFORMATIK", // TODO: HARDCODED
+              category: selectedCategory!,
               offersDelivery: false, // TODO: HARDCODED
               isReserved: false, // TODO: HARDCODED
               contact: contactController.text,
@@ -267,6 +260,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                     priceController.clear(),
                     locationController.clear(),
                     contactController.clear(),
+                    selectedCategory = null,
                     setState(() {
                       _imageFile = null;
                     })

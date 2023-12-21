@@ -16,6 +16,7 @@ class ChatState extends ChangeNotifier {
 
 class ListingState extends ChangeNotifier {
   List<Listing> listings = List.empty(growable: true);
+  List<String> categories = List.empty(growable: true);
   List<Listing> ownListings = List.empty(growable: true);
   ListingAPI api = ListingAPI();
 
@@ -31,6 +32,12 @@ class ListingState extends ChangeNotifier {
     ownListings = await api.searchListings({"user_id": id});
     notifyListeners();
     return ownListings;
+  }
+
+  Future<List<String>> getCategoriesRemote() async {
+    categories = await api.getCategories();
+    notifyListeners();
+    return categories;
   }
 
   void setToken(String token) async {

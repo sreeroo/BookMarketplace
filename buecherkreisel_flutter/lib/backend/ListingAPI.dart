@@ -27,6 +27,12 @@ class ListingAPI {
     return Listing.fromJson(response);
   }
 
+  // READ Categories from the backend
+  Future<List<String>> getCategories() async {
+    final response = await _restAPI.fetchData('categories');
+    return List<String>.from(response.map((e) => e.toString()));
+  }
+
   // UPDATE an existing Listing on the backend
   Future<http.StreamedResponse> updateListing(Listing listing,
       [File? imageFile]) async {
