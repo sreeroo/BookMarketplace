@@ -83,7 +83,7 @@ class ListingPreview extends StatelessWidget {
                   if (listing.offersDelivery != null &&
                       !listing.offersDelivery!)
                     Text(
-                      'No Delivery',
+                      'Kein Versand',
                       style: TextStyle(
                         color: Colors.red,
                         fontSize: 16,
