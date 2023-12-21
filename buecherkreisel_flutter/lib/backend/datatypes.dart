@@ -15,20 +15,20 @@ class ListingState extends ChangeNotifier {
 
   Future<List<Listing>> getAllListingsRemote() async {
     listings = await api.getAllListings();
+    categories = await api.getCategories();
     notifyListeners();
     return listings;
   }
 
   Future<List<Listing>> getOwnListings(String id) async {
     ownListings = await api.searchListings({"user_id": id});
+    categories = await api.getCategories();
     notifyListeners();
     return ownListings;
   }
 
   Future<List<String>> getCategoriesRemote() async {
-    categories = await api.getCategories();
-    notifyListeners();
-    return categories;
+    return await api.getCategories();
   }
 
   void setToken(String token) async {

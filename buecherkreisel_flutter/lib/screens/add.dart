@@ -72,11 +72,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   Widget build(BuildContext context) {
     bool isImagePickerOpen = false;
     String imageBase64 = widget.listing?.imageBase64 ?? "";
-    List<String> categories = [];
-    widget.appState.listingState.getCategoriesRemote();
-    setState(() {
-      categories = widget.appState.listingState.categories;
-    });
+    List<String> categories = widget.appState.listingState.categories;
 
     final imageField = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -283,6 +279,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                     contactController.clear(),
                     setState(() {
                       _imageFile = null;
+                      _checkboxValue = false;
                     }),
                   }
                 : Navigator.pop(context);
