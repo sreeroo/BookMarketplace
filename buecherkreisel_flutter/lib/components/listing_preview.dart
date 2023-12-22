@@ -6,9 +6,9 @@ import 'package:buecherkreisel_flutter/components/listing_fullscreen.dart';
 import 'package:flutter/material.dart';
 
 class ListingPreview extends StatelessWidget {
-  final Listing listing;
+  late Listing listing;
 
-  ListingPreview({Key? key, required this.listing}) : super(key: key);
+  ListingPreview({super.key, required this.listing});
 
   @override
   Widget build(BuildContext context) {
@@ -19,81 +19,37 @@ class ListingPreview extends StatelessWidget {
           builder: (context) => ListingFullScreen(listing: listing),
         ),
       ),
-      child: Card(
-        elevation: 4,
+      child: Container(
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                listing.category,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 16,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  listing.category,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-              ),
-              SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.memory(
-                  imageFromBase64String(listing.imageBase64!)!.bytes,
-                  height: 150,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      listing.title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                      maxLines: 2,
+                Text("Ort: ${listing.location}",
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+            Image.memory(imageFromBase64String(listing.imageBase64!)!.bytes),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text("Buchtitel: ${listing.title}",
+                      softWrap: true,
                       overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Text(
-                    '${listing.price.toString()}€',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: Colors.blue,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    listing.location,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 16,
-                    ),
-                  ),
-                  if (listing.offersDelivery != null &&
-                      !listing.offersDelivery!)
-                    Text(
-                      'Kein Versand',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                ),
+                Text("Preis : ${listing.price.toString()}€",
+                    style: const TextStyle(fontWeight: FontWeight.bold))
+              ],
+            )
+          ],
         ),
       ),
     );
