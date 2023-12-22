@@ -202,7 +202,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
             });
           },
         ),
-        Text('Offers Delivery'),
+        Text('Lieferung möglich'),
       ],
     );
 
