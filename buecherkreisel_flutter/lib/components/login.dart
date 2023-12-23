@@ -53,7 +53,7 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                _isLogin ? 'Login' : 'Register',
+                _isLogin ? 'Anmelden' : 'Registrieren',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 20),
@@ -72,7 +72,7 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
                     TextFormField(
                       obscureText: true,
                       decoration: const InputDecoration(
-                        labelText: 'Password',
+                        labelText: 'Passwort',
                       ),
                       validator: passwordValidator,
                       controller: _passwordController,
@@ -83,7 +83,7 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
               SizedBox(height: 20),
               TextButton(
                 child: Text(
-                  _isLogin ? 'Login' : 'Register',
+                  _isLogin ? 'Einloggen' : 'Registrieren',
                   //style: TextStyle(
                   //    color: !_passwordOk || !_usernameOK
                   //        ? Colors.black38
@@ -99,7 +99,9 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text("Registration Failed"),
+                            content: Text(
+                                "Registrierung fehlgeschlagen, bereits registriert?"),
+                            duration: Durations.long2,
                           ),
                         );
                       }
@@ -111,8 +113,9 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text("Login Failed, did you register?"),
-                            duration: Durations.medium4,
+                            content: Text(
+                                "Login fehlgeschlagen, falsches Passwort/Username oder noch nicht registriert? "),
+                            duration: Duration(milliseconds: 800),
                           ),
                         );
                       }
@@ -120,8 +123,8 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text("Check password and username"),
-                        duration: Durations.medium3,
+                        content: Text("Bitte füllen Sie alle Felder aus"),
+                        duration: Durations.long1,
                       ),
                     );
                   }

@@ -44,7 +44,7 @@ class ProfileScreen extends StatelessWidget {
             const Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Text(
-                'Your Listings',
+                'Deine Listings',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -56,7 +56,7 @@ class ProfileScreen extends StatelessWidget {
                 child: listingState.ownListings.isEmpty
                     ? const Center(
                         child: Text(
-                          "You don't have any listings yet",
+                          "Sie haben noch keine Listings erstellt.",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -87,7 +87,7 @@ class ProfileScreen extends StatelessWidget {
                                         ),
                                       );
                                     },
-                                    child: Text('Edit'),
+                                    child: Text('Bearbeiten'),
                                   ),
                                   SizedBox(width: 10),
                                   ElevatedButton(
@@ -102,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
                                                 .showSnackBar(
                                               const SnackBar(
                                                   content: Text(
-                                                      "Listing deleted successfully"),
+                                                      "Listing erfolgreich gelöscht."),
                                                   duration: Durations.medium4),
                                             );
                                           }
@@ -111,7 +111,7 @@ class ProfileScreen extends StatelessWidget {
                                         print(e);
                                       }
                                     },
-                                    child: Text('Delete'),
+                                    child: Text('Löschen'),
                                   ),
                                 ],
                               ),

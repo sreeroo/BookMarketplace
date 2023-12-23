@@ -27,12 +27,27 @@ class ListingAPI {
     return Listing.fromJson(response);
   }
 
+  // READ Categories from the backend
+  Future<List<String>> getCategories() async {
+    final response = await _restAPI.fetchData('categories');
+    return List<String>.from(response.map((e) => e.toString()));
+  }
+
   // UPDATE an existing Listing on the backend
   Future<http.StreamedResponse> updateListing(Listing listing,
       [File? imageFile]) async {
     final body = listing.toJson();
     body.addAll({"token": token});
     return await _restAPI.updateDataMultipart(
+        'listings/${listing.id}', body, imageFile);
+  }
+
+  // Partial UPDATE an existing Listing on the backend
+  Future<http.StreamedResponse> patchListing(Listing listing,
+      [File? imageFile]) async {
+    final body = listing.toJson();
+    body.addAll({"token": token});
+    return await _restAPI.patchDataMultipart(
         'listings/${listing.id}', body, imageFile);
   }
 

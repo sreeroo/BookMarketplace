@@ -37,6 +37,9 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   late TextEditingController descriptionController;
   late TextEditingController priceController;
   late TextEditingController locationController;
+  late TextEditingController contactController;
+  late String? selectedCategory;
+  late bool _checkboxValue;
   File? _imageFile;
 
   @override
@@ -49,6 +52,10 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
         TextEditingController(text: widget.listing?.price.toString() ?? "");
     locationController =
         TextEditingController(text: widget.listing?.location ?? "");
+    contactController =
+        TextEditingController(text: widget.listing?.contact ?? "");
+    selectedCategory = widget.listing == null ? "" : widget.listing!.category;
+    _checkboxValue = widget.listing?.offersDelivery ?? false;
   }
 
   @override
@@ -57,6 +64,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
     descriptionController.dispose();
     priceController.dispose();
     locationController.dispose();
+    contactController.dispose();
     super.dispose();
   }
 
@@ -64,6 +72,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   Widget build(BuildContext context) {
     bool isImagePickerOpen = false;
     String imageBase64 = widget.listing?.imageBase64 ?? "";
+    List<String> categories = widget.appState.listingState.categories;
 
     final imageField = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -99,7 +108,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                     });
                   }
                 },
-          child: Text('Select Image'),
+          child: Text('Bild auswählen'),
         ),
       ],
     );
@@ -111,7 +120,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       decoration: InputDecoration(hintText: "Title"),
       validator: (text) {
         if (text == null || text.isEmpty) {
-          return 'Error: please enter item name';
+          return 'Bitte gib einen Titel ein.';
         }
         return null;
       },
@@ -123,11 +132,34 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       keyboardType: TextInputType.multiline,
       maxLines: 4,
       decoration: InputDecoration(
-        hintText: "Please enter item description",
+        hintText: "Beschreibung",
       ),
       validator: (text) {
         if (text == null || text.isEmpty) {
-          return 'Error: please enter item description';
+          return 'Bitte gib eine Beschreibung ein.';
+        }
+        return null;
+      },
+    );
+
+    final categoryField = DropdownButtonFormField<String>(
+      key: Key("category"),
+      value: widget.listing != null ? widget.listing!.category : null,
+      decoration: InputDecoration(hintText: "Kategorie"),
+      items: categories.map((String category) {
+        return DropdownMenuItem<String>(
+          value: category,
+          child: Text(category),
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        setState(() {
+          selectedCategory = value!;
+        });
+      },
+      validator: (value) {
+        if (value == null) {
+          return 'Bitte wähle eine Kategorie aus.';
         }
         return null;
       },
@@ -138,13 +170,12 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       controller: priceController,
       keyboardType:
           TextInputType.numberWithOptions(decimal: true, signed: true),
-      maxLines: 4,
       decoration: InputDecoration(
-        hintText: "Price",
+        hintText: "Preis",
       ),
       validator: (value) {
         if (!RegExp(r'^-?[0-9]+(\.[0-9]+)?$').hasMatch(value!)) {
-          return 'Please enter a valid price';
+          return 'Bitte gib eine Zahl ein.';
         }
       },
     );
@@ -152,10 +183,37 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       key: Key("location"),
       controller: locationController,
       keyboardType: TextInputType.text,
-      decoration: InputDecoration(hintText: "Location"),
+      decoration: InputDecoration(hintText: "Ort"),
       validator: (text) {
         if (text == null || text.isEmpty) {
-          return 'Error: please enter item name';
+          return 'Bitte gib einen Ort ein.';
+        }
+        return null;
+      },
+    );
+
+    final deliveryCheckbox = Row(
+      children: <Widget>[
+        Checkbox(
+          value: _checkboxValue,
+          onChanged: (bool? value) {
+            setState(() {
+              _checkboxValue = value!;
+            });
+          },
+        ),
+        Text('Lieferung möglich'),
+      ],
+    );
+
+    final contactField = TextFormField(
+      key: Key("contact"),
+      controller: contactController,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(hintText: "Kontakt (Email, Telefon, ...)"),
+      validator: (text) {
+        if (text == null || text.isEmpty) {
+          return 'Bitte gib Kontaktdaten ein.';
         }
         return null;
       },
@@ -163,6 +221,15 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
 
     final saveButton = ElevatedButton(
       onPressed: () async {
+        if (widget.appState.user.id.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Bitte logge dich ein"),
+              duration: Durations.long2,
+            ),
+          );
+          return;
+        }
         if (_formKey.currentState!.validate()) {
           try {
             Listing listing = Listing(
@@ -171,9 +238,10 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
               description: descriptionController.text,
               price: double.parse(priceController.text),
               location: locationController.text,
-              category: "INFORMATIK", // TODO: HARDCODED
-              offersDelivery: false, // TODO: HARDCODED
+              category: selectedCategory!,
+              offersDelivery: _checkboxValue,
               isReserved: false, // TODO: HARDCODED
+              contact: contactController.text,
               createdBy: int.parse(widget.appState.user.id),
             );
 
@@ -183,19 +251,19 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                   .createListing(listing, _imageFile!)
                   .then((value) => ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("Listing posted"),
+                          content: Text("Listing erstellt"),
                           duration: Durations.medium3,
                         ),
                       ));
             } else {
               // Update existing listing
               await widget.appState.listingState.api
-                  .updateListing(listing, _imageFile);
+                  .patchListing(listing, _imageFile);
               await widget.appState.listingState
                   .getOwnListings(widget.appState.user.id);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text("Listing updated"),
+                  content: Text("Listing aktualisiert"),
                   duration: Durations.long2,
                 ),
               );
@@ -208,27 +276,30 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                     descriptionController.clear(),
                     priceController.clear(),
                     locationController.clear(),
+                    contactController.clear(),
                     setState(() {
                       _imageFile = null;
-                    })
+                      _checkboxValue = false;
+                    }),
                   }
                 : Navigator.pop(context);
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text("Listing could not be processed"),
+                content: Text("Fehler beim Posten des Listings"),
                 duration: Durations.long2,
               ),
             );
           }
         }
       },
-      child: Text(widget.listing == null ? 'Add' : 'Save Changes'),
+      child: Text(widget.listing == null ? 'Post' : 'Aktualisieren'),
     );
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.listing == null ? 'Add Listing' : 'Update Listing'),
+        title:
+            Text(widget.listing == null ? 'Listing erstellen' : 'Bearbeiten'),
       ),
       body: Form(
         key: _formKey,
@@ -238,9 +309,12 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
             imageField,
             nameField,
             descriptionField,
+            categoryField,
             priceField,
             locationField,
-            saveButton
+            deliveryCheckbox,
+            contactField,
+            saveButton,
           ],
         ),
       ),
