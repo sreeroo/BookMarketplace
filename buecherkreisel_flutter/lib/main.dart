@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
       ),
       home: MultiProvider(
         providers: [
-          ChangeNotifierProvider<ChatState>.value(value: appState.chatState),
           ChangeNotifierProvider<ListingState>.value(
               value: appState.listingState),
           ChangeNotifierProvider<AppState>.value(value: appState),

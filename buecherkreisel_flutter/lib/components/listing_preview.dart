@@ -29,8 +29,10 @@ class ListingPreview extends StatelessWidget {
                 Text(
                   listing.category,
                   overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Text(listing.location),
+                Text("Ort: ${listing.location}",
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
             Image.memory(imageFromBase64String(listing.imageBase64!)!.bytes),
@@ -38,12 +40,12 @@ class ListingPreview extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(listing.title,
+                  child: Text("Buchtitel: ${listing.title}",
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
-                Text("${listing.price.toString()}€",
+                Text("Preis : ${listing.price.toString()}€",
                     style: const TextStyle(fontWeight: FontWeight.bold))
               ],
             )

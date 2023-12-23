@@ -5,17 +5,9 @@ import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
-class ChatState extends ChangeNotifier {
-  List<Chat> chats = List.empty(growable: true);
-
-  void updateChats() {
-    print("updateChats not yet implemented");
-    notifyListeners();
-  }
-}
-
 class ListingState extends ChangeNotifier {
   List<Listing> listings = List.empty(growable: true);
+  List<String> categories = List.empty(growable: true);
   List<Listing> ownListings = List.empty(growable: true);
   ListingAPI api = ListingAPI();
 
@@ -23,14 +15,20 @@ class ListingState extends ChangeNotifier {
 
   Future<List<Listing>> getAllListingsRemote() async {
     listings = await api.getAllListings();
+    categories = await api.getCategories();
     notifyListeners();
     return listings;
   }
 
   Future<List<Listing>> getOwnListings(String id) async {
     ownListings = await api.searchListings({"user_id": id});
+    categories = await api.getCategories();
     notifyListeners();
     return ownListings;
+  }
+
+  Future<List<String>> getCategoriesRemote() async {
+    return await api.getCategories();
   }
 
   void setToken(String token) async {
@@ -54,7 +52,6 @@ class ListingState extends ChangeNotifier {
 class AppState extends ChangeNotifier {
   User user = User(id: "", imageURI: "", username: "", token: "");
   ListingState listingState = ListingState();
-  ChatState chatState = ChatState();
 
   void setUser(User user) {
     this.user = user;
