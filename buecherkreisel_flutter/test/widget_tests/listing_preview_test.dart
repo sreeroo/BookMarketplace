@@ -15,17 +15,17 @@ String getDummyImageBase64String() {
 
 Listing createDummyListing() {
   return Listing(
-    id: 1,
-    category: 'Books',
-    location: 'Munich',
-    imageBase64: getDummyImageBase64String(),
-    title: 'Demo Listing',
-    price: 20.0,
-    offersDelivery: false,
-    description: '',
-    isReserved: false,
-    createdBy: 21,
-  );
+      id: 1,
+      category: 'Books',
+      location: 'Munich',
+      imageBase64: getDummyImageBase64String(),
+      title: 'Demo Listing',
+      price: 20.0,
+      offersDelivery: false,
+      description: '',
+      isReserved: false,
+      createdBy: 21,
+      contact: "a@b.c");
 }
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}

@@ -7,6 +7,11 @@ class ListingAPI {
   final _restAPI = APIClient();
   String token = "";
 
+  //set restAPI client for testing
+  void setClient(http.Client client) {
+    _restAPI.client = client;
+  }
+
   // CREATE a new Listing on the backend
   Future<http.StreamedResponse> createListing(
       Listing listing, File imageFile) async {

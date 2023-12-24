@@ -10,7 +10,10 @@ class APIClient {
   // use IP 10.0.2.2 to access localhost from emulator!
   static const baseUrl = "http://10.0.2.2:8080/";
 
-  final _client = http.Client();
+  var _client = http.Client();
+
+  // set _client for testing
+  set client(http.Client client) => _client = client;
 
   // GET
   Future<dynamic> fetchData(String endpoint,
