@@ -38,15 +38,6 @@ class ListingAPI {
     return List<String>.from(response.map((e) => e.toString()));
   }
 
-  // UPDATE an existing Listing on the backend
-  Future<http.StreamedResponse> updateListing(Listing listing,
-      [File? imageFile]) async {
-    final body = listing.toJson();
-    body.addAll({"token": token});
-    return await _restAPI.updateDataMultipart(
-        'listings/${listing.id}', body, imageFile);
-  }
-
   // Partial UPDATE an existing Listing on the backend
   Future<http.StreamedResponse> patchListing(Listing listing,
       [File? imageFile]) async {
@@ -67,4 +58,16 @@ class ListingAPI {
     final response = await _restAPI.fetchData('listings/search', query);
     return List<Listing>.from(response.map((e) => Listing.fromJson(e)));
   }
+
+  // UPDATE an existing Listing on the backend
+  // Not being used at the moment, use patchListing instead
+  /*
+  Future<http.StreamedResponse> updateListing(Listing listing,
+      [File? imageFile]) async {
+    final body = listing.toJson();
+    body.addAll({"token": token});
+    return await _restAPI.updateDataMultipart(
+        'listings/${listing.id}', body, imageFile);
+  }
+  */
 }

@@ -99,38 +99,6 @@ class APIClient {
     }
   }
 
-  // Update using multipart/form-data (PUT)
-  Future<http.StreamedResponse> updateDataMultipart(
-      String endpoint, dynamic data,
-      [File? imageFile]) async {
-    final response =
-        await http.MultipartRequest('PUT', Uri.parse('$baseUrl$endpoint'));
-
-    response.headers.addAll(<String, String>{
-      'Content-Type': 'multipart/form-data',
-      'Connection': 'keep-alive',
-    });
-
-    response.fields.addAll(data);
-
-    if (imageFile != null) {
-      response.files.add(
-        await http.MultipartFile.fromPath(
-          'images',
-          imageFile.path,
-        ),
-      );
-    }
-
-    final streamedResponse = await response.send();
-
-    if (streamedResponse.statusCode <= 300) {
-      return streamedResponse;
-    } else {
-      throw Exception('Failed to update data');
-    }
-  }
-
   // UPDATE using multipart/form-data (PATCH)
   Future<http.StreamedResponse> patchDataMultipart(
       String endpoint, dynamic data,
@@ -172,7 +140,41 @@ class APIClient {
     if (response.statusCode >= 300) {
       throw Exception('Failed to delete data');
     }
-
     return response;
   }
+
+  // Update using multipart/form-data (PUT)
+  // Not being used at the moment
+  /*
+  Future<http.StreamedResponse> updateDataMultipart(
+      String endpoint, dynamic data,
+      [File? imageFile]) async {
+    final response =
+        await http.MultipartRequest('PUT', Uri.parse('$baseUrl$endpoint'));
+
+    response.headers.addAll(<String, String>{
+      'Content-Type': 'multipart/form-data',
+      'Connection': 'keep-alive',
+    });
+
+    response.fields.addAll(data);
+
+    if (imageFile != null) {
+      response.files.add(
+        await http.MultipartFile.fromPath(
+          'images',
+          imageFile.path,
+        ),
+      );
+    }
+
+    final streamedResponse = await response.send();
+
+    if (streamedResponse.statusCode <= 300) {
+      return streamedResponse;
+    } else {
+      throw Exception('Failed to update data');
+    }
+  }
+  */
 }

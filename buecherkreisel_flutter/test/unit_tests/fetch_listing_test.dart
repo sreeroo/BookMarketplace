@@ -1,14 +1,9 @@
-import 'dart:math';
-
-import 'package:buecherkreisel_flutter/backend/ListingAPI.dart';
-import 'package:buecherkreisel_flutter/backend/backend.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'dart:convert';
+import 'package:buecherkreisel_flutter/backend/datatypes.dart';
 
 import 'fetch_listing_test.mocks.dart';
 
@@ -17,10 +12,12 @@ const baseUrl = "http://10.0.2.2:8080";
 @GenerateMocks([http.Client])
 void main() {
   //APIClient apiClient = APIClient();
-  ListingAPI listingAPI = ListingAPI();
+  ListingState listingAPI = ListingState();
   MockClient mockClient = MockClient();
   //apiClient.client = mockClient;
-  listingAPI.setClient(mockClient);
+  listingAPI.api.setClient(mockClient);
+
+  List<String> categories = List.empty(growable: true);
 
   String jsonString = '''
 [
@@ -54,23 +51,34 @@ void main() {
 ''';
 
   group('getAllListings', () {
-    test('returns a list of listings if the http call completes successfully',
+    test(
+        'returns a list of listings and categories if the http call completes successfully',
         () async {
       // arrange
       when(mockClient.get(Uri.parse('$baseUrl/listings'),
               headers: anyNamed('headers')))
           .thenAnswer((_) async => http.Response(jsonString, 200));
 
+      when(mockClient.get(Uri.parse('$baseUrl/categories'),
+              headers: anyNamed('headers')))
+          .thenAnswer(
+              (_) async => http.Response('["Category1", "Category2"]', 200));
+
       // act
-      List<Listing> response = await listingAPI.getAllListings();
+      List<Listing> listings = await listingAPI.getAllListingsRemote();
+      categories = await listingAPI.getCategoriesRemote();
 
       // assert
-      expect(response, isA<List<Listing>>());
-      expect(response[0].id, 1);
-      expect(response[0].title, "Listing1");
-      expect(response[0].description, "Description1");
-      expect(response[1].id, 2);
-      expect(response[1].description, "Description2");
+      expect(listings, isA<List<Listing>>());
+      expect(listings[0].id, 1);
+      expect(listings[0].title, "Listing1");
+      expect(listings[0].description, "Description1");
+      expect(listings[1].id, 2);
+      expect(listings[1].description, "Description2");
+
+      expect(categories, isA<List<String>>());
+      expect(categories[0], "Category1");
+      expect(categories[1], "Category2");
     });
 
     test('throws an exception if the http call completes with an error', () {
@@ -80,24 +88,66 @@ void main() {
           .thenAnswer((_) async => http.Response('Not Found', 404));
 
       // act
-      final response = listingAPI.getAllListings();
+      final listings = listingAPI.getAllListingsRemote();
 
       // assert
-      expect(response, throwsException);
+      expect(listings, throwsException);
     });
 
-    test('returns an empty list if the server returns an empty list', () async {
+    test(
+        'returns an empty list if the server returns an empty list and categories',
+        () async {
       // arrange
       when(mockClient.get(Uri.parse('$baseUrl/listings'),
               headers: anyNamed('headers')))
           .thenAnswer((_) async => http.Response('[]', 200));
 
+      when(mockClient.get(Uri.parse('$baseUrl/categories'),
+              headers: anyNamed('headers')))
+          .thenAnswer((_) async => http.Response('[]', 200));
+
       // act
-      final response = await listingAPI.getAllListings();
+      final listings = await listingAPI.getAllListingsRemote();
+      categories = await listingAPI.getCategoriesRemote();
 
       // assert
-      expect(response, isA<List<Listing>>());
-      expect(response, isEmpty);
+      expect(listings, isA<List<Listing>>());
+      expect(listings, isEmpty);
+
+      expect(categories, isA<List<String>>());
+      expect(categories, isEmpty);
+    });
+
+    test('returns a listing posted by a user', () async {
+      // arrange
+      when(mockClient.get(Uri.parse('$baseUrl/listings/search?user_id=1'),
+              headers: anyNamed('headers')))
+          .thenAnswer((_) async => http.Response(jsonString, 200));
+
+      when(mockClient.get(Uri.parse('$baseUrl/categories'),
+              headers: anyNamed('headers')))
+          .thenAnswer(
+              (_) async => http.Response('["Category1", "Category2"]', 200));
+
+      // act
+      List<Listing> listings = await listingAPI.getOwnListings("1");
+
+      // assert
+      expect(listings, isA<List<Listing>>());
+      expect(listings[0].id, 1);
+      expect(listings[0].title, "Listing1");
+      expect(listings[0].description, "Description1");
+    });
+
+    test('Set token test', () async {
+      // arrange
+      listingAPI.setToken("token");
+
+      // act
+      String token = listingAPI.api.token;
+
+      // assert
+      expect(token, "token");
     });
   });
 }
