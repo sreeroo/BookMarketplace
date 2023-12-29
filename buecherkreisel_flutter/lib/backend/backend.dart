@@ -75,7 +75,7 @@ class APIClient {
       ),
     );
 
-    final streamedResponse = await response.send();
+    final streamedResponse = await _client.send(response);
 
     if (streamedResponse.statusCode == 201) {
       return streamedResponse;
@@ -122,7 +122,7 @@ class APIClient {
       );
     }
 
-    final streamedResponse = await response.send();
+    final streamedResponse = await _client.send(response);
 
     if (streamedResponse.statusCode <= 300) {
       return streamedResponse;
