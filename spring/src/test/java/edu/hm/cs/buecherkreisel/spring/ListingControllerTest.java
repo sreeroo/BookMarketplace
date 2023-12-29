@@ -37,15 +37,14 @@ class ListingControllerTest {
     }
 
     /**
-     * Test for creating a new listing
+     * Test for creating new listing, but user id is wrong
      */
     @Test
-    public void testNewListing() throws Exception {
+    public void testNewListingWrongUserID() throws Exception {
 
         User user = userRepository.save(
                 new User("Nutzername", "Password", "Profilbild"));
 
-        // Wrong user id, throw 401 Status Code
         mockMvc.perform(MockMvcRequestBuilders
                         .multipart("/listings")
                         .file("images", Base64.getDecoder().decode("Bild"))
@@ -60,6 +59,16 @@ class ListingControllerTest {
                         .param("contact", "gregor@samsa.pl")
                         .param("token", user.getToken())
                 ).andExpect(status().is(401));
+    }
+
+    /**
+     * Test for creating a new listing
+     */
+    @Test
+    public void testNewListing() throws Exception {
+
+        User user = userRepository.save(
+                new User("Nutzername", "Password", "Profilbild"));
 
         // All correct
         mockMvc.perform(MockMvcRequestBuilders
@@ -177,6 +186,47 @@ class ListingControllerTest {
     }
 
     /**
+     * Tests if listing is deleted, but invalid ID
+     */
+    @Test
+    public void testDeleteListingInvalidID() throws Exception {
+         User user = userRepository.save(
+                new User("Nutzername", "Password", "Profilbild"));
+
+        MvcResult mvcResult = createListing(user);
+        if (mvcResult.getResponse().getStatus() != 201) {
+            throw new RuntimeException("Unable to create Listing!");
+        }
+
+         // Not existing id, throw 404 Status Code
+        mockMvc.perform(MockMvcRequestBuilders.delete("/listings/2")
+                .param("user_id", String.valueOf(user.getId()))
+                .param("token", user.getToken()))
+                .andExpect(status().isNotFound());
+
+    }
+
+    /**
+     * Tests if listing is deleted, but wrong user ID
+     */
+    @Test
+    public void testDeleteListingWrongUserID() throws Exception {
+        User user = userRepository.save(
+                new User("Nutzername", "Password", "Profilbild"));
+
+        MvcResult mvcResult = createListing(user);
+        if (mvcResult.getResponse().getStatus() != 201) {
+            throw new RuntimeException("Unable to create Listing!");
+        }
+
+        // Wrong user id, throw 401 Status Code
+        mockMvc.perform(MockMvcRequestBuilders.delete("/listings/1")
+                .param("user_id", String.valueOf(user.getId()+1))
+                .param("token", user.getToken()))
+                .andExpect(status().is(401));
+    }
+
+    /**
      * Tests if listings are deleted correctly
      */
     @Test
@@ -189,19 +239,6 @@ class ListingControllerTest {
             throw new RuntimeException("Unable to create Listing!");
         }
 
-        // Not existing id, throw 404 Status Code
-        mockMvc.perform(MockMvcRequestBuilders.delete("/listings/2")
-                .param("user_id", String.valueOf(user.getId()))
-                .param("token", user.getToken()))
-                .andExpect(status().isNotFound());
-
-        // Wrong user id, throw 401 Status Code
-        mockMvc.perform(MockMvcRequestBuilders.delete("/listings/1")
-                .param("user_id", String.valueOf(user.getId()+1))
-                .param("token", user.getToken()))
-                .andExpect(status().is(401));
-
-        // All correct
         mockMvc.perform(MockMvcRequestBuilders.delete("/listings/1")
                 .param("user_id", String.valueOf(user.getId()))
                 .param("token", user.getToken()))
@@ -234,10 +271,10 @@ class ListingControllerTest {
     }
 
     /**
-     * Tests if listing is updated correctly
+     * Test if listing is updated, but wrong user ID
      */
     @Test
-    public void testUpdateListing() throws Exception {
+    public void testUpdateListingWrongUserID() throws Exception {
         User user = userRepository.save(
                 new User("Nutzername", "Password", "Profilbild"));
 
@@ -261,8 +298,22 @@ class ListingControllerTest {
                         .param("token", user.getToken())
                 )
                 .andExpect(status().is(401));
+    }
 
-        // Check for wrong id - Listing should be created anyway
+    /**
+     * Test if listing is updated, but ID doesn't exist
+     */
+    @Test
+    public void testUpdateListingNotExistingID() throws Exception {
+        User user = userRepository.save(
+                new User("Nutzername", "Password", "Profilbild"));
+
+        MvcResult mvcResult = createListing(user);
+        if (mvcResult.getResponse().getStatus() != 201) {
+            throw new RuntimeException("Unable to create Listing!");
+        }
+
+         // Check for wrong id - Listing should be created anyway
         mockMvc.perform(createBuilder(2L)
                 .file("images", Base64.getDecoder().decode("Bild"))
                         .param("title", "UpdatedTitle")
@@ -277,8 +328,21 @@ class ListingControllerTest {
                         .param("token", user.getToken())
                 )
                 .andExpect(status().isCreated());
+    }
 
-        // With correct parameters
+    /**
+     * Tests if listing is updated correctly
+     */
+    @Test
+    public void testUpdateListing() throws Exception {
+        User user = userRepository.save(
+                new User("Nutzername", "Password", "Profilbild"));
+
+        MvcResult mvcResult = createListing(user);
+        if (mvcResult.getResponse().getStatus() != 201) {
+            throw new RuntimeException("Unable to create Listing!");
+        }
+
         mockMvc.perform(createBuilder(1L)
                 .file("images", Base64.getDecoder().decode("Bild"))
                         .param("title", "UpdatedTitle")
@@ -308,6 +372,50 @@ class ListingControllerTest {
                 .andExpect(jsonPath("$[0].price").value("29.99"));
     }
 
+    /**
+     * Tests if listing is updated, but invalid ID
+     */
+    @Test
+    public void testPatchListingInvalidID() throws Exception {
+        User user = userRepository.save(
+                new User("Nutzername", "Password", "Profilbild"));
+
+        MvcResult mvcResult = createListing(user);
+        if (mvcResult.getResponse().getStatus() != 201) {
+            throw new RuntimeException("Unable to create Listing!");
+        }
+
+         // Check for wrong id
+        mockMvc.perform(MockMvcRequestBuilders.patch("/listings/2")
+                .param("user_id", String.valueOf(user.getId()))
+                .param("token", user.getToken())
+                .param("title", "PatchTitel"))
+                .andExpect(status().isNotFound());
+    }
+
+    /**
+     * Tests if listing is updated, but wrong user ID
+     */
+    @Test
+    public void testPatchListingWrongUserID() throws Exception {
+        User user = userRepository.save(
+                new User("Nutzername", "Password", "Profilbild"));
+
+        MvcResult mvcResult = createListing(user);
+        if (mvcResult.getResponse().getStatus() != 201) {
+            throw new RuntimeException("Unable to create Listing!");
+        }
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/listings/1")
+                .param("user_id", String.valueOf(user.getId() + 1))
+                .param("token", user.getToken())
+                .param("title", "PatchTitel"))
+                .andExpect(status().is(401));
+    }
+
+    /**
+     * Check if listing is updated
+     */
     @Test
     public void testPatchListing() throws Exception {
         User user = userRepository.save(
@@ -317,20 +425,6 @@ class ListingControllerTest {
         if (mvcResult.getResponse().getStatus() != 201) {
             throw new RuntimeException("Unable to create Listing!");
         }
-
-        // Check for wrong id
-        mockMvc.perform(MockMvcRequestBuilders.patch("/listings/2")
-                .param("user_id", String.valueOf(user.getId()))
-                .param("token", user.getToken())
-                .param("title", "PatchTitel"))
-                .andExpect(status().isNotFound());
-
-        //Check for wrong user id
-        mockMvc.perform(MockMvcRequestBuilders.patch("/listings/1")
-                .param("user_id", String.valueOf(user.getId() + 1))
-                .param("token", user.getToken())
-                .param("title", "PatchTitel"))
-                .andExpect(status().is(401));
 
         // With correct parameters
         mockMvc.perform(MockMvcRequestBuilders.patch("/listings/1")
