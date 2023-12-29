@@ -5,7 +5,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
 
-import 'fetch_listing_test.mocks.dart';
+import 'read_listing_test.mocks.dart';
 
 const baseUrl = "http://10.0.2.2:8080";
 
@@ -50,7 +50,7 @@ void main() {
 ]
 ''';
 
-  group('getAllListings', () {
+  group('getListings', () {
     test(
         'returns a list of listings and categories if the http call completes successfully',
         () async {

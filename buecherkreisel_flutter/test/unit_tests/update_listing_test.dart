@@ -9,7 +9,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
 
-import 'patch_listing_test.mocks.dart';
+import 'update_listing_test.mocks.dart';
 
 const baseUrl = "http://10.0.2.2:8080";
 

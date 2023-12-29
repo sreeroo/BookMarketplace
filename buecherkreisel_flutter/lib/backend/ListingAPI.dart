@@ -26,12 +26,6 @@ class ListingAPI {
     return List<Listing>.from(response.map((e) => Listing.fromJson(e)));
   }
 
-  // READ a specific Listing from the backend
-  Future<Listing> getListingById(String id) async {
-    final response = await _restAPI.fetchData('listings/$id', {});
-    return Listing.fromJson(response);
-  }
-
   // READ Categories from the backend
   Future<List<String>> getCategories() async {
     final response = await _restAPI.fetchData('categories');
