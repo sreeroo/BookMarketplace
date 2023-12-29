@@ -44,14 +44,13 @@ class ListingState extends ChangeNotifier {
       notifyListeners();
       return response;
     } catch (e) {
-      print(e);
       return null;
     }
   }
 }
 
 class AppState extends ChangeNotifier {
-  User user = User(id: "", imageURI: "", username: "", token: "");
+  User user = User(id: "", profilePicture: "", username: "", token: "");
   ListingState listingState = ListingState();
 
   void setUser(User user) {
@@ -68,7 +67,7 @@ class AppState extends ChangeNotifier {
   }
 
   void logout() {
-    this.user = User(id: "", imageURI: "", username: "", token: "");
+    this.user = User(id: "", profilePicture: "", username: "", token: "");
     listingState.setToken("");
     notifyListeners();
   }
