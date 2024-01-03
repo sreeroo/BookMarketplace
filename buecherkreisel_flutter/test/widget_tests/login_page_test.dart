@@ -54,7 +54,8 @@ void main() {
     expect(find.text('Bitte gib ein Passwort len>=6 ein.'), findsOneWidget);
   });
 
-  testWidgets('Test: ohne Regristrierung anmelden', (tester) async {
+  testWidgets('Test: ohne Regristrierung anmelden, Seite hat nicht geweschselt',
+      (tester) async {
     await tester.pumpWidget(
       ChangeNotifierProvider(
         create: (context) => AppState(),
@@ -70,6 +71,7 @@ void main() {
     await tester.enterText(find.byType(TextFormField).at(1), 'password123');
     await tester.tap(find.text('Einloggen'));
     await tester.pump();
+    expect(find.byType(LoginRegisterScreen), findsOneWidget);
   });
 
   testWidgets('Test: weschseln zwischen anmelden und registrieren',
