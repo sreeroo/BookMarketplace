@@ -1,5 +1,4 @@
 import 'package:buecherkreisel_flutter/backend/ListingAPI.dart';
-import 'package:buecherkreisel_flutter/models/chat.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter/material.dart';
