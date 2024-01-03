@@ -69,7 +69,7 @@ void main() {
 ''';
 
   group('CreateListing', () {
-    test('createListing sends a POST request', () async {
+    test('Test: Ein Listing wird erfolgreich erstellt', () async {
       // Arrange
 
       // Stub the behavior of the APIClient's post method
@@ -83,7 +83,7 @@ void main() {
       expect(response.statusCode, 201);
     });
 
-    test('create a listing with an error', () async {
+    test('Test: Ein Listing wird nicht erstellt , wirft Exception', () async {
       // Arrange
 
       // Stub the behavior of the APIClient's patchDataMultipart method
@@ -98,7 +98,7 @@ void main() {
 
   group('ReadListings', () {
     test(
-        'returns a list of listings and categories if the http call completes successfully',
+        'Test: getAllListingsRemote gibt eine Liste von Listings und Kategorien zurück',
         () async {
       // arrange
       when(mockClient.get(Uri.parse('$baseUrl/listings'),
@@ -127,7 +127,7 @@ void main() {
       expect(categories[1], "Category2");
     });
 
-    test('throws an exception if the http call completes with an error', () {
+    test('Test: getAllListingsRemote wirft eine Exception', () async {
       // arrange
       when(mockClient.get(Uri.parse('$baseUrl/listings'),
               headers: anyNamed('headers')))
@@ -141,7 +141,7 @@ void main() {
     });
 
     test(
-        'returns an empty list if the server returns an empty list and categories',
+        'Test: getAllListingsRemote gibt eine leere Liste von Listings und Kategorien zurück',
         () async {
       // arrange
       when(mockClient.get(Uri.parse('$baseUrl/listings'),
@@ -164,7 +164,8 @@ void main() {
       expect(categories, isEmpty);
     });
 
-    test('returns a listing posted by a user', () async {
+    test('Test: getOwnListings gibt eine Liste von Listings des Users zurück',
+        () async {
       // arrange
       when(mockClient.get(Uri.parse('$baseUrl/listings/search?user_id=1'),
               headers: anyNamed('headers')))
@@ -185,7 +186,7 @@ void main() {
       expect(listings[0].description, "Description1");
     });
 
-    test('Set token test', () async {
+    test('Test: prüft ob Token richtig gesetzt wird', () async {
       // arrange
       listingState.setToken("token");
 
@@ -198,7 +199,7 @@ void main() {
   });
 
   group('Update/Patch Listings', () {
-    test('patch a listing successfully', () async {
+    test('Test: Aktualisieren eines Listings', () async {
       // Arrange
 
       // Stub the behavior of the APIClient's patchDataMultipart method
@@ -212,7 +213,7 @@ void main() {
       expect(response.statusCode, 200);
     });
 
-    test('patch a listing with an error', () async {
+    test('Test: Aktualisieren eines Listings wirft eine Exception', () async {
       // Arrange
 
       // Stub the behavior of the APIClient's patchDataMultipart method
@@ -225,7 +226,7 @@ void main() {
     });
 
     // test without a image file
-    test('patch a listing without a image file', () async {
+    test('Test: Aktualisieren eines Listings ohne Bild', () async {
       // Arrange
 
       // Stub the behavior of the APIClient's patchDataMultipart method
@@ -241,7 +242,7 @@ void main() {
   });
 
   group('DeletListings', () {
-    test('delete a listing successfully', () async {
+    test('Test: Löschen eines Listings', () async {
       // arrange
 
       var uri = Uri.parse(
@@ -261,8 +262,7 @@ void main() {
       expect(response.statusCode, 204);
     });
 
-    test('response is null if an exception is thrown when deleting a listing',
-        () async {
+    test('Test: Löschen eines Listings wirft eine Exception', () async {
       // arrange
 
       var uri = Uri.parse(

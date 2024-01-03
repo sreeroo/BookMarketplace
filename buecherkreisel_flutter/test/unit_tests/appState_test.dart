@@ -6,7 +6,9 @@ void main() {
   group('AppState', () {
     AppState appState = AppState();
 
-    test('setUser updates the user and notifies listeners', () {
+    test(
+        'Test: setUser aktualisiert den Benutzer und benachrichtigt die Listener',
+        () {
       User testUser = User(
           id: "1",
           profilePicture: "test",
@@ -24,7 +26,9 @@ void main() {
       expect(notified, isTrue);
     });
 
-    test('setToken updates the token and notifies listeners', () {
+    test(
+        'Test: setToken aktualisiert den Token und benachrichtigt die Listener',
+        () {
       String testToken = "testToken";
 
       bool notified = false;
@@ -38,7 +42,9 @@ void main() {
       expect(notified, isTrue);
     });
 
-    test('logout resets the user and notifies listeners', () {
+    test(
+        'Test: Logout aktualisiert den Benutzer und benachrichtigt die Listener',
+        () {
       User testUser = User(
           id: "1",
           profilePicture: "test",
