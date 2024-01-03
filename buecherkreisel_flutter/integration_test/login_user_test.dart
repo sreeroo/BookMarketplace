@@ -51,7 +51,7 @@ void main() {
       await tester.enterText(find.byType(TextFormField).first, username);
       await tester.enterText(find.byType(TextFormField).last, password);
 
-      // Klicke auf den Login-Button (angenommen, der Text des Buttons ist 'Einloggen')
+      // Klicke auf den Login-Button
       await tester.tap(find.widgetWithText(TextButton, 'Einloggen'));
       await tester.pumpAndSettle();
 
