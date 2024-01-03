@@ -15,7 +15,7 @@ void main() {
   userAPI.setClient(mockClient);
 
   group('UserAPI', () {
-    test('createUser sends a POST request', () async {
+    test('Test: eine neue User wird erstellt mit einem Post Request', () async {
       // Arrange
       when(mockClient.post(any,
               body: anyNamed('body'),
@@ -32,7 +32,9 @@ void main() {
       expect(response.token, "test");
     });
 
-    test('create User throws an exception', () async {
+    test(
+        'Test: Exception wird geworfen, wenn der User nicht erstellt werden kann',
+        () async {
       // Arrange
       when(mockClient.post(any,
               body: anyNamed('body'),
@@ -47,7 +49,8 @@ void main() {
       expect(response, throwsException);
     });
 
-    test('getUserAsPublic sends a GET request', () async {
+    test('Test: ein User wird als public gelese mit einem GET Request',
+        () async {
       // Arrange
       when(mockClient.get(any, headers: anyNamed('headers'))).thenAnswer(
           (_) async => http.Response(
@@ -61,7 +64,7 @@ void main() {
       expect(response.id, "1");
     });
 
-    test('loginUser sends a POST request', () async {
+    test('Test: Ein User wird angemeldet mit einem Post Request', () async {
       // Arrange
       when(mockClient.post(any,
               body: anyNamed('body'), headers: anyNamed('headers')))
@@ -76,7 +79,8 @@ void main() {
       expect(response.token, "test");
     });
 
-    test('updateProfilePicture sends a PATCH request', () async {
+    test('Test: Ein User kann Profilbild ändern mit einem Patch Request',
+        () async {
       // Arrange
       when(mockClient.patch(any,
               body: anyNamed('body'), headers: anyNamed('headers')))
@@ -98,7 +102,9 @@ void main() {
       expect(response.containsValue("test"), true);
     });
 
-    test('updateProfilePicture throws an exception', () async {
+    test(
+        'Test: Exception wird geworfen, wenn das Profilbild nicht geändert wird',
+        () async {
       // Arrange
       when(mockClient.patch(any,
               body: anyNamed('body'), headers: anyNamed('headers')))
