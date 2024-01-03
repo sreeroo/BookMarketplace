@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import "package:buecherkreisel_flutter/models/user.dart";
@@ -26,34 +27,6 @@ class UserAPI {
     return User.fromJson(response);
   }
 
-  // UPDATE an existing User on the backend
-  Future<User> updateUser(User user) async {
-    final response =
-        await _restAPI.updateData('users/${user.id}', user.toJson());
-    return User.fromJson(response);
-  }
-
-  // UPDATE username of an existing User on the backend
-
-  Future<User> updateUsername(User user) async {
-    final response =
-        await _restAPI.updateData('users/edit_alias/${user.id}', user.toJson());
-    return User.fromJson(response);
-  }
-
-  // UPDATE imageURL of an existing User on the backend
-
-  Future<User> updateImageURL(User user) async {
-    final response =
-        await _restAPI.updateData('users/edit_pic/${user.id}', user.toJson());
-    return User.fromJson(response);
-  }
-
-  // DELETE an existing User on the backend
-  Future<void> deleteUser(User user) async {
-    await _restAPI.deleteData('users/delete/${user.id}');
-  }
-
   // LOGIN a user
   Future<User> loginUser(String username, password) async {
     Map<String, dynamic> response = await _restAPI
@@ -61,4 +34,39 @@ class UserAPI {
     response.addAll({"username": username});
     return User.fromJson(response);
   }
+
+  // UPDATE THE PROFILE PICTURE OF A USER
+  FutureOr<Map<String, dynamic>> updateProfilePicture(
+      User user, String imageURL) async {
+    final response = await _restAPI.updateData('users/edit_pic/${user.id}', {
+      "token": user.token,
+      "new_picture": imageURL,
+    });
+    return response;
+  }
+
+/*
+
+NOT USED AT THE MOMENT - MAYBE USEFUL LATER
+
+   // UPDATE username of an existing User on the backend
+  Future<User> updateUsername(User user) async {
+    final response =
+        await _restAPI.updateData('users/edit_alias/${user.id}', user.toJson());
+    return User.fromJson(response);
+  }
+
+  // UPDATE an existing User on the backend
+  Future<User> updateUser(User user) async {
+    final response =
+        await _restAPI.updateData('users/${user.id}', user.toJson());
+    return User.fromJson(response);
+  }
+
+
+  // DELETE an existing User on the backend
+  Future<void> deleteUser(User user) async {
+    await _restAPI.deleteData('users/delete/${user.id}');
+  }
+*/
 }

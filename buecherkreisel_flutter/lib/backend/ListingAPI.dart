@@ -53,9 +53,11 @@ class ListingAPI {
     return List<Listing>.from(response.map((e) => Listing.fromJson(e)));
   }
 
-  // UPDATE an existing Listing on the backend
-  // Not being used at the moment, use patchListing instead
   /*
+
+NOT USED AT THE MOMENT - MAYBE USEFUL LATER
+
+  // UPDATE an existing Listing on the backend
   Future<http.StreamedResponse> updateListing(Listing listing,
       [File? imageFile]) async {
     final body = listing.toJson();

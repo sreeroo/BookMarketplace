@@ -86,7 +86,7 @@ class APIClient {
 
   // UPDATE
   Future<dynamic> updateData(String endpoint, dynamic data) async {
-    final response = await _client.put(
+    final response = await _client.patch(
       Uri.parse('$baseUrl$endpoint'),
       body: json.encode(data),
       headers: {'Content-Type': 'application/json'},
@@ -143,9 +143,11 @@ class APIClient {
     return response;
   }
 
-  // Update using multipart/form-data (PUT)
-  // Not being used at the moment
   /*
+
+NOT USED AT THE MOMENT - MAYBE USEFUL LATER
+  
+  // Update using multipart/form-data (PUT)
   Future<http.StreamedResponse> updateDataMultipart(
       String endpoint, dynamic data,
       [File? imageFile]) async {

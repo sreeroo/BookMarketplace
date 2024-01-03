@@ -60,5 +60,61 @@ void main() {
       // Assert
       expect(response.id, "1");
     });
+
+    test('loginUser sends a POST request', () async {
+      // Arrange
+      when(mockClient.post(any,
+              body: anyNamed('body'), headers: anyNamed('headers')))
+          .thenAnswer(
+              (_) async => http.Response('{"id":"1","token":"test"}', 200));
+
+      // Act
+      final response = await userAPI.loginUser('user1', 'password');
+
+      // Assert
+      expect(response.id, "1");
+      expect(response.token, "test");
+    });
+
+    test('updateProfilePicture sends a PATCH request', () async {
+      // Arrange
+      when(mockClient.patch(any,
+              body: anyNamed('body'), headers: anyNamed('headers')))
+          .thenAnswer(
+              (_) async => http.Response('{"id":"1","token":"test"}', 200));
+
+      User user = User(
+          id: "1",
+          profilePicture: "profile_pic",
+          username: "username",
+          token: "token");
+
+      // Act
+      final response =
+          await userAPI.updateProfilePicture(user, 'new_image_url');
+
+      // Assert
+      expect(response.containsValue("1"), true);
+      expect(response.containsValue("test"), true);
+    });
+
+    test('updateProfilePicture throws an exception', () async {
+      // Arrange
+      when(mockClient.patch(any,
+              body: anyNamed('body'), headers: anyNamed('headers')))
+          .thenAnswer((_) async => http.Response('Not Found', 404));
+
+      User user = User(
+          id: "1",
+          profilePicture: "profile_pic",
+          username: "username",
+          token: "token");
+
+      // Act
+      final response = userAPI.updateProfilePicture(user, 'new_image_url');
+
+      // Assert
+      expect(response, throwsException);
+    });
   });
 }

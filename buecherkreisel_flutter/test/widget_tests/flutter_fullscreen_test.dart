@@ -31,7 +31,7 @@ void main() {
     // Überprüfen Sie, ob alle erwarteten Elemente angezeigt werden
     expect(find.byType(Image), findsOneWidget);
     expect(find.byType(Text),
-        findsNWidgets(7)); // Anzahl der Text-Widgets anpassen
+        findsNWidgets(10)); // Anzahl der Text-Widgets anpassen
     expect(find.byType(IconButton), findsOneWidget);
     expect(find.byType(Divider),
         findsNWidgets(2)); // Anzahl der Divider-Widgets anpassen
