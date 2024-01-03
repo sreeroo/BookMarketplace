@@ -59,7 +59,7 @@ void main() {
     await tester.tap(find.byType(IconButton));
     await tester.pump();
 
-    // Überprüfen Sie hier die erwartete Aktion, z.B. ob ein bestimmter Text angezeigt wird
     // In diesem Fall wird nur überprüft, ob der IconButton getappt werden kann, da er momentan nur eine Drucknachricht ausgibt
+    expect(find.byIcon(Icons.favorite), findsOneWidget);
   });
 }
