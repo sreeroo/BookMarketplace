@@ -58,10 +58,13 @@ void main() {
     await tester
         .pumpWidget(MaterialApp(home: ListingPreview(listing: dummyListing)));
 
+// Verify if the elements are present
     expect(find.text(dummyListing.category), findsOneWidget);
-    expect(find.text(dummyListing.location), findsOneWidget);
-    expect(find.text(dummyListing.title), findsOneWidget);
-    expect(find.text('${dummyListing.price}€'), findsOneWidget);
+    expect(find.text('Ort: ${dummyListing.location}'), findsOneWidget);
+    expect(find.text('Buchtitel: ${dummyListing.title}'), findsOneWidget);
+    expect(
+        find.text('Preis : ${dummyListing.price.toString()}€'), findsOneWidget);
+    expect(find.byType(Image), findsOneWidget);
     expect(find.byType(Image), findsOneWidget);
     expect(find.byType(GestureDetector), findsOneWidget);
   });

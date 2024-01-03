@@ -36,10 +36,15 @@ void main() {
     expect(find.byType(Divider),
         findsNWidgets(2)); // Anzahl der Divider-Widgets anpassen
 
-    expect(find.text(dummyListing.category), findsOneWidget);
-    expect(find.text(dummyListing.location), findsOneWidget);
-    expect(find.text(dummyListing.title), findsOneWidget);
+    expect(find.text('Kategorie: ${dummyListing.category}'), findsOneWidget);
+    expect(find.text('Ort: ${dummyListing.location}'), findsOneWidget);
+    expect(find.text('Beschreibung:'), findsOneWidget);
+    expect(find.text(dummyListing.description), findsOneWidget);
+    expect(find.text(dummyListing.title), findsAtLeast(1));
     expect(find.text('${dummyListing.price}€'), findsOneWidget);
+    expect(find.text('Versand möglich: '), findsOneWidget);
+    expect(find.text('Kontakt:'), findsOneWidget);
+    expect(find.text(dummyListing.contact), findsOneWidget);
     expect(find.byType(Image), findsOneWidget);
     expect(find.byType(GestureDetector), findsOneWidget);
   });
