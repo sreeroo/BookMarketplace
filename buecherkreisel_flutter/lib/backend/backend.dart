@@ -10,7 +10,10 @@ class APIClient {
   // use IP 10.0.2.2 to access localhost from emulator!
   static const baseUrl = "http://10.0.2.2:8080/";
 
-  final _client = http.Client();
+  var _client = http.Client();
+
+  // set _client for testing
+  set client(http.Client client) => _client = client;
 
   // GET
   Future<dynamic> fetchData(String endpoint,
@@ -72,7 +75,7 @@ class APIClient {
       ),
     );
 
-    final streamedResponse = await response.send();
+    final streamedResponse = await _client.send(response);
 
     if (streamedResponse.statusCode == 201) {
       return streamedResponse;
@@ -83,7 +86,7 @@ class APIClient {
 
   // UPDATE
   Future<dynamic> updateData(String endpoint, dynamic data) async {
-    final response = await _client.put(
+    final response = await _client.patch(
       Uri.parse('$baseUrl$endpoint'),
       body: json.encode(data),
       headers: {'Content-Type': 'application/json'},
@@ -96,6 +99,54 @@ class APIClient {
     }
   }
 
+  // UPDATE using multipart/form-data (PATCH)
+  Future<http.StreamedResponse> patchDataMultipart(
+      String endpoint, dynamic data,
+      [File? imageFile]) async {
+    final response =
+        await http.MultipartRequest('PATCH', Uri.parse('$baseUrl$endpoint'));
+
+    response.headers.addAll(<String, String>{
+      'Content-Type': 'multipart/form-data',
+      'Connection': 'keep-alive',
+    });
+
+    response.fields.addAll(data);
+
+    if (imageFile != null) {
+      response.files.add(
+        await http.MultipartFile.fromPath(
+          'images',
+          imageFile.path,
+        ),
+      );
+    }
+
+    final streamedResponse = await _client.send(response);
+
+    if (streamedResponse.statusCode <= 300) {
+      return streamedResponse;
+    } else {
+      throw Exception('Failed to update data');
+    }
+  }
+
+  // DELETE
+  Future<http.Response> deleteData(String endpoint) async {
+    Uri uri = Uri.parse('$baseUrl$endpoint');
+
+    final response = await _client.delete(uri);
+
+    if (response.statusCode >= 300) {
+      throw Exception('Failed to delete data');
+    }
+    return response;
+  }
+
+  /*
+
+NOT USED AT THE MOMENT - MAYBE USEFUL LATER
+  
   // Update using multipart/form-data (PUT)
   Future<http.StreamedResponse> updateDataMultipart(
       String endpoint, dynamic data,
@@ -127,49 +178,5 @@ class APIClient {
       throw Exception('Failed to update data');
     }
   }
-
-  // UPDATE using multipart/form-data (PATCH)
-  Future<http.StreamedResponse> patchDataMultipart(
-      String endpoint, dynamic data,
-      [File? imageFile]) async {
-    final response =
-        await http.MultipartRequest('PATCH', Uri.parse('$baseUrl$endpoint'));
-
-    response.headers.addAll(<String, String>{
-      'Content-Type': 'multipart/form-data',
-      'Connection': 'keep-alive',
-    });
-
-    response.fields.addAll(data);
-
-    if (imageFile != null) {
-      response.files.add(
-        await http.MultipartFile.fromPath(
-          'images',
-          imageFile.path,
-        ),
-      );
-    }
-
-    final streamedResponse = await response.send();
-
-    if (streamedResponse.statusCode <= 300) {
-      return streamedResponse;
-    } else {
-      throw Exception('Failed to update data');
-    }
-  }
-
-  // DELETE
-  Future<http.Response> deleteData(String endpoint) async {
-    Uri uri = Uri.parse('$baseUrl$endpoint');
-
-    final response = await _client.delete(uri);
-
-    if (response.statusCode >= 300) {
-      throw Exception('Failed to delete data');
-    }
-
-    return response;
-  }
+  */
 }

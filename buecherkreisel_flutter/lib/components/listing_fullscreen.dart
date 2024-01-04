@@ -36,7 +36,7 @@ class ListingFullScreen extends StatelessWidget {
                   overflow: TextOverflow.clip,
                 ),
                 IconButton(
-                  onPressed: () => print("Not FaveIcon implemented"),
+                  onPressed: () => print("FaveIcon not implemented"),
                   icon: const Icon(Icons.favorite),
                 ),
               ],

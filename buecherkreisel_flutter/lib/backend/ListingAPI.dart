@@ -7,6 +7,11 @@ class ListingAPI {
   final _restAPI = APIClient();
   String token = "";
 
+  //set restAPI client for testing
+  void setClient(http.Client client) {
+    _restAPI.client = client;
+  }
+
   // CREATE a new Listing on the backend
   Future<http.StreamedResponse> createListing(
       Listing listing, File imageFile) async {
@@ -21,25 +26,10 @@ class ListingAPI {
     return List<Listing>.from(response.map((e) => Listing.fromJson(e)));
   }
 
-  // READ a specific Listing from the backend
-  Future<Listing> getListingById(String id) async {
-    final response = await _restAPI.fetchData('listings/$id', {});
-    return Listing.fromJson(response);
-  }
-
   // READ Categories from the backend
   Future<List<String>> getCategories() async {
     final response = await _restAPI.fetchData('categories');
     return List<String>.from(response.map((e) => e.toString()));
-  }
-
-  // UPDATE an existing Listing on the backend
-  Future<http.StreamedResponse> updateListing(Listing listing,
-      [File? imageFile]) async {
-    final body = listing.toJson();
-    body.addAll({"token": token});
-    return await _restAPI.updateDataMultipart(
-        'listings/${listing.id}', body, imageFile);
   }
 
   // Partial UPDATE an existing Listing on the backend
@@ -62,4 +52,18 @@ class ListingAPI {
     final response = await _restAPI.fetchData('listings/search', query);
     return List<Listing>.from(response.map((e) => Listing.fromJson(e)));
   }
+
+  /*
+
+NOT USED AT THE MOMENT - MAYBE USEFUL LATER
+
+  // UPDATE an existing Listing on the backend
+  Future<http.StreamedResponse> updateListing(Listing listing,
+      [File? imageFile]) async {
+    final body = listing.toJson();
+    body.addAll({"token": token});
+    return await _restAPI.updateDataMultipart(
+        'listings/${listing.id}', body, imageFile);
+  }
+  */
 }

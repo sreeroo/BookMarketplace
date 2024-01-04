@@ -27,8 +27,8 @@ class ProfileScreen extends StatelessWidget {
             Card(
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: state.user.imageURI.isNotEmpty
-                      ? NetworkImage(state.user.imageURI)
+                  backgroundImage: state.user.profilePicture.isNotEmpty
+                      ? NetworkImage(state.user.profilePicture)
                       : null,
                 ),
                 title: Text(state.user.username),

@@ -1,5 +1,4 @@
 import 'package:buecherkreisel_flutter/backend/ListingAPI.dart';
-import 'package:buecherkreisel_flutter/models/chat.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter/material.dart';
@@ -15,20 +14,21 @@ class ListingState extends ChangeNotifier {
 
   Future<List<Listing>> getAllListingsRemote() async {
     listings = await api.getAllListings();
-    categories = await api.getCategories();
+    getCategoriesRemote();
     notifyListeners();
     return listings;
   }
 
   Future<List<Listing>> getOwnListings(String id) async {
     ownListings = await api.searchListings({"user_id": id});
-    categories = await api.getCategories();
+    getCategoriesRemote();
     notifyListeners();
     return ownListings;
   }
 
   Future<List<String>> getCategoriesRemote() async {
-    return await api.getCategories();
+    categories = await api.getCategories();
+    return categories;
   }
 
   void setToken(String token) async {
@@ -43,14 +43,13 @@ class ListingState extends ChangeNotifier {
       notifyListeners();
       return response;
     } catch (e) {
-      print(e);
       return null;
     }
   }
 }
 
 class AppState extends ChangeNotifier {
-  User user = User(id: "", imageURI: "", username: "", token: "");
+  User user = User(id: "", profilePicture: "", username: "", token: "");
   ListingState listingState = ListingState();
 
   void setUser(User user) {
@@ -67,7 +66,7 @@ class AppState extends ChangeNotifier {
   }
 
   void logout() {
-    this.user = User(id: "", imageURI: "", username: "", token: "");
+    this.user = User(id: "", profilePicture: "", username: "", token: "");
     listingState.setToken("");
     notifyListeners();
   }
