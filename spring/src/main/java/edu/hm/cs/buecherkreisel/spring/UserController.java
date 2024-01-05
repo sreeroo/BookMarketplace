@@ -21,7 +21,7 @@ public class UserController {
      * Retrieves user information based on the provided ID and token.
      *
      * @param id   The ID of the user to retrieve.
-     * @param body Map containing the user token for authentication.
+     * @param token String containing the user token for authentication.
      * @return ResponseEntity containing user information if successful, or an error response.
      */
     @GetMapping("/users/{id}")
