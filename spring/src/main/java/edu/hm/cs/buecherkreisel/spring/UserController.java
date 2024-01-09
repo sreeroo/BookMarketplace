@@ -21,15 +21,15 @@ public class UserController {
      * Retrieves user information based on the provided ID and token.
      *
      * @param id   The ID of the user to retrieve.
-     * @param body Map containing the user token for authentication.
+     * @param token String containing the user token for authentication.
      * @return ResponseEntity containing user information if successful, or an error response.
      */
     @GetMapping("/users/{id}")
-    ResponseEntity<Map<String, String>> getUser(@PathVariable long id, @RequestBody Map<String, String> body) {
+    ResponseEntity<Map<String, String>> getUser(@PathVariable long id, @RequestParam("token") String token) {
         Optional<User> userCheck = repository.findById(id);
         if(userCheck.isPresent()) {
             User user = userCheck.get();
-            if(Objects.equals(user.getToken(), body.get("token"))) {
+            if(Objects.equals(user.getToken(), token)) {
                 Map<String, String> answer = new HashMap<>();
                 answer.put("id", String.valueOf(user.getId()));
                 answer.put("username", user.getUsername());
@@ -125,7 +125,8 @@ public class UserController {
                 String[] stringArray = listOfLikesString.replaceAll("[\\[\\]\"]", "").split(", ");
                 List<Long> listOfLikes = new ArrayList<>();
                 for (String str : stringArray) {
-                    listOfLikes.add(Long.parseLong(str));
+                    if(!str.isEmpty())
+                        listOfLikes.add(Long.parseLong(str));
                 }
                 user.setLikedListings(listOfLikes);
                 repository.save(user);
