@@ -57,6 +57,23 @@ class UserAPI {
 
   }
 
+  // UPDATE THE LIKED LISTINGS LIST
+  FutureOr<Map<String, dynamic>> updateLikedListings(
+      User user, List<Listing> likedListings) async {
+
+    List<int> likedListingsIndex = [];
+
+    for (Listing listing in likedListings) {
+      likedListingsIndex.add(listing.id);
+    }
+
+    final response = await _restAPI.updateData('users/edit_likes/${user.id}', {
+      "token": user.token,
+      "liked_listings": likedListingsIndex,
+    });
+    return response;
+  }
+
 /*
 
 NOT USED AT THE MOMENT - MAYBE USEFUL LATER
