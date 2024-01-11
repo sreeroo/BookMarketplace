@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import "package:buecherkreisel_flutter/models/user.dart";
 import 'package:http/http.dart' as http;
+import '../models/listing.dart';
 import 'backend.dart';
 
 class UserAPI {
@@ -43,6 +44,17 @@ class UserAPI {
       "new_picture": imageURL,
     });
     return response;
+  }
+
+  Future<List<int>> getLikedListings(User user) async {
+    final responseData = await _restAPI.fetchData('users/${user.id}', {
+      "token": user.token
+    }) as Map<String, dynamic>;
+
+    List<dynamic> dynamicList = json.decode(responseData["liked_listings"]);
+
+    return dynamicList.cast<int>();
+
   }
 
 /*

@@ -1,4 +1,5 @@
 import 'package:buecherkreisel_flutter/backend/ListingAPI.dart';
+import 'package:buecherkreisel_flutter/backend/UserAPI.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,9 @@ class ListingState extends ChangeNotifier {
   List<Listing> listings = List.empty(growable: true);
   List<String> categories = List.empty(growable: true);
   List<Listing> ownListings = List.empty(growable: true);
+  List<Listing> likedListings = List.empty(growable: true);
   ListingAPI api = ListingAPI();
+  UserAPI userAPI = UserAPI();
 
   ListingState();
 
@@ -24,6 +27,23 @@ class ListingState extends ChangeNotifier {
     getCategoriesRemote();
     notifyListeners();
     return ownListings;
+  }
+
+  Future<List<Listing>> getLikedListings(User user) async {
+    List<int> indexList = await userAPI.getLikedListings(user);
+
+    if (listings.isEmpty) {
+      getAllListingsRemote();
+    }
+
+    for (Listing listing in listings) {
+      if (indexList.contains(listing.id)) {
+        likedListings.add(listing);
+      }
+    }
+
+    notifyListeners();
+    return likedListings;
   }
 
   Future<List<String>> getCategoriesRemote() async {

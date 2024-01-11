@@ -5,10 +5,10 @@ import 'dart:convert';
 
 class APIClient {
   // use IP 10.0.2.2 to access localhost from windows client
-  //static const baseUrl = "http://127.0.0.1:8080/";
+  static const baseUrl = "http://127.0.0.1:8080/";
 
   // use IP 10.0.2.2 to access localhost from emulator!
-  static const baseUrl = "http://10.0.2.2:8080/";
+  // static const baseUrl = "http://10.0.2.2:8080/";
 
   var _client = http.Client();
 
