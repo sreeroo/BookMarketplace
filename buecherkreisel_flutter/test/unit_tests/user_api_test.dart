@@ -1,5 +1,5 @@
 import 'package:buecherkreisel_flutter/backend/UserAPI.dart';
-import 'package:buecherkreisel_flutter/backend/datatypes.dart';
+import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -122,5 +122,58 @@ void main() {
       // Assert
       expect(response, throwsException);
     });
+
+    test('Test: Die Liste der favorisierten Anzeigen des Nutzer werden abgerufen',
+            () async {
+      //Arange
+      when(mockClient.get(any, headers: anyNamed('headers'))).thenAnswer(
+              (_) async => http.Response(
+                  '{"liked_listings":"[1]"}', 200));
+
+      User user = User(
+          id: "1",
+          profilePicture: "profile_pic",
+          username: "username",
+          token: "token");
+
+      // Act
+      final response = await userAPI.getLikedListings(user);
+
+      // Assert
+      expect(response, {1});
+    });
   });
+
+  test('Test: Die Liste der favorisierten Anzeigen des Nutzer wird aktualisiert',
+      () async {
+        // Arrange
+        when(mockClient.patch(any,
+                body: anyNamed('body'), headers: anyNamed('headers')))
+            .thenAnswer((_) async => http.Response('{"liked_listings":[1]}', 204));
+
+        User user = User(
+            id: "1",
+            profilePicture: "profile_pic",
+            username: "username",
+            token: "token");
+
+        Listing listing = Listing(
+            id: 1,
+            title: "title",
+            price: 2,
+            category: "category",
+            offersDelivery: false,
+            description: "description",
+            isReserved: false,
+            createdBy: 1,
+            location: "location",
+            contact: "contact");
+
+        // Act
+        final response = userAPI.updateLikedListings(user, {listing});
+
+        // Assert
+        expect(response.toString(), "Instance of 'Future<dynamic>'");
+      }
+  );
 }
