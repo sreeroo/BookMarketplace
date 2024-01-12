@@ -21,7 +21,7 @@ class ListingPreview extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ListenableProvider<AppState>.value(
+          builder: (context) => ChangeNotifierProvider.value(
             value: appState,
             child: ListingFullScreen(listing: listing),),
         ),
