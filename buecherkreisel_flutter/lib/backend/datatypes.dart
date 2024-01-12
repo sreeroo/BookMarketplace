@@ -40,8 +40,6 @@ class ListingState extends ChangeNotifier {
         likedListings.add(listing);
       }
     }
-
-    notifyListeners();
     return likedListings;
   }
 
