@@ -1,7 +1,9 @@
+import 'package:buecherkreisel_flutter/backend/datatypes.dart';
 import 'package:buecherkreisel_flutter/components/listing_fullscreen.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
+import 'package:provider/provider.dart';
 
 import 'listing_preview_test.dart';
 
@@ -24,8 +26,12 @@ void main() {
   testWidgets('Test: ListingFullScreen zeigt alle Elemente an',
       (WidgetTester tester) async {
     Listing dummyListing = createDummyListing();
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(MultiProvider(
+        providers: [ChangeNotifierProvider(create: (_) => AppState())
+        ],
+    child: MaterialApp(
       home: ListingFullScreen(listing: dummyListing),
+      ),
     ));
 
     // Überprüfen Sie, ob alle erwarteten Elemente angezeigt werden
@@ -51,8 +57,12 @@ void main() {
 
   testWidgets('Test: IconButton reagiert auf Taps',
       (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(MultiProvider(
+        providers: [ChangeNotifierProvider(create: (_) => AppState())
+        ],
+    child: MaterialApp(
       home: ListingFullScreen(listing: createDummyListing()),
+      ),
     ));
 
     // Überprüfen Sie, ob der IconButton auf Taps reagiert
