@@ -1,12 +1,10 @@
-import 'dart:convert';
-
-import 'package:buecherkreisel_flutter/components/listing_fullscreen.dart';
+import 'package:buecherkreisel_flutter/backend/datatypes.dart';
 import 'package:buecherkreisel_flutter/components/listing_preview.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
-import 'package:buecherkreisel_flutter/backend/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:provider/provider.dart';
 
 // Helper Funktion, die ein Dummy-Bild als Base64-String generiert.
 String getDummyImageBase64String() {
@@ -55,8 +53,15 @@ void main() {
   testWidgets('Test: Listing Preview zeigt Informationen korrekt',
       (tester) async {
     Listing dummyListing = createDummyListing();
-    await tester
-        .pumpWidget(MaterialApp(home: ListingPreview(listing: dummyListing)));
+    await tester.pumpWidget(MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ListingState()),
+          ChangeNotifierProvider(create: (_) => AppState()),
+        ],
+    child: MaterialApp(
+      home: ListingPreview(listing: dummyListing),
+      ),
+    ));
 
 // Verify if the elements are present
     expect(find.text(dummyListing.category), findsOneWidget);
