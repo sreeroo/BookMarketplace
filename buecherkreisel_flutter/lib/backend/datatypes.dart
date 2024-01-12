@@ -9,7 +9,7 @@ class ListingState extends ChangeNotifier {
   List<Listing> listings = List.empty(growable: true);
   List<String> categories = List.empty(growable: true);
   List<Listing> ownListings = List.empty(growable: true);
-  List<Listing> likedListings = List.empty(growable: true);
+  Set<Listing> likedListings = {};
   ListingAPI api = ListingAPI();
   UserAPI userAPI = UserAPI();
 
@@ -29,8 +29,8 @@ class ListingState extends ChangeNotifier {
     return ownListings;
   }
 
-  Future<List<Listing>> getLikedListings(User user) async {
-    List<int> indexList = await userAPI.getLikedListings(user);
+  Future<Set<Listing>> getLikedListings(User user) async {
+    Set<int> indexList = await userAPI.getLikedListings(user);
 
     if (listings.isEmpty) {
       getAllListingsRemote();
@@ -76,6 +76,7 @@ class AppState extends ChangeNotifier {
     this.user = user;
     setToken(user.token);
     listingState.getOwnListings(user.id);
+    listingState.getLikedListings(user);
     notifyListeners();
   }
 
@@ -88,6 +89,7 @@ class AppState extends ChangeNotifier {
   void logout() {
     this.user = User(id: "", profilePicture: "", username: "", token: "");
     listingState.setToken("");
+    listingState.likedListings = {};
     notifyListeners();
   }
 }

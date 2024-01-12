@@ -46,20 +46,20 @@ class UserAPI {
     return response;
   }
 
-  Future<List<int>> getLikedListings(User user) async {
+  Future<Set<int>> getLikedListings(User user) async {
     final responseData = await _restAPI.fetchData('users/${user.id}', {
       "token": user.token
     }) as Map<String, dynamic>;
 
     List<dynamic> dynamicList = json.decode(responseData["liked_listings"]);
 
-    return dynamicList.cast<int>();
+    return dynamicList.cast<int>().toSet();
 
   }
 
   // UPDATE THE LIKED LISTINGS LIST
   Future updateLikedListings(
-      User user, List<Listing> likedListings) async {
+      User user, Set<Listing> likedListings) async {
 
     Set<int> likedListingsIndex = {};
 

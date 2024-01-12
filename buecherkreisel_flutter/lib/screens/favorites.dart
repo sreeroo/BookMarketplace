@@ -9,27 +9,22 @@ class Favorites extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ListingState>(builder: (c, listingState, w) {
-
-      AppState appState = Provider.of<AppState>(context);
+    return Consumer2<ListingState, AppState>(builder: (
+        c, listingState, appState, w) {
 
       if (appState.user.token.isEmpty) {
         return const Center(
               child: Text("Login to see your favorites"));
       }
 
-      if (listingState.likedListings.isEmpty) {
-        listingState.getLikedListings(appState.user);
-      }
-
-      return appState.user.token.isEmpty
+      return listingState.likedListings.isEmpty
           ? const Center(
               child: Text("You don't have any favorites yet"))
           : ListView.builder(
               itemCount: listingState.likedListings.length,
               itemBuilder: (context, index) {
                 return ListingPreview(
-                  listing: listingState.likedListings[index],
+                  listing: listingState.likedListings.elementAt(index),
                 );
               },
             );
