@@ -94,7 +94,8 @@ class APIClient {
 
     if (response.statusCode == 200) {
       return json.decode(utf8.decode(response.bodyBytes));
-    } else {
+    } else if ( response.statusCode == 204) {}
+    else {
       throw Exception('Failed to update data');
     }
   }

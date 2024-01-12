@@ -4,6 +4,9 @@ import 'package:buecherkreisel_flutter/backend/utils.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/components/listing_fullscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../backend/datatypes.dart';
 
 class ListingPreview extends StatelessWidget {
   late Listing listing;
@@ -12,11 +15,15 @@ class ListingPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+
+    return Consumer2<ListingState, AppState>(builder: (c, listingState, appState, w) {
+      return GestureDetector(
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ListingFullScreen(listing: listing),
+          builder: (context) => ListenableProvider<AppState>.value(
+            value: appState,
+            child: ListingFullScreen(listing: listing),),
         ),
       ),
       child: Container(
@@ -53,5 +60,6 @@ class ListingPreview extends StatelessWidget {
         ),
       ),
     );
+    });
   }
 }
