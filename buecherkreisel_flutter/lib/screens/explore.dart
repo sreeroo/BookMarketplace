@@ -10,7 +10,7 @@ class Explore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ListingState, AppState>(builder: (c, listingState, appState, w) {
+    return Consumer<ListingState>(builder: (c, listingState, w) {
       if (listingState.listings.isEmpty) {
         listingState.getAllListingsRemote();
       }

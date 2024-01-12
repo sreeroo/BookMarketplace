@@ -3,7 +3,6 @@ import 'package:buecherkreisel_flutter/backend/UserAPI.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 
 class ListingState extends ChangeNotifier {
   List<Listing> listings = List.empty(growable: true);
@@ -82,12 +81,12 @@ class AppState extends ChangeNotifier {
 
   void setToken(String token) {
     listingState.setToken(token);
-    this.user.token = token;
+    user.token = token;
     notifyListeners();
   }
 
   void logout() {
-    this.user = User(id: "", profilePicture: "", username: "", token: "");
+    user = User(id: "", profilePicture: "", username: "", token: "");
     listingState.setToken("");
     listingState.likedListings = {};
     notifyListeners();

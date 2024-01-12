@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:buecherkreisel_flutter/backend/utils.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/components/listing_fullscreen.dart';
