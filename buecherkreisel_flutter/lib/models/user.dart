@@ -23,11 +23,11 @@ class User {
       );
 
   // map item to JSON-data
-  Map<String, dynamic> toJson() => {
+  /**Map<String, dynamic> toJson() => {
         "id": id,
         "profile_picture": profilePicture,
         "username": username,
         "token": token,
         "total_listings": totalListings,
-      };
+      };**/
 }
