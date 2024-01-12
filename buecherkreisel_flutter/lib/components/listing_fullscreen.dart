@@ -45,6 +45,12 @@ class ListingFullScreen extends StatelessWidget {
                         UserAPI().updateLikedListings(
                           appState.user,
                           appState.listingState.likedListings);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Logge dich zuerst ein!"),
+                            duration: Durations.long2,)
+                        );
                       }
                     },
                     icon: const Icon(Icons.favorite),
