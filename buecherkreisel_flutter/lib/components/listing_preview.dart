@@ -21,7 +21,7 @@ class ListingPreview extends StatelessWidget {
         MaterialPageRoute(
           builder: (context) => ChangeNotifierProvider.value(
             value: appState,
-            child: ListingFullScreen(listing: listing),),
+            child: ListingFullScreen(listing: listing, user: appState.user),),
         ),
       ),
       child: Container(
