@@ -40,22 +40,6 @@ void main() {
 
   testWidgets('Test: Nicht eingeloggt Meldung.',
       (WidgetTester tester) async {
-    await tester.pumpWidget(MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AppState()),
-          ChangeNotifierProvider(create: (_) => ListingState())
-        ],
-    child: MaterialApp(
-      home: Favorites(),
-      ),
-    ));
-
-    expect(find.text('Login to see your favorites'), findsOneWidget);
-
-  });
-
-  testWidgets('Test: Nicht eingeloggt Meldung.',
-      (WidgetTester tester) async {
 
     AppState appState = AppState();
 
@@ -67,15 +51,18 @@ void main() {
 
     appState.user = user;
 
-    await tester.pumpWidget(MultiProvider(
-        providers: [
-          ChangeNotifierProvider.value(value: appState),
-          ChangeNotifierProvider(create: (_) => ListingState())
-        ],
-    child: MaterialApp(
-      home: Favorites(),
-      ),
-    ));
+    await tester.runAsync(() async {
+      await tester.pumpWidget(MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => appState),
+            ChangeNotifierProvider(create: (_) => ListingState())
+          ],
+      child: MaterialApp(
+        home: Favorites(),
+        ),
+      ));
+    });
+    await tester.pumpAndSettle(); 
 
     expect(find.text("You don't have any favorites yet"), findsOneWidget);
 

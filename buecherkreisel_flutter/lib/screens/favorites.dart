@@ -20,12 +20,19 @@ class FavoriteState extends State<Favorites> {
     scheduleLikedListingsFetch();
   }
 
+  @override
+  void dispose() {
+    super.dispose(); 
+  }
+
   void scheduleLikedListingsFetch() {
     // Schedule a callback for the next event loop iteration
     Future.delayed(Duration.zero, fetchLikedListings);
   }
 
   Future<void> fetchLikedListings() async {
+    if(!mounted) return; 
+    
     final appState = Provider.of<AppState>(context, listen: false);
     await appState.listingState.getLikedListings(appState.user.likedListings);
     // Call setState if you need to update the UI after fetching data
