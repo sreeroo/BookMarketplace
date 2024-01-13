@@ -15,7 +15,7 @@ void main() {
   userAPI.setClient(mockClient);
 
   group('UserAPI', () {
-    test('Test: eine neue User wird erstellt mit einem Post Request', () async {
+    test('Test: ein neuer User wird erstellt mit einem Post Request', () async {
       // Arrange
       when(mockClient.post(any,
               body: anyNamed('body'),
@@ -23,6 +23,11 @@ void main() {
               encoding: anyNamed('encoding')))
           .thenAnswer(
               (_) async => http.Response('{"id":"1","token":"test"}', 201));
+
+      when(mockClient.get(any, headers: anyNamed('headers'))).thenAnswer(
+          (_) async => http.Response(
+              '{"id":"1", "username":"user1", "profile_picture":"test", "total_listings":"0", "token":"test", "liked_listings":"[]"}',
+              200));
 
       // Act
       final response = await userAPI.createUser('user1', 'password');
@@ -157,20 +162,8 @@ void main() {
             username: "username",
             token: "token");
 
-        Listing listing = Listing(
-            id: 1,
-            title: "title",
-            price: 2,
-            category: "category",
-            offersDelivery: false,
-            description: "description",
-            isReserved: false,
-            createdBy: 1,
-            location: "location",
-            contact: "contact");
-
         // Act
-        final response = userAPI.updateLikedListings(user, {listing});
+        final response = userAPI.updateLikedListings(user);
 
         // Assert
         expect(response.toString(), "Instance of 'Future<dynamic>'");

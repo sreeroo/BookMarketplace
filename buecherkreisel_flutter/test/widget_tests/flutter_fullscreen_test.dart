@@ -3,7 +3,9 @@ import 'package:buecherkreisel_flutter/components/listing_fullscreen.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
+import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:provider/provider.dart';
+import 'dart:io';
 
 import 'listing_preview_test.dart';
 
@@ -23,6 +25,20 @@ void main() {
         contact: "a@b.c");
   }
 
+  User createDummyUser() {
+    return User(
+      id: "",
+      profilePicture: "",
+      username: "",
+      token: "",
+    ); 
+  }
+
+  setUpAll(() {
+    // ↓ required to avoid HTTP error 400 mocked returns
+    HttpOverrides.global = null;
+  });
+
   testWidgets('Test: ListingFullScreen zeigt alle Elemente an',
       (WidgetTester tester) async {
     Listing dummyListing = createDummyListing();
@@ -30,7 +46,7 @@ void main() {
         providers: [ChangeNotifierProvider(create: (_) => AppState())
         ],
     child: MaterialApp(
-      home: ListingFullScreen(listing: dummyListing),
+      home: ListingFullScreen(listing: dummyListing, user: createDummyUser()),
       ),
     ));
 
@@ -38,7 +54,7 @@ void main() {
     expect(find.byType(Image), findsOneWidget);
     expect(find.byType(Text),
         findsNWidgets(10)); // Anzahl der Text-Widgets anpassen
-    expect(find.byType(IconButton), findsOneWidget);
+    expect(find.byType(GestureDetector), findsOneWidget);
     expect(find.byType(Divider),
         findsNWidgets(2)); // Anzahl der Divider-Widgets anpassen
 
@@ -57,19 +73,23 @@ void main() {
 
   testWidgets('Test: IconButton reagiert auf Taps',
       (WidgetTester tester) async {
+    Listing listing = createDummyListing(); 
+    User user = createDummyUser(); 
     await tester.pumpWidget(MultiProvider(
         providers: [ChangeNotifierProvider(create: (_) => AppState())
         ],
     child: MaterialApp(
-      home: ListingFullScreen(listing: createDummyListing()),
+      home: ListingFullScreen(listing: listing, user: user),
       ),
     ));
 
     // Überprüfen Sie, ob der IconButton auf Taps reagiert
-    await tester.tap(find.byType(IconButton));
-    await tester.pump();
+    await tester.tap(find.byIcon(Icons.favorite_border));
+    await tester.pumpAndSettle();
 
     // In diesem Fall wird nur überprüft, ob der IconButton getappt werden kann, da er momentan nur eine Drucknachricht ausgibt
-    expect(find.byIcon(Icons.favorite), findsOneWidget);
+    expect(find.text("Bitte logge dich ein"), findsOneWidget);
+    expect(find.byIcon(Icons.favorite_border), findsOneWidget); 
+    expect(find.byIcon(Icons.favorite), findsNothing); 
   });
 }
