@@ -64,7 +64,7 @@ void main() {
     });
     await tester.pumpAndSettle(); 
 
-    expect(find.text("You don't have any favorites yet"), findsOneWidget);
+    expect(find.text("Du hast noch keine Favoriten"), findsOneWidget);
 
   });
 
