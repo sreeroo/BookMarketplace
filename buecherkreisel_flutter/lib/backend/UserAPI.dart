@@ -18,7 +18,9 @@ class UserAPI {
   Future<User> createUser(String username, password) async {
     Map<String, dynamic> response = await _restAPI
         .postData('users/create', {"username": username, "password": password});
-    response.addAll({"username": username});
+    Map<String, dynamic> userData = await _restAPI
+        .fetchData('users/${response['id']}', {"token": {response['token']}});
+    response.addAll(userData); 
     return User.fromJson(response);
   }
 
@@ -32,7 +34,9 @@ class UserAPI {
   Future<User> loginUser(String username, password) async {
     Map<String, dynamic> response = await _restAPI
         .postData('login', {"username": username, "password": password});
-    response.addAll({"username": username});
+    Map<String, dynamic> userData = await _restAPI
+        .fetchData('users/${response['id']}', {"token": {response['token']}});
+    response.addAll(userData); 
     return User.fromJson(response);
   }
 
@@ -57,23 +61,12 @@ class UserAPI {
 
   }
 
-  // UPDATE THE LIKED LISTINGS LIST
-  Future updateLikedListings(
-      User user, Set<Listing> likedListings) async {
-
-    Set<int> likedListingsIndex = {};
-
-    for (Listing listing in likedListings) {
-      likedListingsIndex.add(listing.id);
-    }
-
-    String jsonList = jsonEncode(likedListingsIndex.toList());
-
-    await _restAPI.updateData('users/edit_likes/${user.id}', {
-      "token": user.token,
-      "liked_listings": jsonList,
-    });
-    return;
+  Future<dynamic> updateLikedListings(User user) async{
+    final response = await _restAPI.updateData('users/edit_likes/${user.id}', {
+      "liked_listings": jsonEncode(user.likedListings.toString()), 
+      "token": user.token
+    }); 
+    return response; 
   }
 
 /*

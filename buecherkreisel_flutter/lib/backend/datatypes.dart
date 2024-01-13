@@ -8,7 +8,7 @@ class ListingState extends ChangeNotifier {
   List<Listing> listings = List.empty(growable: true);
   List<String> categories = List.empty(growable: true);
   List<Listing> ownListings = List.empty(growable: true);
-  Set<Listing> likedListings = {};
+  List<Listing> liked_listings= List.empty(growable: true);
   ListingAPI api = ListingAPI();
   UserAPI userAPI = UserAPI();
 
@@ -28,19 +28,11 @@ class ListingState extends ChangeNotifier {
     return ownListings;
   }
 
-  Future<Set<Listing>> getLikedListings(User user) async {
-    Set<int> indexList = await userAPI.getLikedListings(user);
-
-    if (listings.isEmpty) {
-      getAllListingsRemote();
-    }
-
-    for (Listing listing in listings) {
-      if (indexList.contains(listing.id)) {
-        likedListings.add(listing);
-      }
-    }
-    return likedListings;
+  Future<List<Listing>> getLikedListings(List<int> likedListingsIds) async {
+    liked_listings = await api.getAllListings();
+    liked_listings.removeWhere((listing) => !likedListingsIds.contains(listing.id)); 
+    notifyListeners();
+    return liked_listings;
   }
 
   Future<List<String>> getCategoriesRemote() async {
@@ -73,7 +65,7 @@ class AppState extends ChangeNotifier {
     this.user = user;
     setToken(user.token);
     listingState.getOwnListings(user.id);
-    listingState.getLikedListings(user);
+    listingState.getLikedListings(user.likedListings);
     notifyListeners();
   }
 
@@ -86,7 +78,6 @@ class AppState extends ChangeNotifier {
   void logout() {
     user = User(id: "", profilePicture: "", username: "", token: "");
     listingState.setToken("");
-    listingState.likedListings = {};
     notifyListeners();
   }
 }
