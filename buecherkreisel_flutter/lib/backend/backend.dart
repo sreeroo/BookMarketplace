@@ -5,7 +5,7 @@ import 'dart:convert';
 
 class APIClient {
   // use IP 10.0.2.2 to access localhost from windows client
-  // static const baseUrl = "http://127.0.0.1:8080/";
+  //static const baseUrl = "http://127.0.0.1:8080/";
 
   // use IP 10.0.2.2 to access localhost from emulator!
   static const baseUrl = "http://10.0.2.2:8080/";
@@ -92,10 +92,10 @@ class APIClient {
       headers: {'Content-Type': 'application/json'},
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode < 300) {
+      if(response.statusCode == 204) return; 
       return json.decode(utf8.decode(response.bodyBytes));
-    } else if ( response.statusCode == 204) {}
-    else {
+    } else {
       throw Exception('Failed to update data');
     }
   }

@@ -57,12 +57,30 @@ class _ListingFullScreenState extends State<ListingFullScreen> with SingleTicker
             children: [
               AspectRatio(
                 aspectRatio: 16 / 9,
-                child: _listingImage != null 
+                child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  Opacity(
+                    opacity: widget.listing.isReserved ? 0.25 : 1,
+                    child: _listingImage != null 
                     ? Image(image: _listingImage!, fit: BoxFit.cover) // Use the cached image
                       : Image.memory(
                             imageFromBase64String("")!.bytes,
                             fit: BoxFit.cover,
                         ),
+                  ),
+                  if (widget.listing.isReserved)
+                    Container(
+                      color: Colors.black.withOpacity(0.5), // Semi-transparent mask
+                      child: const Center(
+                        child: Text(
+                          'Reserviert', 
+                          style: TextStyle(color: Colors.white, fontSize: 24),
+                        ),
+                      ),
+                    ),
+                ],
+                ),
               ),
               SizedBox(height: 20),
               Row(

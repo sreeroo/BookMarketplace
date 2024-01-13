@@ -10,7 +10,7 @@ import 'dart:io';
 import 'listing_preview_test.dart';
 
 void main() {
-  Listing createDummyListing() {
+  Listing createDummyListing(bool reserved) {
     return Listing(
         id: 1,
         category: 'Books',
@@ -20,10 +20,12 @@ void main() {
         price: 20.0,
         offersDelivery: false,
         description: '',
-        isReserved: false,
+        isReserved: reserved,
         createdBy: 21,
         contact: "a@b.c");
   }
+
+
 
   User createDummyUser() {
     return User(
@@ -41,7 +43,7 @@ void main() {
 
   testWidgets('Test: ListingFullScreen zeigt alle Elemente an',
       (WidgetTester tester) async {
-    Listing dummyListing = createDummyListing();
+    Listing dummyListing = createDummyListing(false);
     await tester.pumpWidget(MultiProvider(
         providers: [ChangeNotifierProvider(create: (_) => AppState())
         ],
@@ -69,11 +71,20 @@ void main() {
     expect(find.text(dummyListing.contact), findsOneWidget);
     expect(find.byType(Image), findsOneWidget);
     expect(find.byType(GestureDetector), findsOneWidget);
+    expect(find.byType(Image), findsOneWidget);
+
+    final Finder opacityWidget = find.byType(Opacity);
+    expect(opacityWidget, findsOneWidget);
+
+    final Opacity opacity = tester.widget(opacityWidget);
+    expect(opacity.opacity, equals(1));
+
+    expect(find.text("Reserviert"), findsNothing);
   });
 
   testWidgets('Test: IconButton reagiert auf Taps',
       (WidgetTester tester) async {
-    Listing listing = createDummyListing(); 
+    Listing listing = createDummyListing(false); 
     User user = createDummyUser(); 
     await tester.pumpWidget(MultiProvider(
         providers: [ChangeNotifierProvider(create: (_) => AppState())
@@ -92,4 +103,26 @@ void main() {
     expect(find.byIcon(Icons.favorite_border), findsOneWidget); 
     expect(find.byIcon(Icons.favorite), findsNothing); 
   });
+
+  testWidgets('Test: Opacity and Reserved Text is shown',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(MultiProvider(
+        providers: [ChangeNotifierProvider(create: (_) => AppState())
+        ],
+    child: MaterialApp(
+      home: ListingFullScreen(listing: createDummyListing(true), user: createDummyUser()),
+      ),
+    ));;
+
+    expect(find.byType(Image), findsOneWidget);
+
+    final Finder opacityWidget = find.byType(Opacity);
+    expect(opacityWidget, findsOneWidget);
+
+    final Opacity opacity = tester.widget(opacityWidget);
+    expect(opacity.opacity, equals(0.25));
+
+    expect(find.text("Reserviert"), findsOneWidget);
+  });
+
 }
