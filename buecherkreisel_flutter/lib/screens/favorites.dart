@@ -46,15 +46,15 @@ class FavoriteState extends State<Favorites> {
     return Consumer<AppState>(builder: (  
         c, appState, w) {
 
+      Widget content; 
       if (appState.user.token.isEmpty) {
-        return const Center(
-              child: Text("Login to see your favorites"));
-      }
-
-      return appState.listingState.liked_listings.isEmpty
-          ? const Center(
-              child: Text("You don't have any favorites yet"))
-          : ListView.builder(
+        content = const Center(
+              child: Text("Log dich ein, um deine Favoriten zu sehen"));
+      } else if(appState.listingState.liked_listings.isEmpty){
+        content = const Center(
+              child: Text("Du hast noch keine Favoriten")); 
+      } else {
+        content = ListView.builder(
               itemCount: appState.listingState.liked_listings.length,
               itemBuilder: (context, index) {
                 return ListingPreview(
@@ -62,5 +62,34 @@ class FavoriteState extends State<Favorites> {
                 );
               },
             );
+      }
+      
+      return CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            floating: true,  // AppBar will hide when scrolling
+            snap: true,  // AppBar can reappear mid-scroll if a dragging motion starts 
+            title: Center(
+              child: Text(
+                "Favoriten",
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+            ),
+          ),
+          SliverList(  // Use SliverList for the content if there are list items to display
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final item = appState.listingState.liked_listings.elementAt(index);
+                return ListingPreview(listing: item);
+              },
+              childCount: appState.listingState.liked_listings.length,
+            ),
+          ),
+          if (appState.user.token.isEmpty || appState.listingState.liked_listings.isEmpty)
+            SliverFillRemaining(  // Use SliverFillRemaining to fill the viewport with the message content
+              child: content,
+            ),
+        ],
+      );
     });
   }}
