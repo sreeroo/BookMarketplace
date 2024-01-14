@@ -92,7 +92,8 @@ class APIClient {
       headers: {'Content-Type': 'application/json'},
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode < 300) {
+      if(response.statusCode == 204) return; 
       return json.decode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to update data');

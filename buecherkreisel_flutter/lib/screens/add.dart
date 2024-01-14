@@ -40,6 +40,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
   late TextEditingController contactController;
   late String? selectedCategory;
   late bool _checkboxValue;
+  late bool _reservedValue; 
   File? _imageFile;
 
   @override
@@ -56,6 +57,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
         TextEditingController(text: widget.listing?.contact ?? "");
     selectedCategory = widget.listing == null ? "" : widget.listing!.category;
     _checkboxValue = widget.listing?.offersDelivery ?? false;
+    _reservedValue = widget.listing?.isReserved ?? false;
   }
 
   @override
@@ -202,12 +204,29 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
             });
           },
         ),
-        Text('Lieferung möglich'),
+        const Text('Lieferung möglich'),
+
+        if (widget.listing != null) ...[
+          SizedBox(width: 10),
+          Checkbox(
+            value: _reservedValue,
+            onChanged: (bool? value) {
+              setState(() {
+                _reservedValue = value!;
+              });
+            },
+          ),
+          const Flexible( // Use Flexible or other solution here
+            child: Text('Als reserviert markieren'),
+          ),
+        ],
       ],
     );
 
+    
+
     final contactField = TextFormField(
-      key: Key("contact"),
+      key: const Key("contact"),
       controller: contactController,
       keyboardType: TextInputType.text,
       decoration: InputDecoration(hintText: "Kontakt (Email, Telefon, ...)"),
@@ -240,7 +259,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
               location: locationController.text,
               category: selectedCategory!,
               offersDelivery: _checkboxValue,
-              isReserved: false, // TODO: HARDCODED
+              isReserved: _reservedValue,
               contact: contactController.text,
               createdBy: int.parse(widget.appState.user.id),
             );

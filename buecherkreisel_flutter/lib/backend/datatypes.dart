@@ -1,14 +1,16 @@
 import 'package:buecherkreisel_flutter/backend/ListingAPI.dart';
+import 'package:buecherkreisel_flutter/backend/UserAPI.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 
 class ListingState extends ChangeNotifier {
   List<Listing> listings = List.empty(growable: true);
   List<String> categories = List.empty(growable: true);
   List<Listing> ownListings = List.empty(growable: true);
+  List<Listing> liked_listings= List.empty(growable: true);
   ListingAPI api = ListingAPI();
+  UserAPI userAPI = UserAPI();
 
   ListingState();
 
@@ -24,6 +26,13 @@ class ListingState extends ChangeNotifier {
     getCategoriesRemote();
     notifyListeners();
     return ownListings;
+  }
+
+  Future<List<Listing>> getLikedListings(List<int> likedListingsIds) async {
+    liked_listings = await api.getAllListings();
+    liked_listings.removeWhere((listing) => !likedListingsIds.contains(listing.id)); 
+    notifyListeners();
+    return liked_listings;
   }
 
   Future<List<String>> getCategoriesRemote() async {
@@ -56,17 +65,18 @@ class AppState extends ChangeNotifier {
     this.user = user;
     setToken(user.token);
     listingState.getOwnListings(user.id);
+    listingState.getLikedListings(user.likedListings);
     notifyListeners();
   }
 
   void setToken(String token) {
     listingState.setToken(token);
-    this.user.token = token;
+    user.token = token;
     notifyListeners();
   }
 
   void logout() {
-    this.user = User(id: "", profilePicture: "", username: "", token: "");
+    user = User(id: "", profilePicture: "", username: "", token: "");
     listingState.setToken("");
     notifyListeners();
   }

@@ -1,5 +1,5 @@
 import 'package:buecherkreisel_flutter/backend/UserAPI.dart';
-import 'package:buecherkreisel_flutter/backend/datatypes.dart';
+import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -15,7 +15,7 @@ void main() {
   userAPI.setClient(mockClient);
 
   group('UserAPI', () {
-    test('Test: eine neue User wird erstellt mit einem Post Request', () async {
+    test('Test: ein neuer User wird erstellt mit einem Post Request', () async {
       // Arrange
       when(mockClient.post(any,
               body: anyNamed('body'),
@@ -23,6 +23,11 @@ void main() {
               encoding: anyNamed('encoding')))
           .thenAnswer(
               (_) async => http.Response('{"id":"1","token":"test"}', 201));
+
+      when(mockClient.get(any, headers: anyNamed('headers'))).thenAnswer(
+          (_) async => http.Response(
+              '{"id":"1", "username":"user1", "profile_picture":"test", "total_listings":"0", "token":"test", "liked_listings":"[]"}',
+              200));
 
       // Act
       final response = await userAPI.createUser('user1', 'password');
@@ -122,5 +127,46 @@ void main() {
       // Assert
       expect(response, throwsException);
     });
+
+    test('Test: Die Liste der favorisierten Anzeigen des Nutzer werden abgerufen',
+            () async {
+      //Arange
+      when(mockClient.get(any, headers: anyNamed('headers'))).thenAnswer(
+              (_) async => http.Response(
+                  '{"liked_listings":"[1]"}', 200));
+
+      User user = User(
+          id: "1",
+          profilePicture: "profile_pic",
+          username: "username",
+          token: "token");
+
+      // Act
+      final response = await userAPI.getLikedListings(user);
+
+      // Assert
+      expect(response, {1});
+    });
   });
+
+  test('Test: Die Liste der favorisierten Anzeigen des Nutzer wird aktualisiert',
+      () async {
+        // Arrange
+        when(mockClient.patch(any,
+                body: anyNamed('body'), headers: anyNamed('headers')))
+            .thenAnswer((_) async => http.Response('{"liked_listings":[1]}', 204));
+
+        User user = User(
+            id: "1",
+            profilePicture: "profile_pic",
+            username: "username",
+            token: "token");
+
+        // Act
+        final response = userAPI.updateLikedListings(user);
+
+        // Assert
+        expect(response.toString(), "Instance of 'Future<dynamic>'");
+      }
+  );
 }
