@@ -110,16 +110,16 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
                     });
                   }
                 },
-          child: Text('Bild auswählen'),
+          child: const Text('Bild auswählen'),
         ),
       ],
     );
 
     final nameField = TextFormField(
-      key: Key("title"),
+      key: const Key("title"),
       controller: titleController,
       keyboardType: TextInputType.text,
-      decoration: InputDecoration(hintText: "Title"),
+      decoration: const InputDecoration(hintText: "Title"),
       validator: (text) {
         if (text == null || text.isEmpty) {
           return 'Bitte gib einen Titel ein.';
@@ -129,11 +129,11 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
     );
 
     final descriptionField = TextFormField(
-      key: Key("desc"),
+      key: const Key("desc"),
       controller: descriptionController,
       keyboardType: TextInputType.multiline,
       maxLines: 4,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         hintText: "Beschreibung",
       ),
       validator: (text) {
@@ -145,9 +145,9 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
     );
 
     final categoryField = DropdownButtonFormField<String>(
-      key: Key("category"),
+      key: const Key("category"),
       value: widget.listing != null ? widget.listing!.category : null,
-      decoration: InputDecoration(hintText: "Kategorie"),
+      decoration: const InputDecoration(hintText: "Kategorie"),
       items: categories.map((String category) {
         return DropdownMenuItem<String>(
           value: category,
@@ -168,11 +168,11 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
     );
 
     final priceField = TextFormField(
-      key: Key("price"),
+      key: const Key("price"),
       controller: priceController,
       keyboardType:
-          TextInputType.numberWithOptions(decimal: true, signed: true),
-      decoration: InputDecoration(
+          const TextInputType.numberWithOptions(decimal: true, signed: true),
+      decoration: const InputDecoration(
         hintText: "Preis",
       ),
       validator: (value) {
@@ -182,10 +182,10 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       },
     );
     final locationField = TextFormField(
-      key: Key("location"),
+      key: const Key("location"),
       controller: locationController,
       keyboardType: TextInputType.text,
-      decoration: InputDecoration(hintText: "Ort"),
+      decoration: const InputDecoration(hintText: "Ort"),
       validator: (text) {
         if (text == null || text.isEmpty) {
           return 'Bitte gib einen Ort ein.';
@@ -207,7 +207,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
         const Text('Lieferung möglich'),
 
         if (widget.listing != null) ...[
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Checkbox(
             value: _reservedValue,
             onChanged: (bool? value) {
@@ -229,7 +229,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       key: const Key("contact"),
       controller: contactController,
       keyboardType: TextInputType.text,
-      decoration: InputDecoration(hintText: "Kontakt (Email, Telefon, ...)"),
+      decoration: const InputDecoration(hintText: "Kontakt (Email, Telefon, ...)"),
       validator: (text) {
         if (text == null || text.isEmpty) {
           return 'Bitte gib Kontaktdaten ein.';
@@ -323,7 +323,7 @@ class _AddUpdateListingFormState extends State<_AddUpdateListingForm> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
           children: <Widget>[
             imageField,
             nameField,

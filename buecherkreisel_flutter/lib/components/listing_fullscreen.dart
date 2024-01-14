@@ -51,7 +51,7 @@ class _ListingFullScreenState extends State<ListingFullScreen> with SingleTicker
           title: Text(widget.listing.title),
         ),
         body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -82,7 +82,7 @@ class _ListingFullScreenState extends State<ListingFullScreen> with SingleTicker
                 ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -133,51 +133,51 @@ class _ListingFullScreenState extends State<ListingFullScreen> with SingleTicker
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 '${widget.listing.price}€',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'Ort: ${widget.listing.location}',
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
                   Text(
                     'Kategorie: ${widget.listing.category}',
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
-              Divider(),
-              Text(
+              const SizedBox(height: 20),
+              const Divider(),
+              const Text(
                 'Beschreibung:',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 widget.listing.description,
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
-              SizedBox(height: 20),
-              Divider(),
-              Text(
+              const SizedBox(height: 20),
+              const Divider(),
+              const Text(
                 'Kontakt:',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 widget.listing.contact,
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
-                  Text(
+                  const Text(
                     'Versand möglich: ',
                     style: TextStyle(fontSize: 16),
                   ),

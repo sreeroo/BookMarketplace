@@ -13,7 +13,7 @@ class Settings extends StatelessWidget {
       builder: (b, state, w) {
         return state.user.token.isEmpty
             ? LoginRegisterScreen()
-            : ProfileScreen();
+            : const ProfileScreen();
       },
     );
   }

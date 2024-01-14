@@ -112,7 +112,7 @@ void main() {
     child: MaterialApp(
       home: ListingFullScreen(listing: createDummyListing(true), user: createDummyUser()),
       ),
-    ));;
+    ));
 
     expect(find.byType(Image), findsOneWidget);
 

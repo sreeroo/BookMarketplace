@@ -1,6 +1,5 @@
 import 'package:buecherkreisel_flutter/backend/UserAPI.dart';
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
-import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -54,9 +53,9 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
             children: [
               Text(
                 _isLogin ? 'Anmelden' : 'Registrieren',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Form(
                 key: _formKey,
                 child: Column(
@@ -80,7 +79,7 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextButton(
                 child: Text(
                   _isLogin ? 'Einloggen' : 'Registrieren',
@@ -130,7 +129,7 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
                   }
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextButton(
                 child: Text(
                   _isLogin

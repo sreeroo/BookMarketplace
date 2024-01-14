@@ -1,5 +1,4 @@
 import 'package:buecherkreisel_flutter/backend/UserAPI.dart';
-import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
