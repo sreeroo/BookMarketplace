@@ -38,7 +38,7 @@ void main() {
 
 
   group("Favorites", () {
-    testWidgets('Test: Like Listing',
+    testWidgets('Test: Like & dislike Listing',
             (WidgetTester tester) async {
 
       // Create user
@@ -109,9 +109,16 @@ void main() {
       expect(iconFinder, findsOne);
 
       // Like listing
+      // Scroll after like button is visible
       await tester.scrollUntilVisible(iconFinder, 300);
       await tester.tap(iconFinder);
+      await tester.pumpAndSettle(Durations.extralong4);
       expect(find.byIcon(Icons.favorite), findsOne);
+
+      // Dislike listing
+      await tester.tap(find.byIcon(Icons.favorite));
+      await tester.pumpAndSettle(Durations.extralong4);
+      expect(iconFinder, findsOne);
     });
   });
 }
