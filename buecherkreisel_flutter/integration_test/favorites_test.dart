@@ -105,16 +105,13 @@ void main() {
       await tester.pumpAndSettle(Durations.extralong4);
 
       expect(find.byType(ListingFullScreen), findsOneWidget);
-      expect(find.byIcon(Icons.favorite_border), findsOne);
-      expect(find.byType(GestureDetector), findsAny);
-
-      await tester.pumpAndSettle(const Duration(seconds: 2));
+      final iconFinder = find.byIcon(Icons.favorite_border);
+      expect(iconFinder, findsOne);
 
       // Like listing
-      await tester.tap(find.byType(GestureDetector).last);
+      await tester.scrollUntilVisible(iconFinder, 300);
+      await tester.tap(iconFinder);
       expect(find.byIcon(Icons.favorite), findsOne);
-
-      await tester.pumpAndSettle(const Duration(seconds: 2));
     });
   });
 }
