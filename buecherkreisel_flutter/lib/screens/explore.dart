@@ -1,7 +1,5 @@
-import 'package:buecherkreisel_flutter/backend/ListingAPI.dart';
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
 import 'package:buecherkreisel_flutter/components/listing_preview.dart';
-import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

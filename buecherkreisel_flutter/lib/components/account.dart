@@ -15,7 +15,7 @@ class ProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Text(
                 'Account',
                 style: TextStyle(
@@ -32,16 +32,16 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 title: Text(state.user.username),
                 trailing: IconButton(
-                  icon: Icon(Icons.logout),
+                  icon: const Icon(Icons.logout),
                   onPressed: () => state.logout(),
                 ),
               ),
             ),
-            Divider(),
+            const Divider(),
             //ownlistings
             // List of own listings
             const Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Text(
                 'Deine Listings',
                 style: TextStyle(
@@ -86,9 +86,9 @@ class ProfileScreen extends StatelessWidget {
                                         ),
                                       );
                                     },
-                                    child: Text('Bearbeiten'),
+                                    child: const Text('Bearbeiten'),
                                   ),
-                                  SizedBox(width: 10),
+                                  const SizedBox(width: 10),
                                   ElevatedButton(
                                     onPressed: () {
                                       try {
@@ -110,7 +110,7 @@ class ProfileScreen extends StatelessWidget {
                                         print(e);
                                       }
                                     },
-                                    child: Text('Löschen'),
+                                    child: const Text('Löschen'),
                                   ),
                                 ],
                               ),

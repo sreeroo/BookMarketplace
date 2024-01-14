@@ -1,18 +1,14 @@
-import 'package:buecherkreisel_flutter/backend/utils.dart';
 import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/models/user.dart';
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
-import 'package:buecherkreisel_flutter/backend/backend.dart';
 import 'package:buecherkreisel_flutter/screens/add.dart';
+import 'package:buecherkreisel_flutter/backend/ListingAPI.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
 import 'package:mockito/mockito.dart';
-import 'package:buecherkreisel_flutter/backend/ListingAPI.dart';
 import 'package:http/http.dart' as http;
-import 'package:mockito/annotations.dart';
 
 
 class MockListingAPI extends Mock implements ListingAPI {
@@ -29,8 +25,6 @@ void main() {
     HttpOverrides.global = null;
   });
 
-  String mockPic = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
-
   testWidgets('AddUpdateListing controllers test', (WidgetTester tester) async {
     // Mock the necessary data or state if needed
     // Example: AppState mockAppState = MockAppState();
@@ -39,7 +33,7 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider(
         create: (context) => AppState(),
-        child: MaterialApp(
+        child: const MaterialApp(
           home: Scaffold(
             body: AddUpdateListing(),
           ),
@@ -49,32 +43,32 @@ void main() {
 
     // Test title controller
     const String titleTestInput = "Test Title";
-    await tester.enterText(find.byKey(Key("title")), titleTestInput);
+    await tester.enterText(find.byKey(const Key("title")), titleTestInput);
     await tester.pump();
     // Find the TextFormField and check if the text matches
     expect(find.widgetWithText(TextFormField, titleTestInput), findsOneWidget);
 
     // Test description controller
     const String descriptionTestInput = "Test Description";
-    await tester.enterText(find.byKey(Key("desc")), descriptionTestInput);
+    await tester.enterText(find.byKey(const Key("desc")), descriptionTestInput);
     await tester.pump();
     expect(find.widgetWithText(TextFormField, descriptionTestInput), findsOneWidget);
 
     // Test price controller
     const String priceTestInput = "100";
-    await tester.enterText(find.byKey(Key("price")), priceTestInput);
+    await tester.enterText(find.byKey(const Key("price")), priceTestInput);
     await tester.pump();
     expect(find.widgetWithText(TextFormField, priceTestInput), findsOneWidget);
 
     // Test location controller
     const String locationTestInput = "Test Location";
-    await tester.enterText(find.byKey(Key("location")), locationTestInput);
+    await tester.enterText(find.byKey(const Key("location")), locationTestInput);
     await tester.pump();
     expect(find.widgetWithText(TextFormField, locationTestInput), findsOneWidget);
 
     // Test contact controller
     const String contactTestInput = "Test Contact";
-    await tester.enterText(find.byKey(Key("contact")), contactTestInput);
+    await tester.enterText(find.byKey(const Key("contact")), contactTestInput);
     await tester.pump();
     expect(find.widgetWithText(TextFormField, contactTestInput), findsOneWidget);
   });
@@ -91,7 +85,7 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider(
         create: (context) => mockAppState,
-        child: MaterialApp(
+        child: const MaterialApp(
           home: Scaffold(
             body: AddUpdateListing(),
           ),
@@ -101,28 +95,28 @@ void main() {
 
     // Test title controller
     const String titleTestInput = "";
-    await tester.enterText(find.byKey(Key("title")), titleTestInput);
+    await tester.enterText(find.byKey(const Key("title")), titleTestInput);
     await tester.tap(find.byType(ElevatedButton).last); 
     await tester.pump();
     expect(find.text("Bitte gib einen Titel ein."), findsOneWidget);
 
     // Test description controller
     const String descriptionTestInput = "";
-    await tester.enterText(find.byKey(Key("desc")), descriptionTestInput);
+    await tester.enterText(find.byKey(const Key("desc")), descriptionTestInput);
     await tester.tap(find.byType(ElevatedButton).last); 
     await tester.pump();
     expect(find.text("Bitte gib eine Beschreibung ein."), findsOneWidget);
 
     // Test price controller
     const String priceTestInput = "Falscher Price";
-    await tester.enterText(find.byKey(Key("price")), priceTestInput);
+    await tester.enterText(find.byKey(const Key("price")), priceTestInput);
     await tester.tap(find.byType(ElevatedButton).last);
     await tester.pump();
     expect(find.text("Bitte gib eine Zahl ein."), findsOneWidget);
 
     // Test location controller
     const String locationTestInput = "";
-    await tester.enterText(find.byKey(Key("location")), locationTestInput);
+    await tester.enterText(find.byKey(const Key("location")), locationTestInput);
     await tester.tap(find.byType(ElevatedButton).last); 
     await tester.pump();
     expect(find.text("Bitte gib einen Ort ein."), findsOneWidget);
@@ -141,7 +135,7 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider(
         create: (context) => mockAppState,
-        child: MaterialApp(
+        child: const MaterialApp(
           home: Scaffold(
             body: AddUpdateListing(),
           ),
@@ -180,7 +174,7 @@ void main() {
                     });
                   },
                 ),
-                Text('Lieferung möglich'),
+                const Text('Lieferung möglich'),
               ],
             ),
           );
@@ -214,7 +208,7 @@ void main() {
                     });
                   },
                 ),
-                Text('Lieferung möglich'),
+                const Text('Lieferung möglich'),
               ],
             ),
           );
@@ -246,7 +240,7 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider(
         create: (context) => mockAppState,
-        child: MaterialApp(
+        child: const MaterialApp(
           home: Scaffold(
             body: AddUpdateListing(),
           ),
@@ -279,7 +273,7 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider(
         create: (context) => mockAppState,
-        child: MaterialApp(
+        child: const MaterialApp(
           home: Scaffold(
             body: AddUpdateListing(),
           ),
@@ -287,25 +281,25 @@ void main() {
       ),
     );
     const String titleTestInput = "Test Title";
-    await tester.enterText(find.byKey(Key("title")), titleTestInput);
+    await tester.enterText(find.byKey(const Key("title")), titleTestInput);
 
     const String descriptionTestInput = "Test Description";
-    await tester.enterText(find.byKey(Key("desc")), descriptionTestInput);
+    await tester.enterText(find.byKey(const Key("desc")), descriptionTestInput);
 
     const String priceTestInput = "100";
-    await tester.enterText(find.byKey(Key("price")), priceTestInput);
+    await tester.enterText(find.byKey(const Key("price")), priceTestInput);
 
     const String locationTestInput = "Test Location";
-    await tester.enterText(find.byKey(Key("location")), locationTestInput);
+    await tester.enterText(find.byKey(const Key("location")), locationTestInput);
 
     const String contactTestInput = "Test Contact";
-    await tester.enterText(find.byKey(Key("contact")), contactTestInput);
+    await tester.enterText(find.byKey(const Key("contact")), contactTestInput);
 
     await tester.pump(); 
 
     await tester.tap(find.byType(DropdownButtonFormField<String>)); 
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(DropdownMenuItem<String>).first);
+    await tester.tap(find.byType(DropdownMenuItem<String>).first, warnIfMissed: false);
     await tester.pumpAndSettle();
 
     await tester.tap(find.byType(ElevatedButton).last); 

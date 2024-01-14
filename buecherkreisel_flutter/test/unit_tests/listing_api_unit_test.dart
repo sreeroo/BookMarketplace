@@ -74,7 +74,7 @@ void main() {
 
       // Stub the behavior of the APIClient's post method
       when(mockClient.send(any))
-          .thenAnswer((_) async => http.StreamedResponse(Stream.empty(), 201));
+          .thenAnswer((_) async => http.StreamedResponse(const Stream.empty(), 201));
 
       // Act
       final response = await listingAPI.createListing(listing, imageFile);
@@ -88,7 +88,7 @@ void main() {
 
       // Stub the behavior of the APIClient's patchDataMultipart method
       when(mockClient.send(any))
-          .thenAnswer((_) async => http.StreamedResponse(Stream.empty(), 400));
+          .thenAnswer((_) async => http.StreamedResponse(const Stream.empty(), 400));
 
       // Act & Assert
       expect(() async => await listingAPI.createListing(listing, imageFile),
@@ -204,7 +204,7 @@ void main() {
 
       // Stub the behavior of the APIClient's patchDataMultipart method
       when(mockClient.send(any))
-          .thenAnswer((_) async => http.StreamedResponse(Stream.empty(), 200));
+          .thenAnswer((_) async => http.StreamedResponse(const Stream.empty(), 200));
 
       // Act
       final response = await listingAPI.patchListing(listing, imageFile);
@@ -218,7 +218,7 @@ void main() {
 
       // Stub the behavior of the APIClient's patchDataMultipart method
       when(mockClient.send(any))
-          .thenAnswer((_) async => http.StreamedResponse(Stream.empty(), 400));
+          .thenAnswer((_) async => http.StreamedResponse(const Stream.empty(), 400));
 
       // Act & Assert
       expect(() async => await listingAPI.patchListing(listing, imageFile),
@@ -231,7 +231,7 @@ void main() {
 
       // Stub the behavior of the APIClient's patchDataMultipart method
       when(mockClient.send(any))
-          .thenAnswer((_) async => http.StreamedResponse(Stream.empty(), 200));
+          .thenAnswer((_) async => http.StreamedResponse(const Stream.empty(), 200));
 
       // Act
       final response = await listingAPI.patchListing(listing);

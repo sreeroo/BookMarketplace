@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import "package:buecherkreisel_flutter/models/user.dart";
 import 'package:http/http.dart' as http;
-import '../models/listing.dart';
 import 'backend.dart';
 
 class UserAPI {

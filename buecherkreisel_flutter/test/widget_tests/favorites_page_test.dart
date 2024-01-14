@@ -57,7 +57,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => appState),
             ChangeNotifierProvider(create: (_) => ListingState())
           ],
-      child: MaterialApp(
+      child: const MaterialApp(
         home: Favorites(),
         ),
       ));
@@ -94,7 +94,7 @@ void main() {
           ChangeNotifierProvider<AppState>(create: (_) => appState),
           ChangeNotifierProvider<ListingState>(create: (_) => listingState),
         ],
-        child: MaterialApp(home: Favorites()),
+        child: const MaterialApp(home: Favorites()),
       ),
     );
 

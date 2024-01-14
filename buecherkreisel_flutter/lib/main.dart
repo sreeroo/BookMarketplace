@@ -1,5 +1,4 @@
 import 'package:buecherkreisel_flutter/backend/datatypes.dart';
-import 'package:buecherkreisel_flutter/models/listing.dart';
 import 'package:buecherkreisel_flutter/screens/add.dart';
 import 'package:buecherkreisel_flutter/screens/explore.dart';
 import 'package:buecherkreisel_flutter/screens/favorites.dart';
